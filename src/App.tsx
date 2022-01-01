@@ -21,7 +21,6 @@ import {
   IconButton,
   LinearProgress,
   Stack,
-  TextField,
   Tooltip,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -36,7 +35,6 @@ import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
-import { Description } from "@mui/icons-material";
 
 interface VectorTemplate {
   top: number;
@@ -112,6 +110,7 @@ function App() {
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [simulationSpeed, setSimulationSpeed] = useState(2);
+  const [mass, setMass] = useState(1);
 
   const [gravity, setGravity] = useState(-9.81);
 
@@ -139,10 +138,6 @@ function App() {
     useState<VectorTemplate | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
   const [displayChange, setDisplayChange] = useState<{
-    xDisplay: number;
-    yDisplay: number;
-  }>({ xDisplay: 0, yDisplay: 0 });
-  const [displayChange2, setDisplayChange2] = useState<{
     xDisplay: number;
     yDisplay: number;
   }>({ xDisplay: 0, yDisplay: 0 });
@@ -1467,7 +1462,7 @@ function App() {
                   displayYVelocity={velocityYDisplay}
                   elasticCollisions={elasticCollisions}
                   incrementTime={timer}
-                  mass={1}
+                  mass={mass}
                   mode={mode}
                   noMovement={noMovement}
                   paused={simulationPaused}
@@ -1915,7 +1910,7 @@ function App() {
                     unit={"x"}
                     upperBound={10}
                     value={simulationSpeed}
-                    labelWidth={"4em"}
+                    labelWidth={"5em"}
                   />
                   <InputField
                     label={<Box>Gravity</Box>}
@@ -1925,7 +1920,7 @@ function App() {
                     unit={"m/s^2"}
                     upperBound={0}
                     value={gravity}
-                    labelWidth={"4em"}
+                    labelWidth={"5em"}
                   />
                 </FormGroup>
               </FormControl>
@@ -2070,7 +2065,7 @@ function App() {
               {simulationType == "Pendulum" && simulationPaused && (
                 <div>
                   <InputField
-                    label={<Box>&theta;</Box>}
+                    label={<Box>Angle</Box>}
                     lowerBound={0}
                     changeValue={setPendulumAngle}
                     step={1}
@@ -2355,6 +2350,13 @@ function App() {
                     <td style={{ cursor: "default" }}>
                       {accelerationYDisplay} m/s<sup>2</sup>
                     </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <Box>Momentum</Box>
+                    </td>
+                    <td>{velocityXDisplay * mass} kg*m/s</td>
+                    <td>{velocityYDisplay * mass} kg*m/s</td>
                   </tr>
                 </tbody>
               </table>
