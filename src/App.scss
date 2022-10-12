@@ -1,0 +1,50 @@
+* {
+  box-sizing: border-box;
+}
+
+.mechanicsSimulationContainer {
+  padding: 0.5em;
+  height: 100vh;
+  width: 150vh;
+  border: solid black 2px;
+  margin: auto;
+  display: flex;
+}
+
+.mechanicsSimulationContentContainer {
+  width: 70%;
+  border: solid red 2px;
+  padding: 0.5em;
+
+  .mechanicsSimulationButtonsAndElements {
+    height: 90%;
+
+    .mechanicsSimulationButtons {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .mechanicsSimulationElements {
+    }
+  }
+
+  .mechanicsSimulationFooter {
+    height: 10%;
+    margin: 1%;
+  }
+}
+
+.weight {
+  background-color: red;
+  border-radius: 50%;
+  width: 10vh;
+  height: 10vh;
+  position: absolute;
+}
+
+.mechanicsSimulationEquationContainer {
+  width: 30%;
+  border: solid blue 2px;
+  padding: 0.5em;
+  margin-left: 1%;
+}
