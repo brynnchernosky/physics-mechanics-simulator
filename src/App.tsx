@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "./logo.svg";
+import { Weight } from "./Weight";
 import "./App.scss";
 
 function App() {
@@ -8,7 +9,16 @@ function App() {
   );
 
   const addWeight = () => {
-    const weight = <div className="weight" key={simulationElements.length} />;
+    const weight = (
+      <Weight
+        posX={0}
+        posY={0}
+        radius={5}
+        color="#FFFFFF"
+        mass={5}
+        forces={[]}
+      />
+    );
     console.log(simulationElements);
     setSimulationElements((state) => [...state, weight]);
   };
