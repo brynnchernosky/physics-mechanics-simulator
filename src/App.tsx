@@ -3,6 +3,7 @@ import logo from "./logo.svg";
 import { Weight } from "./Weight";
 import "./App.scss";
 import { start } from "repl";
+import { IWallProps, Wall } from "./Wall";
 
 export interface ISimulationElement {
   type: string;
@@ -21,6 +22,7 @@ function App() {
   const [simulationElements, setSimulationElements] = useState<
     ISimulationElement[]
   >([]);
+  const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
   const [timerPaused, setTimerPaused] = useState<boolean>(true);
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
@@ -32,23 +34,21 @@ function App() {
       startPosY: 0,
       color: "red",
       mass: 5,
-      radius: 5,
+      radius: 50,
       startAccY: -9.81,
     };
     setSimulationElements((state) => [...state, weight]);
   };
 
+  useEffect(() => {
+    const walls: IWallProps[] = [];
+    walls.push({ length: 100, xPos: 0, yPos: 100, angleInDegrees: 0 });
+    setWallPositions(walls);
+  }, []);
+
   setInterval(() => {
     setTimer(timer + 1);
-  }, 500);
-
-  // useEffect(() => {
-  //   if (!timerPaused) {
-  //     runSimulation();
-  //     console.log("here");
-  //   }
-  //   console.log("there");
-  // }, [timerPaused]);
+  }, 60);
 
   return (
     <div className="mechanicsSimulationContainer">
@@ -76,7 +76,8 @@ function App() {
                       radius={element.radius}
                       color={element.color}
                       mass={element.mass}
-                      timestepSize={1}
+                      timestepSize={0.8}
+                      walls={wallPositions}
                       incrementTime={timer}
                       paused={timerPaused}
                     />
@@ -84,6 +85,19 @@ function App() {
                 );
               }
               return <div key={index} />;
+            })}
+          </div>
+          <div>
+            {wallPositions.map((element, index) => {
+              return (
+                <Wall
+                  key={index}
+                  length={element.length}
+                  xPos={element.xPos}
+                  yPos={element.yPos}
+                  angleInDegrees={element.angleInDegrees}
+                />
+              );
             })}
           </div>
         </div>

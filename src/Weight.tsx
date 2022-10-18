@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { IWallProps } from "./Wall";
 import "./Weight.scss";
 
 export interface Force {
@@ -18,6 +19,7 @@ export interface IWeightProps {
   timestepSize: number;
   incrementTime: number;
   paused: boolean;
+  walls: IWallProps[];
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -34,6 +36,7 @@ export const Weight = (props: IWeightProps) => {
     timestepSize,
     incrementTime,
     paused,
+    walls,
   } = props;
 
   const [xPosition, setXPosition] = useState(startPosX);
@@ -45,8 +48,11 @@ export const Weight = (props: IWeightProps) => {
 
   useEffect(() => {
     if (!paused) {
-      updatePos(timestepSize);
-      updateVelocity(timestepSize);
+      if (yAcceleration != 0) {
+        updatePos(timestepSize);
+        updateVelocity(timestepSize);
+        checkForCollisions();
+      }
     }
   }, [incrementTime]);
 
@@ -71,6 +77,22 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(newYVelocity);
   };
 
+  const checkForCollisions = () => {
+    const minX = xPosition;
+    const maxX = xPosition + 2 * (radius ?? 5);
+    const minY = yPosition;
+    const maxY = yPosition + 2 * (radius ?? 5);
+    const containerHeight = 700;
+    walls.forEach((wall) => {
+      if (maxY >= (wall.yPos / 100) * containerHeight) {
+        setYAcceleration(0);
+        setYVelocity(0);
+      }
+    });
+    // get current position of simulation element
+    // get position of walls
+  };
+
   const weightStyle = {
     backgroundColor: color,
     borderStyle: "solid",
@@ -78,8 +100,8 @@ export const Weight = (props: IWeightProps) => {
     position: "relative" as "relative",
     left: xPosition,
     top: yPosition,
-    width: 2 * (radius ?? 5) + "vw",
-    height: 2 * (radius ?? 5) + "vw",
+    width: 2 * (radius ?? 5) + "px",
+    height: 2 * (radius ?? 5) + "px",
     borderRadius: 50 + "%",
   };
 
