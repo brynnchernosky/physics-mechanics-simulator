@@ -23,7 +23,8 @@ function App() {
     ISimulationElement[]
   >([]);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
-  const [timerPaused, setTimerPaused] = useState<boolean>(true);
+  const [simulationReset, setSimulationReset] = useState<boolean>(false);
+  const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
 
@@ -79,7 +80,8 @@ function App() {
                       timestepSize={0.8}
                       walls={wallPositions}
                       incrementTime={timer}
-                      paused={timerPaused}
+                      reset={simulationReset}
+                      paused={simulationPaused}
                     />
                   </div>
                 );
@@ -104,7 +106,7 @@ function App() {
         <div className="mechanicsSimulationFooter">
           <button
             onClick={() => {
-              setTimerPaused(false);
+              setSimulationPaused(false);
             }}
           >
             {" "}
@@ -112,13 +114,21 @@ function App() {
           </button>
           <button
             onClick={() => {
-              setTimerPaused(true);
+              setSimulationPaused(true);
             }}
           >
             {" "}
             Pause
           </button>
-          <button> Reset</button>
+          <button
+            onClick={() => {
+              setSimulationPaused(true);
+              setSimulationReset(!simulationReset);
+            }}
+          >
+            {" "}
+            Reset
+          </button>
           <button> Slider</button>
         </div>
       </div>

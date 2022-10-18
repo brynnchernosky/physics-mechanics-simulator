@@ -19,6 +19,7 @@ export interface IWeightProps {
   timestepSize: number;
   incrementTime: number;
   paused: boolean;
+  reset: boolean;
   walls: IWallProps[];
 }
 
@@ -36,6 +37,7 @@ export const Weight = (props: IWeightProps) => {
     timestepSize,
     incrementTime,
     paused,
+    reset,
     walls,
   } = props;
 
@@ -55,6 +57,15 @@ export const Weight = (props: IWeightProps) => {
       }
     }
   }, [incrementTime]);
+
+  useEffect(() => {
+    setXPosition(startPosX);
+    setYPosition(startPosY);
+    setXVelocity(startVelX ?? 0);
+    setYVelocity(startVelY ?? 0);
+    setXAcceleration(startAccX ?? 0);
+    setYAcceleration(startAccY ?? 0);
+  }, [reset]);
 
   const updatePos = (timestep: number) => {
     const newXPos =
@@ -89,8 +100,6 @@ export const Weight = (props: IWeightProps) => {
         setYVelocity(0);
       }
     });
-    // get current position of simulation element
-    // get position of walls
   };
 
   const weightStyle = {
