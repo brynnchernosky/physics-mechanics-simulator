@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import { Weight } from "./Weight";
 import "./App.scss";
+import { start } from "repl";
 
 export interface ISimulationElement {
   type: string;
@@ -22,6 +23,7 @@ function App() {
   >([]);
   const [timerPaused, setTimerPaused] = useState<boolean>(true);
   const [timer, setTimer] = useState<number>(0);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -36,13 +38,17 @@ function App() {
     setSimulationElements((state) => [...state, weight]);
   };
 
-  // setInterval(() => {
-  //   if (timerPaused) {
-  //     setTimer(timer);
-  //   } else {
-  //     setTimer(timer + 1);
+  setInterval(() => {
+    setTimer(timer + 1);
+  }, 500);
+
+  // useEffect(() => {
+  //   if (!timerPaused) {
+  //     runSimulation();
+  //     console.log("here");
   //   }
-  // }, 100);
+  //   console.log("there");
+  // }, [timerPaused]);
 
   return (
     <div className="mechanicsSimulationContainer">
@@ -72,6 +78,7 @@ function App() {
                       mass={element.mass}
                       timestepSize={1}
                       incrementTime={timer}
+                      paused={timerPaused}
                     />
                   </div>
                 );

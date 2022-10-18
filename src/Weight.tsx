@@ -17,6 +17,7 @@ export interface IWeightProps {
   mass: number;
   timestepSize: number;
   incrementTime: number;
+  paused: boolean;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -32,6 +33,7 @@ export const Weight = (props: IWeightProps) => {
     mass,
     timestepSize,
     incrementTime,
+    paused,
   } = props;
 
   const [xPosition, setXPosition] = useState(startPosX);
@@ -42,8 +44,10 @@ export const Weight = (props: IWeightProps) => {
   const [yAcceleration, setYAcceleration] = useState(startAccY ?? 0);
 
   useEffect(() => {
-    updatePos(timestepSize);
-    updateVelocity(timestepSize);
+    if (!paused) {
+      updatePos(timestepSize);
+      updateVelocity(timestepSize);
+    }
   }, [incrementTime]);
 
   const updatePos = (timestep: number) => {
