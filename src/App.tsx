@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
-import { Weight } from "./Weight";
+import { Weight, IForce } from "./Weight";
 import "./App.scss";
 import { start } from "repl";
 import { IWallProps, Wall } from "./Wall";
@@ -36,7 +36,6 @@ function App() {
       color: "red",
       mass: 5,
       radius: 50,
-      startAccY: -9.81,
     };
     setSimulationElements((state) => [...state, weight]);
   };
@@ -68,20 +67,24 @@ function App() {
           <div className="mechanicsSimulationElements">
             {simulationElements.map((element, index) => {
               if (element.type === "weight") {
+                const forceOfGravity: IForce = {
+                  magnitude: element.mass * -9.81,
+                  directionInDegrees: 270,
+                };
                 return (
                   <div key={index}>
                     <Weight
                       startPosX={element.startPosX}
                       startPosY={element.startPosY}
-                      startAccY={element.startAccY}
                       radius={element.radius}
                       color={element.color}
                       mass={element.mass}
-                      timestepSize={0.8}
+                      timestepSize={0.3}
                       walls={wallPositions}
                       incrementTime={timer}
                       reset={simulationReset}
                       paused={simulationPaused}
+                      forces={[forceOfGravity]}
                     />
                   </div>
                 );

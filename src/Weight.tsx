@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
 
-export interface Force {
+export interface IForce {
   magnitude: number;
   directionInDegrees: number;
 }
@@ -21,6 +21,7 @@ export interface IWeightProps {
   paused: boolean;
   reset: boolean;
   walls: IWallProps[];
+  forces: IForce[];
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -39,6 +40,7 @@ export const Weight = (props: IWeightProps) => {
     paused,
     reset,
     walls,
+    forces,
   } = props;
 
   const [xPosition, setXPosition] = useState(startPosX);
@@ -67,6 +69,26 @@ export const Weight = (props: IWeightProps) => {
     setYAcceleration(startAccY ?? 0);
   }, [reset]);
 
+  useEffect(() => {
+    setXAcceleration(startAccX ?? 0);
+    setYAcceleration(startAccY ?? 0);
+    if (!forces) {
+      return;
+    }
+    forces.forEach((force) => {
+      const xComponent =
+        (force.magnitude *
+          Math.cos((force.directionInDegrees * Math.PI) / 180)) /
+        mass;
+      const yComponent =
+        (force.magnitude *
+          Math.sin((force.directionInDegrees * Math.PI) / 180)) /
+        mass;
+      setXAcceleration(xAcceleration + xComponent);
+      setYAcceleration(yAcceleration + yComponent);
+    });
+  }, [reset]);
+
   const updatePos = (timestep: number) => {
     const newXPos =
       xPosition +
@@ -74,10 +96,9 @@ export const Weight = (props: IWeightProps) => {
       0.5 * xAcceleration * timestep * timestep;
     setXPosition(newXPos);
     const newYPos =
-      -1 *
-      (yPosition +
-        yVelocity * timestep +
-        0.5 * yAcceleration * timestep * timestep);
+      yPosition +
+      yVelocity * timestep +
+      0.5 * yAcceleration * timestep * timestep;
     setYPosition(newYPos);
   };
 
@@ -93,11 +114,15 @@ export const Weight = (props: IWeightProps) => {
     const maxX = xPosition + 2 * (radius ?? 5);
     const minY = yPosition;
     const maxY = yPosition + 2 * (radius ?? 5);
-    const containerHeight = 700;
+    const containerHeight = window.innerHeight * 0.9;
     walls.forEach((wall) => {
-      if (maxY >= (wall.yPos / 100) * containerHeight) {
+      const wallHeight = (wall.yPos / 100) * containerHeight;
+      if (maxY >= wallHeight) {
+        setYPosition(wallHeight - 2 * (radius ?? 5));
         setYAcceleration(0);
         setYVelocity(0);
+        console.log(wall.yPos, containerHeight, window.innerHeight);
+        console.log("collided!");
       }
     });
   };
@@ -106,9 +131,9 @@ export const Weight = (props: IWeightProps) => {
     backgroundColor: color,
     borderStyle: "solid",
     borderColor: "black",
-    position: "relative" as "relative",
-    left: xPosition,
-    top: yPosition,
+    position: "absolute" as "absolute",
+    left: xPosition + "px",
+    top: yPosition + "px",
     width: 2 * (radius ?? 5) + "px",
     height: 2 * (radius ?? 5) + "px",
     borderRadius: 50 + "%",
