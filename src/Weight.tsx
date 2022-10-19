@@ -43,6 +43,9 @@ export const Weight = (props: IWeightProps) => {
     forces,
   } = props;
 
+  const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
+  const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
+
   const [xPosition, setXPosition] = useState(startPosX);
   const [yPosition, setYPosition] = useState(startPosY);
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
@@ -59,8 +62,8 @@ export const Weight = (props: IWeightProps) => {
   }, [incrementTime]);
 
   useEffect(() => {
-    setXPosition(startPosX);
-    setYPosition(startPosY);
+    setXPosition(updatedStartPosX);
+    setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
     setXAcceleration(startAccX ?? 0);
@@ -169,19 +172,32 @@ export const Weight = (props: IWeightProps) => {
     };
   }
 
+  const [clickPositionX, setClickPositionX] = useState(0);
+  const [clickPositionY, setClickPositionY] = useState(0);
+
   return (
-    <button
+    <div
       className="weight"
+      draggable={dragging}
       style={weightStyle}
       onClick={() => {
         console.log("here");
         setDragging(true);
       }}
-      onDrag={() => {
-        console.log("dragging");
+      onDragStart={(e) => {
+        setClickPositionX(e.clientX);
+        setClickPositionY(e.clientY);
+      }}
+      onDrag={(e) => {
+        setXPosition(xPosition + e.clientX - clickPositionX);
+        setYPosition(yPosition + e.clientY - clickPositionY);
+        setUpdatedStartPosX(xPosition + e.clientX - clickPositionX);
+        setUpdatedStartPosY(yPosition + e.clientY - clickPositionY);
+        setClickPositionX(e.clientX);
+        setClickPositionY(e.clientY);
       }}
     >
       <p className="weightLabel">{mass} kg</p>
-    </button>
+    </div>
   );
 };
