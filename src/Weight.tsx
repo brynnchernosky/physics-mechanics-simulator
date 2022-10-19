@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
 
@@ -49,12 +49,11 @@ export const Weight = (props: IWeightProps) => {
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
   const [xAcceleration, setXAcceleration] = useState(startAccX ?? 0);
   const [yAcceleration, setYAcceleration] = useState(startAccY ?? 0);
+  const [updatedForces, setUpdatedForces] = useState(forces);
 
   useEffect(() => {
     if (!paused) {
       if (yAcceleration != 0) {
-        updatePos(timestepSize);
-        updateVelocity(timestepSize);
         checkForCollisions();
       }
     }
@@ -67,15 +66,17 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(startVelY ?? 0);
     setXAcceleration(startAccX ?? 0);
     setYAcceleration(startAccY ?? 0);
+    setUpdatedForces(forces);
+    updateAcceleration(forces);
   }, [reset]);
 
-  useEffect(() => {
+  const updateAcceleration = (forceList: IForce[]) => {
     setXAcceleration(startAccX ?? 0);
     setYAcceleration(startAccY ?? 0);
-    if (!forces) {
+    if (!forceList) {
       return;
     }
-    forces.forEach((force) => {
+    forceList.forEach((force) => {
       const xComponent =
         (force.magnitude *
           Math.cos((force.directionInDegrees * Math.PI) / 180)) /
@@ -87,7 +88,7 @@ export const Weight = (props: IWeightProps) => {
       setXAcceleration(xAcceleration + xComponent);
       setYAcceleration(yAcceleration + yComponent);
     });
-  }, [reset]);
+  };
 
   const updatePos = (timestep: number) => {
     const newXPos =
@@ -110,21 +111,33 @@ export const Weight = (props: IWeightProps) => {
   };
 
   const checkForCollisions = () => {
-    const minX = xPosition;
-    const maxX = xPosition + 2 * (radius ?? 5);
-    const minY = yPosition;
-    const maxY = yPosition + 2 * (radius ?? 5);
+    let collision = false;
+    // const minX = xPosition;
+    // const maxX = xPosition + 2 * (radius ?? 5);
+    // const minY = yPosition;
+    const effectiveRadius = radius ?? 5;
+    const maxY = yPosition + yVelocity * timestepSize + 2 * effectiveRadius;
     const containerHeight = window.innerHeight * 0.9;
-    walls.forEach((wall) => {
-      const wallHeight = (wall.yPos / 100) * containerHeight;
-      if (maxY >= wallHeight) {
-        setYPosition(wallHeight - 2 * (radius ?? 5));
-        setYAcceleration(0);
-        setYVelocity(0);
-        console.log(wall.yPos, containerHeight, window.innerHeight);
-        console.log("collided!");
-      }
-    });
+    if (yVelocity != 0) {
+      walls.forEach((wall) => {
+        const wallHeight = (wall.yPos / 100) * containerHeight;
+        if (maxY >= wallHeight) {
+          setYPosition(wallHeight - 2 * effectiveRadius);
+          const newForce: IForce = {
+            magnitude: 9.81 * mass,
+            directionInDegrees: wall.angleInDegrees - 90,
+          };
+          setUpdatedForces((state) => [...state, newForce]);
+          setYVelocity(0);
+          updateAcceleration(updatedForces);
+          collision = true;
+        }
+      });
+    }
+    if (!collision) {
+      updatePos(timestepSize);
+      updateVelocity(timestepSize);
+    }
   };
 
   const weightStyle = {
