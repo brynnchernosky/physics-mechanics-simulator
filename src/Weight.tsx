@@ -71,11 +71,8 @@ export const Weight = (props: IWeightProps) => {
   }, [reset]);
 
   const updateAcceleration = (forceList: IForce[]) => {
-    setXAcceleration(startAccX ?? 0);
-    setYAcceleration(startAccY ?? 0);
-    if (!forceList) {
-      return;
-    }
+    let newXAcc = startAccX ?? 0
+    let newYAcc = startAccY ?? 0
     forceList.forEach((force) => {
       const xComponent =
         (force.magnitude *
@@ -85,9 +82,12 @@ export const Weight = (props: IWeightProps) => {
         (force.magnitude *
           Math.sin((force.directionInDegrees * Math.PI) / 180)) /
         mass;
-      setXAcceleration(xAcceleration + xComponent);
-      setYAcceleration(yAcceleration + yComponent);
+      newXAcc += xComponent;
+      newYAcc += yComponent;
     });
+    setXAcceleration(newXAcc)
+    setYAcceleration(newYAcc)
+    console.log("final ", newYAcc);
   };
 
   const updatePos = (timestep: number) => {
@@ -125,11 +125,12 @@ export const Weight = (props: IWeightProps) => {
           setYPosition(wallHeight - 2 * effectiveRadius);
           const newForce: IForce = {
             magnitude: 9.81 * mass,
-            directionInDegrees: wall.angleInDegrees - 90,
+            directionInDegrees: wall.angleInDegrees + 270,
           };
           setUpdatedForces((state) => [...state, newForce]);
           setYVelocity(0);
           updateAcceleration(updatedForces);
+          console.log("collision!");
           collision = true;
         }
       });
