@@ -50,12 +50,11 @@ export const Weight = (props: IWeightProps) => {
   const [xAcceleration, setXAcceleration] = useState(startAccX ?? 0);
   const [yAcceleration, setYAcceleration] = useState(startAccY ?? 0);
   const [updatedForces, setUpdatedForces] = useState(forces);
+  const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
     if (!paused) {
-      if (yAcceleration != 0) {
-        checkForCollisions();
-      }
+      checkForCollisions();
     }
   }, [incrementTime]);
 
@@ -71,8 +70,8 @@ export const Weight = (props: IWeightProps) => {
   }, [reset]);
 
   const updateAcceleration = (forceList: IForce[]) => {
-    let newXAcc = startAccX ?? 0
-    let newYAcc = startAccY ?? 0
+    let newXAcc = startAccX ?? 0;
+    let newYAcc = startAccY ?? 0;
     forceList.forEach((force) => {
       const xComponent =
         (force.magnitude *
@@ -85,9 +84,8 @@ export const Weight = (props: IWeightProps) => {
       newXAcc += xComponent;
       newYAcc += yComponent;
     });
-    setXAcceleration(newXAcc)
-    setYAcceleration(newYAcc)
-    console.log("final ", newYAcc);
+    setXAcceleration(newXAcc);
+    setYAcceleration(newYAcc);
   };
 
   const updatePos = (timestep: number) => {
@@ -130,7 +128,6 @@ export const Weight = (props: IWeightProps) => {
           setUpdatedForces((state) => [...state, newForce]);
           setYVelocity(0);
           updateAcceleration(updatedForces);
-          console.log("collision!");
           collision = true;
         }
       });
@@ -141,7 +138,7 @@ export const Weight = (props: IWeightProps) => {
     }
   };
 
-  const weightStyle = {
+  let weightStyle = {
     backgroundColor: color,
     borderStyle: "solid",
     borderColor: "black",
@@ -151,13 +148,40 @@ export const Weight = (props: IWeightProps) => {
     width: 2 * (radius ?? 5) + "px",
     height: 2 * (radius ?? 5) + "px",
     borderRadius: 50 + "%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   };
+  if (dragging) {
+    weightStyle = {
+      backgroundColor: color,
+      borderStyle: "solid",
+      borderColor: "lightblue",
+      position: "absolute" as "absolute",
+      left: xPosition + "px",
+      top: yPosition + "px",
+      width: 2 * (radius ?? 5) + "px",
+      height: 2 * (radius ?? 5) + "px",
+      borderRadius: 50 + "%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    };
+  }
 
   return (
-    <div key={incrementTime} className="weight" style={weightStyle}>
-      <div className="weightLabelContainer">
-        <p className="weightLabel">{mass} kg</p>
-      </div>
-    </div>
+    <button
+      className="weight"
+      style={weightStyle}
+      onClick={() => {
+        console.log("here");
+        setDragging(true);
+      }}
+      onDrag={() => {
+        console.log("dragging");
+      }}
+    >
+      <p className="weightLabel">{mass} kg</p>
+    </button>
   );
 };

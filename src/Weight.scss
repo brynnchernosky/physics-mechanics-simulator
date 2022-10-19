@@ -1,12 +1,5 @@
-.weightLabelContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
 .weightLabel {
   font-weight: bold;
   font-size: 20px;
+  pointer-events: none;
 }
