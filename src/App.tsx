@@ -84,6 +84,7 @@ function App() {
                       incrementTime={timer}
                       reset={simulationReset}
                       paused={simulationPaused}
+                      setPaused={setSimulationPaused}
                       forces={[forceOfGravity]}
                     />
                   </div>

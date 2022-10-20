@@ -19,6 +19,7 @@ export interface IWeightProps {
   timestepSize: number;
   incrementTime: number;
   paused: boolean;
+  setPaused: (bool: boolean) => any;
   reset: boolean;
   walls: IWallProps[];
   forces: IForce[];
@@ -38,6 +39,7 @@ export const Weight = (props: IWeightProps) => {
     timestepSize,
     incrementTime,
     paused,
+    setPaused,
     reset,
     walls,
     forces,
@@ -64,6 +66,10 @@ export const Weight = (props: IWeightProps) => {
   }, [incrementTime]);
 
   useEffect(() => {
+    resetEverything();
+  }, [reset]);
+
+  const resetEverything = () => {
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
@@ -72,7 +78,8 @@ export const Weight = (props: IWeightProps) => {
     setYAcceleration(startAccY ?? 0);
     setUpdatedForces(forces);
     updateAcceleration(forces);
-  }, [reset]);
+    console.log("reset block");
+  };
 
   const updateAcceleration = (forceList: IForce[]) => {
     let newXAcc = startAccX ?? 0;
@@ -156,6 +163,7 @@ export const Weight = (props: IWeightProps) => {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    touchAction: "none",
   };
   if (draggable || dragging) {
     weightStyle.borderColor = "lightblue";
@@ -169,15 +177,14 @@ export const Weight = (props: IWeightProps) => {
       className="weight"
       style={weightStyle}
       onPointerDown={(e) => {
-        if (draggable) {
-          setDragging(true);
-          setClickPositionX(e.clientX);
-          setClickPositionY(e.clientY);
-        } else {
-          setDraggable(true);
-        }
+        e.preventDefault();
+        setPaused(true);
+        setDragging(true);
+        setClickPositionX(e.clientX);
+        setClickPositionY(e.clientY);
       }}
       onPointerMove={(e) => {
+        e.preventDefault();
         if (dragging) {
           setXPosition(xPosition + e.clientX - clickPositionX);
           setYPosition(yPosition + e.clientY - clickPositionY);
@@ -188,10 +195,9 @@ export const Weight = (props: IWeightProps) => {
         }
       }}
       onPointerUp={(e) => {
-        if (dragging) {
-          setDragging(false);
-          setDraggable(false);
-        }
+        e.preventDefault();
+        setDragging(false);
+        resetEverything();
       }}
     >
       <p className="weightLabel">{mass} kg</p>
