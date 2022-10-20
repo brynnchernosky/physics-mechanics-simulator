@@ -1,4 +1,6 @@
+import { isAbsolute } from "node:path/win32";
 import { useState, useEffect, useCallback } from "react";
+import { couldStartTrivia } from "typescript";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
 
@@ -174,8 +176,7 @@ export const Weight = (props: IWeightProps) => {
 
   return (
     <div
-      className="weight"
-      style={weightStyle}
+      className="weightContainer"
       onPointerDown={(e) => {
         e.preventDefault();
         setPaused(true);
@@ -200,7 +201,46 @@ export const Weight = (props: IWeightProps) => {
         resetEverything();
       }}
     >
-      <p className="weightLabel">{mass} kg</p>
+      <div className="weight" style={weightStyle}>
+        <p className="weightLabel">{mass} kg</p>
+      </div>
+      {forces.map((force, index) => {
+        const value = Math.abs(force.magnitude) * 3;
+        const y = yPosition - value - (radius ?? 5);
+        const x = xPosition + (radius ?? 5) - 7;
+        const angle = 0; //(50 * Math.PI) / 180;
+        const lineStyle = {
+          backgroundColor: "black",
+          height: value + "px",
+          width: 10 + "px",
+          top: y * Math.cos(angle) + x * Math.cos(angle) + "px",
+          left: x * Math.sin(angle) + y * Math.sin(angle) + "px",
+          zIndex: -1000,
+          position: "relative" as "relative",
+        };
+        const xArrow = xPosition - 7;
+        const yArrow = yPosition - Math.abs(force.magnitude) * 3;
+        const arrowHead = {
+          width: 0,
+          height: 0,
+          borderLeft: Math.abs(force.magnitude) / 2 + "px solid transparent",
+          borderRight: Math.abs(force.magnitude) / 2 + "px solid transparent",
+          borderBottom: Math.abs(force.magnitude) / 2 + "px solid black",
+          top: yArrow * Math.cos(angle) + xArrow * Math.cos(angle) + "px",
+          left: xArrow * Math.sin(angle) + yArrow * Math.sin(angle) + "px",
+          margin: 2 + "rem",
+          position: "relative" as "relative",
+        };
+        const forceArrow = {
+          // transform: rotate(force.directionInDegrees + "deg"),
+        };
+        return (
+          <div key={index} style={forceArrow} className="forceArrow">
+            {" "}
+            <div style={arrowHead} /> <div style={lineStyle} />{" "}
+          </div>
+        );
+      })}
     </div>
   );
 };
