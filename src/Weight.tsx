@@ -53,6 +53,8 @@ export const Weight = (props: IWeightProps) => {
   const [xAcceleration, setXAcceleration] = useState(startAccX ?? 0);
   const [yAcceleration, setYAcceleration] = useState(startAccY ?? 0);
   const [updatedForces, setUpdatedForces] = useState(forces);
+
+  const [draggable, setDraggable] = useState(false);
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
@@ -155,21 +157,8 @@ export const Weight = (props: IWeightProps) => {
     justifyContent: "center",
     alignItems: "center",
   };
-  if (dragging) {
-    weightStyle = {
-      backgroundColor: color,
-      borderStyle: "solid",
-      borderColor: "lightblue",
-      position: "absolute" as "absolute",
-      left: xPosition + "px",
-      top: yPosition + "px",
-      width: 2 * (radius ?? 5) + "px",
-      height: 2 * (radius ?? 5) + "px",
-      borderRadius: 50 + "%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    };
+  if (draggable || dragging) {
+    weightStyle.borderColor = "lightblue";
   }
 
   const [clickPositionX, setClickPositionX] = useState(0);
@@ -178,23 +167,31 @@ export const Weight = (props: IWeightProps) => {
   return (
     <div
       className="weight"
-      draggable={dragging}
       style={weightStyle}
-      onClick={() => {
-        console.log("here");
-        setDragging(true);
+      onPointerDown={(e) => {
+        if (draggable) {
+          setDragging(true);
+          setClickPositionX(e.clientX);
+          setClickPositionY(e.clientY);
+        } else {
+          setDraggable(true);
+        }
       }}
-      onDragStart={(e) => {
-        setClickPositionX(e.clientX);
-        setClickPositionY(e.clientY);
+      onPointerMove={(e) => {
+        if (dragging) {
+          setXPosition(xPosition + e.clientX - clickPositionX);
+          setYPosition(yPosition + e.clientY - clickPositionY);
+          setUpdatedStartPosX(xPosition + e.clientX - clickPositionX);
+          setUpdatedStartPosY(yPosition + e.clientY - clickPositionY);
+          setClickPositionX(e.clientX);
+          setClickPositionY(e.clientY);
+        }
       }}
-      onDrag={(e) => {
-        setXPosition(xPosition + e.clientX - clickPositionX);
-        setYPosition(yPosition + e.clientY - clickPositionY);
-        setUpdatedStartPosX(xPosition + e.clientX - clickPositionX);
-        setUpdatedStartPosY(yPosition + e.clientY - clickPositionY);
-        setClickPositionX(e.clientX);
-        setClickPositionY(e.clientY);
+      onPointerUp={(e) => {
+        if (dragging) {
+          setDragging(false);
+          setDraggable(false);
+        }
       }}
     >
       <p className="weightLabel">{mass} kg</p>
