@@ -68,7 +68,7 @@ function App() {
             {simulationElements.map((element, index) => {
               if (element.type === "weight") {
                 const forceOfGravity: IForce = {
-                  magnitude: element.mass * -9.81,
+                  magnitude: element.mass * 9.81,
                   directionInDegrees: 270,
                 };
                 return (

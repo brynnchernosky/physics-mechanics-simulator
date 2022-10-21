@@ -80,7 +80,6 @@ export const Weight = (props: IWeightProps) => {
     setYAcceleration(startAccY ?? 0);
     setUpdatedForces(forces);
     updateAcceleration(forces);
-    console.log("reset block");
   };
 
   const updateAcceleration = (forceList: IForce[]) => {
@@ -92,8 +91,9 @@ export const Weight = (props: IWeightProps) => {
           Math.cos((force.directionInDegrees * Math.PI) / 180)) /
         mass;
       const yComponent =
-        (force.magnitude *
-          Math.sin((force.directionInDegrees * Math.PI) / 180)) /
+        (-1 *
+          (force.magnitude *
+            Math.sin((force.directionInDegrees * Math.PI) / 180))) /
         mass;
       newXAcc += xComponent;
       newYAcc += yComponent;
@@ -137,18 +137,20 @@ export const Weight = (props: IWeightProps) => {
           setYPosition(wallHeight - 2 * effectiveRadius);
           const newForce: IForce = {
             magnitude: 9.81 * mass,
-            directionInDegrees: wall.angleInDegrees + 270,
+            directionInDegrees: wall.angleInDegrees + 90,
           };
           setUpdatedForces((state) => [...state, newForce]);
           setYVelocity(0);
           updateAcceleration(updatedForces);
           collision = true;
+          console.log("collision");
         }
       });
     }
     if (!collision) {
       updatePos(timestepSize);
       updateVelocity(timestepSize);
+      console.log("no collision");
     }
   };
 
@@ -175,69 +177,80 @@ export const Weight = (props: IWeightProps) => {
   const [clickPositionY, setClickPositionY] = useState(0);
 
   return (
-    <div
-      className="weightContainer"
-      onPointerDown={(e) => {
-        e.preventDefault();
-        setPaused(true);
-        setDragging(true);
-        setClickPositionX(e.clientX);
-        setClickPositionY(e.clientY);
-      }}
-      onPointerMove={(e) => {
-        e.preventDefault();
-        if (dragging) {
-          setXPosition(xPosition + e.clientX - clickPositionX);
-          setYPosition(yPosition + e.clientY - clickPositionY);
-          setUpdatedStartPosX(xPosition + e.clientX - clickPositionX);
-          setUpdatedStartPosY(yPosition + e.clientY - clickPositionY);
+    <div style={{ zIndex: -1000 }}>
+      <div
+        className="weightContainer"
+        onPointerDown={(e) => {
+          e.preventDefault();
+          setPaused(true);
+          setDragging(true);
           setClickPositionX(e.clientX);
           setClickPositionY(e.clientY);
-        }
-      }}
-      onPointerUp={(e) => {
-        e.preventDefault();
-        setDragging(false);
-        resetEverything();
-      }}
-    >
-      <div className="weight" style={weightStyle}>
-        <p className="weightLabel">{mass} kg</p>
+        }}
+        onPointerMove={(e) => {
+          e.preventDefault();
+          if (dragging) {
+            setXPosition(xPosition + e.clientX - clickPositionX);
+            setYPosition(yPosition + e.clientY - clickPositionY);
+            setUpdatedStartPosX(xPosition + e.clientX - clickPositionX);
+            setUpdatedStartPosY(yPosition + e.clientY - clickPositionY);
+            setClickPositionX(e.clientX);
+            setClickPositionY(e.clientY);
+          }
+        }}
+        onPointerUp={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          resetEverything();
+        }}
+      >
+        <div className="weight" style={weightStyle}>
+          <p className="weightLabel">{mass} kg</p>
+        </div>
       </div>
       {forces.map((force, index) => {
-        const value = Math.abs(force.magnitude) * 3;
-        const y = yPosition - value - (radius ?? 5);
-        const x = xPosition + (radius ?? 5) - 7;
-        const angle = 0; //(50 * Math.PI) / 180;
-        const lineStyle = {
-          backgroundColor: "black",
-          height: value + "px",
-          width: 10 + "px",
-          top: y * Math.cos(angle) + x * Math.cos(angle) + "px",
-          left: x * Math.sin(angle) + y * Math.sin(angle) + "px",
-          zIndex: -1000,
-          position: "relative" as "relative",
-        };
-        const xArrow = xPosition - 7;
-        const yArrow = yPosition - Math.abs(force.magnitude) * 3;
-        const arrowHead = {
-          width: 0,
-          height: 0,
-          borderLeft: Math.abs(force.magnitude) / 2 + "px solid transparent",
-          borderRight: Math.abs(force.magnitude) / 2 + "px solid transparent",
-          borderBottom: Math.abs(force.magnitude) / 2 + "px solid black",
-          top: yArrow * Math.cos(angle) + xArrow * Math.cos(angle) + "px",
-          left: xArrow * Math.sin(angle) + yArrow * Math.sin(angle) + "px",
-          margin: 2 + "rem",
-          position: "relative" as "relative",
-        };
-        const forceArrow = {
-          // transform: rotate(force.directionInDegrees + "deg"),
-        };
+        const arrowStartY = yPosition + (radius ?? 5);
+        const arrowStartX = xPosition + (radius ?? 5);
+        const arrowEndY =
+          arrowStartY -
+          Math.abs(force.magnitude) *
+            3 *
+            Math.sin((force.directionInDegrees * Math.PI) / 180);
+        const arrowEndX =
+          arrowStartX +
+          Math.abs(force.magnitude) *
+            3 *
+            Math.cos((force.directionInDegrees * Math.PI) / 180);
+
         return (
-          <div key={index} style={forceArrow} className="forceArrow">
-            {" "}
-            <div style={arrowHead} /> <div style={lineStyle} />{" "}
+          <div
+            key={index}
+            style={{ pointerEvents: "none", position: "absolute", zIndex: -1 }}
+          >
+            <svg width={"5000px"} height={"5000px"}>
+              <defs>
+                <marker
+                  id="arrow"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="0"
+                  refY="3"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                </marker>
+              </defs>
+              <line
+                x1={arrowStartX}
+                y1={arrowStartY}
+                x2={arrowEndX}
+                y2={arrowEndY}
+                stroke="#000"
+                strokeWidth="5"
+                markerEnd="url(#arrow)"
+              />
+            </svg>
           </div>
         );
       })}
