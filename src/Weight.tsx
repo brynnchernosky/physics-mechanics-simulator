@@ -139,18 +139,18 @@ export const Weight = (props: IWeightProps) => {
             magnitude: 9.81 * mass,
             directionInDegrees: wall.angleInDegrees + 90,
           };
-          setUpdatedForces((state) => [...state, newForce]);
+          const forceList = updatedForces;
+          forceList.push(newForce);
+          setUpdatedForces(forceList);
           setYVelocity(0);
-          updateAcceleration(updatedForces);
+          updateAcceleration(forceList);
           collision = true;
-          console.log("collision");
         }
       });
     }
     if (!collision) {
       updatePos(timestepSize);
       updateVelocity(timestepSize);
-      console.log("no collision");
     }
   };
 
@@ -208,8 +208,8 @@ export const Weight = (props: IWeightProps) => {
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
-      {forces.map((force, index) => {
-        const arrowStartY = yPosition + (radius ?? 5);
+      {updatedForces.map((force, index) => {
+        const arrowStartY = yPosition + (radius ?? 5) / 2;
         const arrowStartX = xPosition + (radius ?? 5);
         const arrowEndY =
           arrowStartY -
