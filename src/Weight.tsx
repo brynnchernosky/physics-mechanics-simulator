@@ -190,12 +190,23 @@ export const Weight = (props: IWeightProps) => {
         onPointerMove={(e) => {
           e.preventDefault();
           if (dragging) {
-            setXPosition(xPosition + e.clientX - clickPositionX);
-            setYPosition(yPosition + e.clientY - clickPositionY);
-            setUpdatedStartPosX(xPosition + e.clientX - clickPositionX);
-            setUpdatedStartPosY(yPosition + e.clientY - clickPositionY);
-            setClickPositionX(e.clientX);
-            setClickPositionY(e.clientY);
+            let y = e.clientY;
+            if (e.clientY > window.innerHeight * 0.9) {
+              y = window.innerHeight * 0.9;
+            }
+            let x = e.clientX;
+            if (e.clientX > window.innerHeight * 1.1) {
+              x = window.innerHeight * 1.1;
+            } else if (x < window.innerHeight * 0.15) {
+              x = window.innerHeight * 0.15;
+            }
+
+            setXPosition(xPosition + x - clickPositionX);
+            setYPosition(yPosition + y - clickPositionY);
+            setUpdatedStartPosX(xPosition + x - clickPositionX);
+            setUpdatedStartPosY(yPosition + y - clickPositionY);
+            setClickPositionX(x);
+            setClickPositionY(y);
           }
         }}
         onPointerUp={(e) => {
