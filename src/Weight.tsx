@@ -25,6 +25,7 @@ export interface IWeightProps {
   reset: boolean;
   walls: IWallProps[];
   forces: IForce[];
+  showForces: boolean;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -45,6 +46,7 @@ export const Weight = (props: IWeightProps) => {
     reset,
     walls,
     forces,
+    showForces,
   } = props;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
@@ -220,6 +222,7 @@ export const Weight = (props: IWeightProps) => {
         </div>
       </div>
       {!dragging &&
+        showForces &&
         updatedForces.map((force, index) => {
           const arrowStartY = yPosition + (radius ?? 5) / 2;
           const arrowStartX = xPosition + (radius ?? 5);

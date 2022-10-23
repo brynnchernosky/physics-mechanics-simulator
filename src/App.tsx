@@ -27,6 +27,7 @@ function App() {
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
+  const [showForces, setShowForces] = useState<boolean>(false);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -62,7 +63,12 @@ function App() {
               {" "}
               Add element
             </button>
-            <button> Settings</button>
+            {!showForces && (
+              <button onClick={() => setShowForces(true)}> Show forces</button>
+            )}
+            {showForces && (
+              <button onClick={() => setShowForces(false)}> Hide forces</button>
+            )}
           </div>
           <div className="mechanicsSimulationElements">
             {simulationElements.map((element, index) => {
@@ -86,6 +92,7 @@ function App() {
                       paused={simulationPaused}
                       setPaused={setSimulationPaused}
                       forces={[forceOfGravity]}
+                      showForces={showForces}
                     />
                   </div>
                 );
