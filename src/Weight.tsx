@@ -219,52 +219,57 @@ export const Weight = (props: IWeightProps) => {
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
-      {updatedForces.map((force, index) => {
-        const arrowStartY = yPosition + (radius ?? 5) / 2;
-        const arrowStartX = xPosition + (radius ?? 5);
-        const arrowEndY =
-          arrowStartY -
-          Math.abs(force.magnitude) *
-            3 *
-            Math.sin((force.directionInDegrees * Math.PI) / 180);
-        const arrowEndX =
-          arrowStartX +
-          Math.abs(force.magnitude) *
-            3 *
-            Math.cos((force.directionInDegrees * Math.PI) / 180);
+      {!dragging &&
+        updatedForces.map((force, index) => {
+          const arrowStartY = yPosition + (radius ?? 5) / 2;
+          const arrowStartX = xPosition + (radius ?? 5);
+          const arrowEndY =
+            arrowStartY -
+            Math.abs(force.magnitude) *
+              3 *
+              Math.sin((force.directionInDegrees * Math.PI) / 180);
+          const arrowEndX =
+            arrowStartX +
+            Math.abs(force.magnitude) *
+              3 *
+              Math.cos((force.directionInDegrees * Math.PI) / 180);
 
-        return (
-          <div
-            key={index}
-            style={{ pointerEvents: "none", position: "absolute", zIndex: -1 }}
-          >
-            <svg width={"5000px"} height={"5000px"}>
-              <defs>
-                <marker
-                  id="arrow"
-                  markerWidth="10"
-                  markerHeight="10"
-                  refX="0"
-                  refY="3"
-                  orient="auto"
-                  markerUnits="strokeWidth"
-                >
-                  <path d="M0,0 L0,6 L9,3 z" fill="#000" />
-                </marker>
-              </defs>
-              <line
-                x1={arrowStartX}
-                y1={arrowStartY}
-                x2={arrowEndX}
-                y2={arrowEndY}
-                stroke="#000"
-                strokeWidth="5"
-                markerEnd="url(#arrow)"
-              />
-            </svg>
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={index}
+              style={{
+                pointerEvents: "none",
+                position: "absolute",
+                zIndex: -1,
+              }}
+            >
+              <svg width={"5000px"} height={"5000px"}>
+                <defs>
+                  <marker
+                    id="arrow"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="0"
+                    refY="3"
+                    orient="auto"
+                    markerUnits="strokeWidth"
+                  >
+                    <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                  </marker>
+                </defs>
+                <line
+                  x1={arrowStartX}
+                  y1={arrowStartY}
+                  x2={arrowEndX}
+                  y2={arrowEndY}
+                  stroke="#000"
+                  strokeWidth="5"
+                  markerEnd="url(#arrow)"
+                />
+              </svg>
+            </div>
+          );
+        })}
     </div>
   );
 };
