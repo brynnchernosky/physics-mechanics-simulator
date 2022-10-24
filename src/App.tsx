@@ -4,6 +4,7 @@ import { Weight, IForce } from "./Weight";
 import "./App.scss";
 import { start } from "repl";
 import { IWallProps, Wall } from "./Wall";
+import { RiPlayFill, RiPauseFill, RiArrowGoBackFill } from "react-icons/ri";
 
 export interface ISimulationElement {
   type: string;
@@ -27,7 +28,11 @@ function App() {
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
-  const [showForces, setShowForces] = useState<boolean>(false);
+  const [showForces, setShowForces] = useState<boolean>(true);
+
+  const [positionDisplay, setPositionDisplay] = useState(0);
+  const [velocityDisplay, setVelocityDisplay] = useState(0);
+  const [accelerationDisplay, setAccelerationDisplay] = useState(0);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -43,7 +48,7 @@ function App() {
 
   useEffect(() => {
     const walls: IWallProps[] = [];
-    walls.push({ length: 100, xPos: 0, yPos: 100, angleInDegrees: 0 });
+    walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
     setWallPositions(walls);
   }, []);
 
@@ -74,6 +79,7 @@ function App() {
             {simulationElements.map((element, index) => {
               if (element.type === "weight") {
                 const forceOfGravity: IForce = {
+                  description: "Gravity",
                   magnitude: element.mass * 9.81,
                   directionInDegrees: 270,
                 };
@@ -93,6 +99,9 @@ function App() {
                       setPaused={setSimulationPaused}
                       forces={[forceOfGravity]}
                       showForces={showForces}
+                      setPositionDisplay={setPositionDisplay}
+                      setVelocityDisplay={setVelocityDisplay}
+                      setAccelerationDisplay={setAccelerationDisplay}
                     />
                   </div>
                 );
@@ -114,24 +123,32 @@ function App() {
             })}
           </div>
         </div>
+      </div>
+      <div className="mechanicsSimulationEquationContainer">
         <div className="mechanicsSimulationFooter">
           <button
+            className="controlButton"
             onClick={() => {
               setSimulationPaused(false);
             }}
           >
             {" "}
             Start
+            <i className="ri-admin-line"></i>
+            <RiPlayFill />
           </button>
           <button
+            className="controlButton"
             onClick={() => {
               setSimulationPaused(true);
             }}
           >
             {" "}
             Pause
+            <RiPauseFill />
           </button>
           <button
+            className="controlButton"
             onClick={() => {
               setSimulationPaused(true);
               setSimulationReset(!simulationReset);
@@ -139,13 +156,37 @@ function App() {
           >
             {" "}
             Reset
+            <RiArrowGoBackFill />
           </button>
-          <button> Slider</button>
         </div>
-      </div>
-      <div className="mechanicsSimulationEquationContainer">
         <div className="mechanicsSimulationEquation">
-          Position: x_1=x_0+vt+at^2
+          <table>
+            <tr>
+              <td></td>
+              <td>Formula</td>
+              <td>Value</td>
+            </tr>
+            <tr>
+              <td>Position</td>
+              <td>
+                x<sub>1</sub>=x<sub>0</sub>+vt+at<sup>2</sup>
+              </td>
+              <td>{positionDisplay} m</td>
+            </tr>
+            <tr>
+              <td>Velocity</td>
+              <td>
+                v<sub>1</sub>=v<sub>0</sub>+at
+              </td>
+              <td>{velocityDisplay} m/s</td>
+            </tr>
+            <tr>
+              <td>Acceleration</td> <td>a=f/m</td>
+              <td>
+                {accelerationDisplay} m/s<sup>2</sup>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>

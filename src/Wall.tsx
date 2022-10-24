@@ -21,7 +21,7 @@ export const Wall = (props: IWallProps) => {
     position: "absolute" as "absolute",
     left: xPos + "%",
     top: yPos + "%",
-    backgroundColor: "black",
+    backgroundColor: "#6c7b8b",
     zIndex: -1000,
   };
 
