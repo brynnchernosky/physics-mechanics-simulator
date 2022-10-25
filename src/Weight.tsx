@@ -6,6 +6,7 @@ import "./Weight.scss";
 
 export interface IForce {
   description?: string;
+  impulse?: boolean;
   magnitude: number;
   directionInDegrees: number;
 }
@@ -144,6 +145,12 @@ export const Weight = (props: IWeightProps) => {
     const effectiveRadius = radius ?? 5;
     const maxY = yPosition + yVelocity * timestepSize + 2 * effectiveRadius;
     const containerHeight = window.innerHeight;
+    updatedForces.forEach((force, index) => {
+      if (force.impulse) {
+        const forceList = updatedForces.splice(index);
+        setUpdatedForces(forceList);
+      }
+    });
     if (yVelocity != 0) {
       walls.forEach((wall) => {
         const wallHeight = (wall.yPos / 100) * containerHeight;

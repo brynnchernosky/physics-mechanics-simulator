@@ -66,7 +66,6 @@ function App() {
   }, 100);
 
   return (
-    // <ChakraProvider>
     <div className="mechanicsSimulationContainer">
       <div className="mechanicsSimulationContentContainer">
         <div className="mechanicsSimulationButtonsAndElements">
@@ -121,7 +120,7 @@ function App() {
                       radius={element.radius}
                       color={element.color}
                       mass={element.mass}
-                      timestepSize={0.25}
+                      timestepSize={0.1}
                       walls={wallPositions}
                       incrementTime={timer}
                       reset={simulationReset}
@@ -222,7 +221,6 @@ function App() {
         </div>
       </div>
     </div>
-    // </ChakraProvider>
   );
 }
 
