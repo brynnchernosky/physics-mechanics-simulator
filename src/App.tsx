@@ -5,7 +5,14 @@ import "./App.scss";
 import { start } from "repl";
 import { IWallProps, Wall } from "./Wall";
 import { RiPlayFill, RiPauseFill, RiArrowGoBackFill } from "react-icons/ri";
-
+import { ChakraProvider } from "@chakra-ui/react";
+import {
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderMark,
+} from "@chakra-ui/react";
 export interface ISimulationElement {
   type: string;
   startPosX: number;
@@ -28,7 +35,9 @@ function App() {
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [timer, setTimer] = useState<number>(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
+
   const [showForces, setShowForces] = useState<boolean>(true);
+  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
 
   const [positionDisplay, setPositionDisplay] = useState(0);
   const [velocityDisplay, setVelocityDisplay] = useState(0);
@@ -54,9 +63,10 @@ function App() {
 
   setInterval(() => {
     setTimer(timer + 1);
-  }, 60);
+  }, 100);
 
   return (
+    // <ChakraProvider>
     <div className="mechanicsSimulationContainer">
       <div className="mechanicsSimulationContentContainer">
         <div className="mechanicsSimulationButtonsAndElements">
@@ -68,12 +78,32 @@ function App() {
               {" "}
               Add element
             </button>
-            {!showForces && (
-              <button onClick={() => setShowForces(true)}> Show forces</button>
-            )}
-            {showForces && (
-              <button onClick={() => setShowForces(false)}> Hide forces</button>
-            )}
+            <div>
+              {!elasticCollisions && (
+                <button onClick={() => setElasticCollisions(true)}>
+                  {" "}
+                  Make collisions elastic
+                </button>
+              )}
+              {elasticCollisions && (
+                <button onClick={() => setElasticCollisions(false)}>
+                  {" "}
+                  Make collisions inelastic
+                </button>
+              )}
+              {!showForces && (
+                <button onClick={() => setShowForces(true)}>
+                  {" "}
+                  Show forces
+                </button>
+              )}
+              {showForces && (
+                <button onClick={() => setShowForces(false)}>
+                  {" "}
+                  Hide forces
+                </button>
+              )}
+            </div>
           </div>
           <div className="mechanicsSimulationElements">
             {simulationElements.map((element, index) => {
@@ -91,7 +121,7 @@ function App() {
                       radius={element.radius}
                       color={element.color}
                       mass={element.mass}
-                      timestepSize={0.3}
+                      timestepSize={0.25}
                       walls={wallPositions}
                       incrementTime={timer}
                       reset={simulationReset}
@@ -102,6 +132,7 @@ function App() {
                       setPositionDisplay={setPositionDisplay}
                       setVelocityDisplay={setVelocityDisplay}
                       setAccelerationDisplay={setAccelerationDisplay}
+                      elasticCollisions={elasticCollisions}
                     />
                   </div>
                 );
@@ -159,6 +190,7 @@ function App() {
             <RiArrowGoBackFill />
           </button>
         </div>
+        <div className="slider">ADD SLIDER</div>
         <div className="mechanicsSimulationEquation">
           <table>
             <tr>
@@ -190,6 +222,7 @@ function App() {
         </div>
       </div>
     </div>
+    // </ChakraProvider>
   );
 }
 

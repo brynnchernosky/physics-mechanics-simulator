@@ -30,6 +30,7 @@ export interface IWeightProps {
   setPositionDisplay: (val: number) => any;
   setVelocityDisplay: (val: number) => any;
   setAccelerationDisplay: (val: number) => any;
+  elasticCollisions: boolean;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -54,6 +55,7 @@ export const Weight = (props: IWeightProps) => {
     setPositionDisplay,
     setVelocityDisplay,
     setAccelerationDisplay,
+    elasticCollisions,
   } = props;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
@@ -109,7 +111,7 @@ export const Weight = (props: IWeightProps) => {
     });
     setXAcceleration(newXAcc);
     setYAcceleration(newYAcc);
-    setAccelerationDisplay(Math.round(newYAcc * 100) / 100);
+    setAccelerationDisplay((-1 * Math.round(newYAcc * 100)) / 100);
   };
 
   const updatePos = (timestep: number) => {
@@ -134,7 +136,7 @@ export const Weight = (props: IWeightProps) => {
     setXVelocity(newXVelocity);
     const newYVelocity = yVelocity + yAcceleration * timestep;
     setYVelocity(newYVelocity);
-    setVelocityDisplay(Math.round(newYVelocity * 100) / 100);
+    setVelocityDisplay((-1 * Math.round(newYVelocity * 100)) / 100);
   };
 
   const checkForCollisionsWithGround = () => {
@@ -146,17 +148,21 @@ export const Weight = (props: IWeightProps) => {
       walls.forEach((wall) => {
         const wallHeight = (wall.yPos / 100) * containerHeight;
         if (maxY >= wallHeight) {
-          setYPosition(wallHeight - 2 * effectiveRadius + 5);
-          const newForce: IForce = {
-            description: "Normal force",
-            magnitude: 9.81 * mass,
-            directionInDegrees: wall.angleInDegrees + 90,
-          };
-          const forceList = updatedForces;
-          forceList.push(newForce);
-          setUpdatedForces(forceList);
-          setYVelocity(0);
-          updateAcceleration(forceList);
+          if (elasticCollisions) {
+            setYVelocity(-yVelocity);
+          } else {
+            setYPosition(wallHeight - 2 * effectiveRadius + 5);
+            const newForce: IForce = {
+              description: "Normal force",
+              magnitude: 9.81 * mass,
+              directionInDegrees: wall.angleInDegrees + 90,
+            };
+            const forceList = updatedForces;
+            forceList.push(newForce);
+            setUpdatedForces(forceList);
+            setYVelocity(0);
+            updateAcceleration(forceList);
+          }
           collision = true;
         }
       });
