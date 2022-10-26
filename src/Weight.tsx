@@ -315,7 +315,7 @@ export const Weight = (props: IWeightProps) => {
       {!dragging &&
         showForces &&
         updatedForces.map((force, index) => {
-          let arrowStartY: number = yPosition;
+          let arrowStartY: number = yPosition + radius;
           const arrowStartX: number = xPosition + radius;
           let arrowEndY: number =
             arrowStartY -
@@ -329,11 +329,6 @@ export const Weight = (props: IWeightProps) => {
               Math.cos((force.directionInDegrees * Math.PI) / 180);
 
           let color = "#0d0d0d";
-          if (arrowStartY > arrowEndY) {
-            // color = "#ffff00";
-            arrowStartY -= radius;
-            arrowEndY -= radius;
-          }
 
           return (
             <div key={index}>
@@ -342,6 +337,8 @@ export const Weight = (props: IWeightProps) => {
                   pointerEvents: "none",
                   position: "absolute",
                   zIndex: -1,
+                  left: 0,
+                  top: 0,
                 }}
               >
                 <svg
@@ -375,7 +372,7 @@ export const Weight = (props: IWeightProps) => {
               <div
                 style={{
                   pointerEvents: "none",
-                  position: "relative",
+                  position: "absolute",
                   left: arrowEndX + 25 + "px",
                   top: arrowEndY + "px",
                   zIndex: -1,
