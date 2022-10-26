@@ -24,6 +24,7 @@ export interface ISimulationElement {
   startVelY?: number;
   startAccX?: number;
   startAccY?: number;
+  pendulum?: boolean;
 }
 
 function App() {
@@ -51,6 +52,20 @@ function App() {
       color: "red",
       mass: 5,
       radius: 50,
+      pendulum: false,
+    };
+    setSimulationElements((state) => [...state, weight]);
+  };
+
+  const addPendulum = () => {
+    const weight: ISimulationElement = {
+      type: "weight",
+      startPosX: 0,
+      startPosY: 0,
+      color: "red",
+      mass: 5,
+      radius: 50,
+      pendulum: true,
     };
     setSimulationElements((state) => [...state, weight]);
   };
@@ -70,13 +85,22 @@ function App() {
       <div className="mechanicsSimulationContentContainer">
         <div className="mechanicsSimulationButtonsAndElements">
           <div className="mechanicsSimulationButtons">
-            <button
-              onClick={addWeight}
-              disabled={simulationElements.length > 0}
-            >
-              {" "}
-              Add element
-            </button>
+            <div>
+              <button
+                onClick={addWeight}
+                disabled={simulationElements.length > 0}
+              >
+                {" "}
+                Add weight
+              </button>
+              <button
+                onClick={addPendulum}
+                disabled={simulationElements.length > 0}
+              >
+                {" "}
+                Add pendulum
+              </button>
+            </div>
             <div>
               {!elasticCollisions && (
                 <button onClick={() => setElasticCollisions(true)}>
@@ -117,7 +141,7 @@ function App() {
                     <Weight
                       startPosX={element.startPosX}
                       startPosY={element.startPosY}
-                      radius={element.radius}
+                      radius={element.radius ?? 5}
                       color={element.color}
                       mass={element.mass}
                       timestepSize={0.1}
@@ -132,6 +156,7 @@ function App() {
                       setVelocityDisplay={setVelocityDisplay}
                       setAccelerationDisplay={setAccelerationDisplay}
                       elasticCollisions={elasticCollisions}
+                      pendulum={element.pendulum ?? false}
                     />
                   </div>
                 );

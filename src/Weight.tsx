@@ -17,7 +17,7 @@ export interface IWeightProps {
   startVelY?: number;
   startAccX?: number;
   startAccY?: number;
-  radius?: number;
+  radius: number;
   color: string;
   mass: number;
   timestepSize: number;
@@ -32,6 +32,7 @@ export interface IWeightProps {
   setVelocityDisplay: (val: number) => any;
   setAccelerationDisplay: (val: number) => any;
   elasticCollisions: boolean;
+  pendulum: boolean;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -57,6 +58,7 @@ export const Weight = (props: IWeightProps) => {
     setVelocityDisplay,
     setAccelerationDisplay,
     elasticCollisions,
+    pendulum,
   } = props;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
@@ -73,9 +75,43 @@ export const Weight = (props: IWeightProps) => {
   const [draggable, setDraggable] = useState(false);
   const [dragging, setDragging] = useState(false);
 
+  const forceOfGravity: IForce = {
+    description: "Gravity",
+    magnitude: mass * 9.81,
+    directionInDegrees: 270,
+  };
+
   useEffect(() => {
     if (!paused) {
+      if (pendulum) {
+        const x = window.innerWidth * 0.35 - xPosition - radius;
+        const y = yPosition + radius + 5;
+        const angle = (Math.tan(y / x) * 180) / Math.PI;
+
+        const forceOfTension: IForce = {
+          description: "Tension",
+          magnitude: mass * 9.81,
+          directionInDegrees: angle,
+        };
+        setUpdatedForces([forceOfGravity, forceOfTension]);
+      }
       checkForCollisionsWithGround();
+    } else {
+      if (pendulum) {
+        const x = window.innerWidth * 0.35 - xPosition - radius;
+        const y = yPosition + radius + 5;
+        let angle = (Math.atan(y / x) * 180) / Math.PI;
+        if (angle < 0) {
+          angle += 180;
+        }
+
+        const forceOfTension: IForce = {
+          description: "Tension",
+          magnitude: mass * 9.81,
+          directionInDegrees: angle,
+        };
+        setUpdatedForces([forceOfGravity, forceOfTension]);
+      }
     }
   }, [incrementTime]);
 
@@ -127,8 +163,7 @@ export const Weight = (props: IWeightProps) => {
       0.5 * yAcceleration * timestep * timestep;
     setYPosition(newYPos);
 
-    const displayPos =
-      window.innerHeight * 0.8 - newYPos - 2 * (radius ?? 5) + 5;
+    const displayPos = window.innerHeight * 0.8 - newYPos - 2 * radius + 5;
     setPositionDisplay(Math.round(displayPos * 100) / 100);
   };
 
@@ -142,8 +177,7 @@ export const Weight = (props: IWeightProps) => {
 
   const checkForCollisionsWithGround = () => {
     let collision = false;
-    const effectiveRadius = radius ?? 5;
-    const maxY = yPosition + yVelocity * timestepSize + 2 * effectiveRadius;
+    const maxY = yPosition + yVelocity * timestepSize + 2 * radius;
     const containerHeight = window.innerHeight;
     updatedForces.forEach((force, index) => {
       if (force.impulse) {
@@ -158,7 +192,7 @@ export const Weight = (props: IWeightProps) => {
           if (elasticCollisions) {
             setYVelocity(-yVelocity);
           } else {
-            setYPosition(wallHeight - 2 * effectiveRadius + 5);
+            setYPosition(wallHeight - 2 * radius + 5);
             const newForce: IForce = {
               description: "Normal force",
               magnitude: 9.81 * mass,
@@ -187,8 +221,8 @@ export const Weight = (props: IWeightProps) => {
     position: "absolute" as "absolute",
     left: xPosition + "px",
     top: yPosition + "px",
-    width: 2 * (radius ?? 5) + "px",
-    height: 2 * (radius ?? 5) + "px",
+    width: 2 * radius + "px",
+    height: 2 * radius + "px",
     borderRadius: 50 + "%",
     display: "flex",
     justifyContent: "center",
@@ -218,14 +252,14 @@ export const Weight = (props: IWeightProps) => {
           if (dragging) {
             const originalYPosition = yPosition;
             let newY = yPosition + e.clientY - clickPositionY;
-            if (newY > window.innerHeight * 0.81 - 2 * (radius ?? 5)) {
-              newY = window.innerHeight * 0.81 - 2 * (radius ?? 5);
+            if (newY > window.innerHeight * 0.81 - 2 * radius) {
+              newY = window.innerHeight * 0.81 - 2 * radius;
             }
 
             const originalXPosition = xPosition;
             let newX = xPosition + e.clientX - clickPositionX;
-            if (newX > window.innerWidth * 0.7 - 2 * (radius ?? 5)) {
-              newX = window.innerWidth * 0.7 - 2 * (radius ?? 5);
+            if (newX > window.innerWidth * 0.7 - 2 * radius) {
+              newX = window.innerWidth * 0.7 - 2 * radius;
             } else if (newX < 0) {
               newX = 0;
             }
@@ -236,7 +270,7 @@ export const Weight = (props: IWeightProps) => {
             setUpdatedStartPosY(newY);
             setPositionDisplay(
               Math.round(
-                (window.innerHeight * 0.8 - 2 * (radius ?? 5) - newY + 5) * 100
+                (window.innerHeight * 0.8 - 2 * radius - newY + 5) * 100
               ) / 100
             );
             setClickPositionX(e.clientX);
@@ -253,11 +287,36 @@ export const Weight = (props: IWeightProps) => {
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
+      {pendulum && (
+        <div
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg
+            width={window.innerWidth + "px"}
+            height={window.innerHeight + "px"}
+          >
+            <line
+              x1={xPosition + radius}
+              y1={yPosition + radius}
+              x2={window.innerWidth * 0.35}
+              y2={-5}
+              stroke={"#deb887"}
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+      )}
       {!dragging &&
         showForces &&
         updatedForces.map((force, index) => {
           let arrowStartY: number = yPosition;
-          const arrowStartX: number = xPosition + (radius ?? 5);
+          const arrowStartX: number = xPosition + radius;
           let arrowEndY: number =
             arrowStartY -
             Math.abs(force.magnitude) *
@@ -272,8 +331,8 @@ export const Weight = (props: IWeightProps) => {
           let color = "#0d0d0d";
           if (arrowStartY > arrowEndY) {
             // color = "#ffff00";
-            arrowStartY -= radius ?? 5;
-            arrowEndY -= radius ?? 5;
+            arrowStartY -= radius;
+            arrowEndY -= radius;
           }
 
           return (
