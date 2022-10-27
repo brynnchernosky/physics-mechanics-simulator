@@ -38,6 +38,8 @@ function App() {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
 
   const [showForces, setShowForces] = useState<boolean>(true);
+  const [showVelocity, setShowVelocity] = useState<boolean>(true);
+  const [showAcceleration, setShowAcceleration] = useState<boolean>(true);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
 
   const [positionDisplay, setPositionDisplay] = useState(0);
@@ -126,6 +128,30 @@ function App() {
                   Hide forces
                 </button>
               )}
+              {!showVelocity && (
+                <button onClick={() => setShowVelocity(true)}>
+                  {" "}
+                  Show velocity
+                </button>
+              )}
+              {showVelocity && (
+                <button onClick={() => setShowVelocity(false)}>
+                  {" "}
+                  Hide velocity
+                </button>
+              )}
+              {!showAcceleration && (
+                <button onClick={() => setShowAcceleration(true)}>
+                  {" "}
+                  Show acceleration
+                </button>
+              )}
+              {showAcceleration && (
+                <button onClick={() => setShowAcceleration(false)}>
+                  {" "}
+                  Hide acceleration
+                </button>
+              )}
             </div>
           </div>
           <div className="mechanicsSimulationElements">
@@ -152,6 +178,8 @@ function App() {
                       setPaused={setSimulationPaused}
                       forces={[forceOfGravity]}
                       showForces={showForces}
+                      showVelocity={showVelocity}
+                      showAcceleration={showAcceleration}
                       setPositionDisplay={setPositionDisplay}
                       setVelocityDisplay={setVelocityDisplay}
                       setAccelerationDisplay={setAccelerationDisplay}

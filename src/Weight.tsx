@@ -1,3 +1,4 @@
+import { sign } from "node:crypto";
 import { isAbsolute } from "node:path/win32";
 import { useState, useEffect, useCallback } from "react";
 import { couldStartTrivia } from "typescript";
@@ -28,6 +29,8 @@ export interface IWeightProps {
   walls: IWallProps[];
   forces: IForce[];
   showForces: boolean;
+  showVelocity: boolean;
+  showAcceleration: boolean;
   setPositionDisplay: (val: number) => any;
   setVelocityDisplay: (val: number) => any;
   setAccelerationDisplay: (val: number) => any;
@@ -54,6 +57,8 @@ export const Weight = (props: IWeightProps) => {
     walls,
     forces,
     showForces,
+    showVelocity,
+    showAcceleration,
     setPositionDisplay,
     setVelocityDisplay,
     setAccelerationDisplay,
@@ -72,6 +77,9 @@ export const Weight = (props: IWeightProps) => {
   const [yAcceleration, setYAcceleration] = useState(startAccY ?? 0);
   const [updatedForces, setUpdatedForces] = useState(forces);
 
+  const [angularVelocity, setAngularVelocity] = useState(0);
+  const [angle, setAngle] = useState(0);
+
   const [draggable, setDraggable] = useState(false);
   const [dragging, setDragging] = useState(false);
 
@@ -86,32 +94,33 @@ export const Weight = (props: IWeightProps) => {
       if (pendulum) {
         const x = window.innerWidth * 0.35 - xPosition - radius;
         const y = yPosition + radius + 5;
-        const angle = (Math.tan(y / x) * 180) / Math.PI;
-
-        const forceOfTension: IForce = {
-          description: "Tension",
-          magnitude: mass * 9.81,
-          directionInDegrees: angle,
-        };
-        setUpdatedForces([forceOfGravity, forceOfTension]);
-      }
-      checkForCollisionsWithGround();
-    } else {
-      if (pendulum) {
-        const x = window.innerWidth * 0.35 - xPosition - radius;
-        const y = yPosition + radius + 5;
         let angle = (Math.atan(y / x) * 180) / Math.PI;
         if (angle < 0) {
           angle += 180;
         }
+        let oppositeAngle = 90 - angle;
+        if (oppositeAngle < 0) {
+          oppositeAngle = 90 - (180 - angle);
+        }
+        setAngle(oppositeAngle);
+
+        const pendulumLength = Math.sqrt(x * x + y * y);
+
+        const mag =
+          mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
+          (mass * (xVelocity * xVelocity + yVelocity * yVelocity)) /
+            pendulumLength;
 
         const forceOfTension: IForce = {
           description: "Tension",
-          magnitude: mass * 9.81,
+          magnitude: mag,
           directionInDegrees: angle,
         };
+
         setUpdatedForces([forceOfGravity, forceOfTension]);
+        updateAcceleration([forceOfGravity, forceOfTension]);
       }
+      checkForCollisionsWithGround();
     }
   }, [incrementTime]);
 
@@ -179,12 +188,6 @@ export const Weight = (props: IWeightProps) => {
     let collision = false;
     const maxY = yPosition + yVelocity * timestepSize + 2 * radius;
     const containerHeight = window.innerHeight;
-    updatedForces.forEach((force, index) => {
-      if (force.impulse) {
-        const forceList = updatedForces.splice(index);
-        setUpdatedForces(forceList);
-      }
-    });
     if (yVelocity != 0) {
       walls.forEach((wall) => {
         const wallHeight = (wall.yPos / 100) * containerHeight;
@@ -310,6 +313,47 @@ export const Weight = (props: IWeightProps) => {
               strokeWidth="10"
             />
           </svg>
+        </div>
+      )}
+      {!dragging && showVelocity && (
+        <div>
+          <div
+            style={{
+              pointerEvents: "none",
+              position: "absolute",
+              zIndex: -1,
+              left: 0,
+              top: 0,
+            }}
+          >
+            <svg
+              width={window.innerWidth + "px"}
+              height={window.innerHeight + "px"}
+            >
+              <defs>
+                <marker
+                  id="arrow"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="0"
+                  refY="3"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <path d="M0,0 L0,6 L9,3 z" fill="#ffff00" />
+                </marker>
+              </defs>
+              <line
+                x1={xPosition + radius}
+                y1={yPosition + radius}
+                x2={xPosition + radius + xVelocity * 3}
+                y2={yPosition + radius + yVelocity * 3}
+                stroke={"#ffff00"}
+                strokeWidth="5"
+                markerEnd="url(#arrow)"
+              />
+            </svg>
+          </div>
         </div>
       )}
       {!dragging &&
