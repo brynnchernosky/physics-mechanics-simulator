@@ -22,8 +22,6 @@ export interface ISimulationElement {
   radius?: number;
   startVelX?: number;
   startVelY?: number;
-  startAccX?: number;
-  startAccY?: number;
   pendulum?: boolean;
 }
 
@@ -38,13 +36,16 @@ function App() {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
 
   const [showForces, setShowForces] = useState<boolean>(true);
-  const [showVelocity, setShowVelocity] = useState<boolean>(true);
-  const [showAcceleration, setShowAcceleration] = useState<boolean>(true);
+  const [showVelocity, setShowVelocity] = useState<boolean>(false);
+  const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
 
-  const [positionDisplay, setPositionDisplay] = useState(0);
-  const [velocityDisplay, setVelocityDisplay] = useState(0);
-  const [accelerationDisplay, setAccelerationDisplay] = useState(0);
+  const [positionYDisplay, setPositionYDisplay] = useState(0);
+  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
+  const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
+  const [positionXDisplay, setPositionXDisplay] = useState(0);
+  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
+  const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -173,7 +174,7 @@ function App() {
                       radius={element.radius ?? 5}
                       color={element.color}
                       mass={element.mass}
-                      timestepSize={0.005}
+                      timestepSize={0.002}
                       walls={wallPositions}
                       incrementTime={timer}
                       reset={simulationReset}
@@ -183,9 +184,12 @@ function App() {
                       showForces={showForces}
                       showVelocity={showVelocity}
                       showAcceleration={showAcceleration}
-                      setDisplayPosition={setPositionDisplay}
-                      setDisplayVelocity={setVelocityDisplay}
-                      setDisplayAcceleration={setAccelerationDisplay}
+                      setDisplayYPosition={setPositionYDisplay}
+                      setDisplayYVelocity={setVelocityYDisplay}
+                      setDisplayYAcceleration={setAccelerationYDisplay}
+                      setDisplayXPosition={setPositionXDisplay}
+                      setDisplayXVelocity={setVelocityXDisplay}
+                      setDisplayXAcceleration={setAccelerationXDisplay}
                       elasticCollisions={elasticCollisions}
                       pendulum={element.pendulum ?? false}
                     />
@@ -249,28 +253,35 @@ function App() {
         <div className="mechanicsSimulationEquation">
           <table>
             <tr>
-              <td></td>
-              <td>Formula</td>
-              <td>Value</td>
+              <td>&nbsp;</td>
+              {/* <td>Formula</td> */}
+              <td>X</td>
+              <td>Y</td>
             </tr>
             <tr>
               <td>Position</td>
-              <td>
-                x<sub>1</sub>=x<sub>0</sub>+vt+at<sup>2</sup>
-              </td>
-              <td>{positionDisplay} m</td>
+              {/* <td>
+                p<sub>1</sub>=p<sub>0</sub>+vt+at<sup>2</sup>
+              </td> */}
+              <td>{positionXDisplay} m</td>
+              <td>{positionYDisplay} m</td>
             </tr>
             <tr>
               <td>Velocity</td>
-              <td>
+              {/* <td>
                 v<sub>1</sub>=v<sub>0</sub>+at
-              </td>
-              <td>{velocityDisplay} m/s</td>
+              </td> */}
+              <td>{velocityXDisplay} m/s</td>
+              <td>{velocityYDisplay} m/s</td>
             </tr>
             <tr>
-              <td>Acceleration</td> <td>a=f/m</td>
+              <td>Acceleration</td>
+              {/* <td>a=f/m</td> */}
               <td>
-                {accelerationDisplay} m/s<sup>2</sup>
+                {accelerationXDisplay} m/s<sup>2</sup>
+              </td>
+              <td>
+                {accelerationYDisplay} m/s<sup>2</sup>
               </td>
             </tr>
           </table>

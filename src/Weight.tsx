@@ -16,8 +16,6 @@ export interface IWeightProps {
   startPosY: number;
   startVelX?: number;
   startVelY?: number;
-  startAccX?: number;
-  startAccY?: number;
   radius: number;
   color: string;
   mass: number;
@@ -31,9 +29,12 @@ export interface IWeightProps {
   showForces: boolean;
   showVelocity: boolean;
   showAcceleration: boolean;
-  setDisplayPosition: (val: number) => any;
-  setDisplayVelocity: (val: number) => any;
-  setDisplayAcceleration: (val: number) => any;
+  setDisplayXPosition: (val: number) => any;
+  setDisplayXVelocity: (val: number) => any;
+  setDisplayXAcceleration: (val: number) => any;
+  setDisplayYPosition: (val: number) => any;
+  setDisplayYVelocity: (val: number) => any;
+  setDisplayYAcceleration: (val: number) => any;
   elasticCollisions: boolean;
   pendulum: boolean;
 }
@@ -44,8 +45,6 @@ export const Weight = (props: IWeightProps) => {
     startPosY,
     startVelX,
     startVelY,
-    startAccX,
-    startAccY,
     radius,
     color,
     mass,
@@ -59,9 +58,12 @@ export const Weight = (props: IWeightProps) => {
     showForces,
     showVelocity,
     showAcceleration,
-    setDisplayPosition,
-    setDisplayVelocity,
-    setDisplayAcceleration,
+    setDisplayXPosition,
+    setDisplayXVelocity,
+    setDisplayXAcceleration,
+    setDisplayYPosition,
+    setDisplayYVelocity,
+    setDisplayYAcceleration,
     elasticCollisions,
     pendulum,
   } = props;
@@ -73,8 +75,6 @@ export const Weight = (props: IWeightProps) => {
   const [yPosition, setYPosition] = useState(startPosY);
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
-  const [xAcceleration, setXAcceleration] = useState(startAccX ?? 0);
-  const [yAcceleration, setYAcceleration] = useState(startAccY ?? 0);
   const [updatedForces, setUpdatedForces] = useState(forces);
 
   const [draggable, setDraggable] = useState(false);
@@ -93,10 +93,15 @@ export const Weight = (props: IWeightProps) => {
         update();
       }
       const displayPos = window.innerHeight * 0.8 - yPosition - 2 * radius + 5;
-      setDisplayPosition(Math.round(displayPos * 100) / 100);
-      setDisplayVelocity((-1 * Math.round(yVelocity * 100)) / 100);
-      setDisplayAcceleration(
+      setDisplayYPosition(Math.round(displayPos * 100) / 100);
+      setDisplayXPosition(Math.round(xPosition * 100) / 100);
+      setDisplayYVelocity((-1 * Math.round(yVelocity * 100)) / 100);
+      setDisplayXVelocity(Math.round(xVelocity * 100) / 100);
+      setDisplayYAcceleration(
         (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
+      );
+      setDisplayXAcceleration(
+        Math.round(getNewAccelerationX(updatedForces) * 100) / 100
       );
     }
   }, [incrementTime]);
@@ -110,8 +115,6 @@ export const Weight = (props: IWeightProps) => {
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
-    setXAcceleration(startAccX ?? 0);
-    setYAcceleration(startAccY ?? 0);
     setUpdatedForces(forces);
   };
 
@@ -334,7 +337,7 @@ export const Weight = (props: IWeightProps) => {
             setYPosition(newY);
             setUpdatedStartPosX(newX);
             setUpdatedStartPosY(newY);
-            setDisplayPosition(
+            setDisplayYPosition(
               Math.round(
                 (window.innerHeight * 0.8 - 2 * radius - newY + 5) * 100
               ) / 100
@@ -379,6 +382,78 @@ export const Weight = (props: IWeightProps) => {
           </svg>
         </div>
       )}
+      {!dragging && showAcceleration && (
+        <div>
+          <div
+            style={{
+              pointerEvents: "none",
+              position: "absolute",
+              zIndex: -1,
+              left: 0,
+              top: 0,
+            }}
+          >
+            <svg
+              width={window.innerWidth + "px"}
+              height={window.innerHeight + "px"}
+            >
+              <defs>
+                <marker
+                  id="arrow"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="0"
+                  refY="3"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <path d="M0,0 L0,6 L9,3 z" fill="green" />
+                </marker>
+              </defs>
+              <line
+                x1={xPosition + radius}
+                y1={yPosition + radius}
+                x2={xPosition + radius + getNewAccelerationX(updatedForces) * 5}
+                y2={yPosition + radius + getNewAccelerationY(updatedForces) * 5}
+                stroke={"green"}
+                strokeWidth="5"
+                markerEnd="url(#arrow)"
+              />
+            </svg>
+            <div
+              style={{
+                pointerEvents: "none",
+                position: "absolute",
+                left:
+                  xPosition +
+                  radius +
+                  getNewAccelerationX(updatedForces) * 5 +
+                  25 +
+                  "px",
+                top:
+                  yPosition +
+                  radius +
+                  getNewAccelerationY(updatedForces) * 5 +
+                  25 +
+                  "px",
+                zIndex: -1,
+                lineHeight: 0.5,
+              }}
+            >
+              <p>
+                {Math.round(
+                  100 *
+                    Math.sqrt(
+                      Math.pow(getNewAccelerationX(updatedForces) * 3, 2) +
+                        Math.pow(getNewAccelerationY(updatedForces) * 3, 2)
+                    )
+                ) / 100}{" "}
+                m/s<sup>2</sup>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {!dragging && showVelocity && (
         <div>
           <div
@@ -404,7 +479,7 @@ export const Weight = (props: IWeightProps) => {
                   orient="auto"
                   markerUnits="strokeWidth"
                 >
-                  <path d="M0,0 L0,6 L9,3 z" fill="#ffff00" />
+                  <path d="M0,0 L0,6 L9,3 z" fill="blue" />
                 </marker>
               </defs>
               <line
@@ -412,11 +487,28 @@ export const Weight = (props: IWeightProps) => {
                 y1={yPosition + radius}
                 x2={xPosition + radius + xVelocity * 3}
                 y2={yPosition + radius + yVelocity * 3}
-                stroke={"#ffff00"}
+                stroke={"blue"}
                 strokeWidth="5"
                 markerEnd="url(#arrow)"
               />
             </svg>
+            <div
+              style={{
+                pointerEvents: "none",
+                position: "absolute",
+                left: xPosition + radius + xVelocity * 3 + 25 + "px",
+                top: yPosition + radius + yVelocity * 3 + "px",
+                zIndex: -1,
+                lineHeight: 0.5,
+              }}
+            >
+              <p>
+                {Math.round(
+                  100 * Math.sqrt(xVelocity * xVelocity + yVelocity * yVelocity)
+                ) / 100}{" "}
+                m/s
+              </p>
+            </div>
           </div>
         </div>
       )}
