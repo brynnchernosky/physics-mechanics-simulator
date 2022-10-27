@@ -88,6 +88,9 @@ function App() {
         <div className="mechanicsSimulationButtonsAndElements">
           <div className="mechanicsSimulationButtons">
             <div>
+              <button onClick={() => setSimulationElements([])}>
+                Clear elements
+              </button>
               <button
                 onClick={addWeight}
                 disabled={simulationElements.length > 0}
@@ -180,9 +183,9 @@ function App() {
                       showForces={showForces}
                       showVelocity={showVelocity}
                       showAcceleration={showAcceleration}
-                      setPositionDisplay={setPositionDisplay}
-                      setVelocityDisplay={setVelocityDisplay}
-                      setAccelerationDisplay={setAccelerationDisplay}
+                      setDisplayPosition={setPositionDisplay}
+                      setDisplayVelocity={setVelocityDisplay}
+                      setDisplayAcceleration={setAccelerationDisplay}
                       elasticCollisions={elasticCollisions}
                       pendulum={element.pendulum ?? false}
                     />
