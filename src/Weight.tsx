@@ -88,17 +88,16 @@ export const Weight = (props: IWeightProps) => {
 
   useEffect(() => {
     if (!paused) {
-      const collisions = checkForCollisionsWithGround();
+      const collisions = checkForCollisionsWithGround(yPosition);
       if (!collisions) {
         update();
-        const displayPos =
-          window.innerHeight * 0.8 - yPosition - 2 * radius + 5;
-        setDisplayPosition(Math.round(displayPos * 100) / 100);
-        setDisplayVelocity((-1 * Math.round(yVelocity * 100)) / 100);
-        setDisplayAcceleration(
-          (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
-        );
       }
+      const displayPos = window.innerHeight * 0.8 - yPosition - 2 * radius + 5;
+      setDisplayPosition(Math.round(displayPos * 100) / 100);
+      setDisplayVelocity((-1 * Math.round(yVelocity * 100)) / 100);
+      setDisplayAcceleration(
+        (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
+      );
     }
   }, [incrementTime]);
 
@@ -114,8 +113,6 @@ export const Weight = (props: IWeightProps) => {
     setXAcceleration(startAccX ?? 0);
     setYAcceleration(startAccY ?? 0);
     setUpdatedForces(forces);
-    setXAcceleration(getNewAccelerationX(forces));
-    setYAcceleration(getNewAccelerationY(forces));
   };
 
   const getNewAccelerationX = (forceList: IForce[]) => {
@@ -186,18 +183,21 @@ export const Weight = (props: IWeightProps) => {
     return vel + acc * timestepSize;
   };
 
-  const checkForCollisionsWithGround = () => {
+  const checkForCollisionsWithGround = (yPos: number) => {
     let collision = false;
-    const maxY = yPosition + 2 * radius;
+    const maxY = yPos + 2 * radius;
     const containerHeight = window.innerHeight;
-    if (yVelocity != 0) {
+    if (yVelocity > 0) {
       walls.forEach((wall) => {
         const wallHeight = (wall.yPos / 100) * containerHeight;
         if (maxY >= wallHeight) {
+          //setYPosition(wallHeight + Math.abs(wallHeight - maxY) + 0.001);
           if (elasticCollisions) {
             setYVelocity(-yVelocity);
           } else {
+            setYVelocity(0);
             setYPosition(wallHeight - 2 * radius + 5);
+            // setYPosition(wallHeight - 2 * radius + 5);
             const newForce: IForce = {
               description: "Normal force",
               magnitude: 9.81 * mass,
@@ -206,9 +206,6 @@ export const Weight = (props: IWeightProps) => {
             const forceList = updatedForces;
             forceList.push(newForce);
             setUpdatedForces(forceList);
-            setYVelocity(0);
-            setXAcceleration(getNewAccelerationX(forces));
-            setYAcceleration(getNewAccelerationY(forces));
           }
           collision = true;
         }
@@ -219,85 +216,68 @@ export const Weight = (props: IWeightProps) => {
 
   const update = () => {
     // RK4 update
-    if (yAcceleration == 0 && xAcceleration == 0) {
-      return;
+    let xPos = xPosition;
+    let yPos = yPosition;
+    let xVel = xVelocity;
+    let yVel = yVelocity;
+    for (let i = 0; i < 40; i++) {
+      let forces1 = getNewForces(xPos, yPos, xVel, yVel);
+      const xAcc1 = getNewAccelerationX(forces1);
+      const yAcc1 = getNewAccelerationY(forces1);
+      const xVel1 = getNewVelocity(xVel, xAcc1);
+      const yVel1 = getNewVelocity(yVel, yAcc1);
+
+      let xVel2 = getNewVelocity(xVel, xAcc1 / 2);
+      let yVel2 = getNewVelocity(yVel, yAcc1 / 2);
+      let xPos2 = getNewPosition(xPos, xVel1 / 2);
+      let yPos2 = getNewPosition(yPos, yVel1 / 2);
+      const forces2 = getNewForces(xPos2, yPos2, xVel2, yVel2);
+      const xAcc2 = getNewAccelerationX(forces2);
+      const yAcc2 = getNewAccelerationY(forces2);
+      xVel2 = getNewVelocity(xVel2, xAcc2);
+      yVel2 = getNewVelocity(yVel2, yAcc2);
+      xPos2 = getNewPosition(xPos2, xVel2);
+      yPos2 = getNewPosition(yPos2, yVel2);
+
+      let xVel3 = getNewVelocity(xVel, xAcc2 / 2);
+      let yVel3 = getNewVelocity(yVel, yAcc2 / 2);
+      let xPos3 = getNewPosition(xPos, xVel2 / 2);
+      let yPos3 = getNewPosition(yPos, yVel2 / 2);
+      const forces3 = getNewForces(xPos3, yPos3, xVel3, yVel3);
+      const xAcc3 = getNewAccelerationX(forces3);
+      const yAcc3 = getNewAccelerationY(forces3);
+      xVel3 = getNewVelocity(xVel3, xAcc3);
+      yVel3 = getNewVelocity(yVel3, yAcc3);
+      xPos3 = getNewPosition(xPos3, xVel3);
+      yPos3 = getNewPosition(yPos3, yVel3);
+
+      let xVel4 = getNewVelocity(xVel, xAcc3);
+      let yVel4 = getNewVelocity(yVel, yAcc3);
+      let xPos4 = getNewPosition(xPos, xVel3);
+      let yPos4 = getNewPosition(yPos, yVel3);
+      const forces4 = getNewForces(xPos4, yPos4, xVel4, yVel4);
+      const xAcc4 = getNewAccelerationX(forces4);
+      const yAcc4 = getNewAccelerationY(forces4);
+      xVel4 = getNewVelocity(xVel4, xAcc4);
+      yVel4 = getNewVelocity(yVel4, yAcc4);
+      xPos4 = getNewPosition(xPos4, xVel4);
+      yPos4 = getNewPosition(yPos4, yVel4);
+
+      xVel +=
+        timestepSize * (xAcc1 / 6.0 + xAcc2 / 3.0 + xAcc3 / 3.0 + xAcc4 / 6.0);
+      yVel +=
+        timestepSize * (yAcc1 / 6.0 + yAcc2 / 3.0 + yAcc3 / 3.0 + yAcc4 / 6.0);
+      xPos +=
+        timestepSize * (xVel1 / 6.0 + xVel2 / 3.0 + xVel3 / 3.0 + xVel4 / 6.0);
+      yPos +=
+        timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
     }
 
-    let forces1 = getNewForces(xPosition, yPosition, xVelocity, yVelocity);
-    const xAcc1 = getNewAccelerationX(forces1);
-    const yAcc1 = getNewAccelerationY(forces1);
-    const xVel1 = getNewVelocity(xVelocity, xAcc1);
-    const yVel1 = getNewVelocity(yVelocity, yAcc1);
-
-    let xVel2 = getNewVelocity(xVelocity, xAcc1 / 2);
-    let yVel2 = getNewVelocity(yVelocity, yAcc1 / 2);
-    let xPos2 = getNewPosition(xPosition, xVel1 / 2);
-    let yPos2 = getNewPosition(yPosition, yVel1 / 2);
-    const forces2 = getNewForces(xPos2, yPos2, xVel2, yVel2);
-    const xAcc2 = getNewAccelerationX(forces2);
-    const yAcc2 = getNewAccelerationY(forces2);
-    xVel2 = getNewVelocity(xVel2, xAcc2);
-    yVel2 = getNewVelocity(yVel2, yAcc2);
-    xPos2 = getNewPosition(xPos2, xVel2);
-    yPos2 = getNewPosition(yPos2, yVel2);
-
-    let xVel3 = getNewVelocity(xVelocity, xAcc2 / 2);
-    let yVel3 = getNewVelocity(yVelocity, yAcc2 / 2);
-    let xPos3 = getNewPosition(xPosition, xVel2 / 2);
-    let yPos3 = getNewPosition(yPosition, yVel2 / 2);
-    const forces3 = getNewForces(xPos3, yPos3, xVel3, yVel3);
-    const xAcc3 = getNewAccelerationX(forces3);
-    const yAcc3 = getNewAccelerationY(forces3);
-    xVel3 = getNewVelocity(xVel3, xAcc3);
-    yVel3 = getNewVelocity(yVel3, yAcc3);
-    xPos3 = getNewPosition(xPos3, xVel3);
-    yPos3 = getNewPosition(yPos3, yVel3);
-
-    let xVel4 = getNewVelocity(xVelocity, xAcc3);
-    let yVel4 = getNewVelocity(yVelocity, yAcc3);
-    let xPos4 = getNewPosition(xPosition, xVel3);
-    let yPos4 = getNewPosition(yPosition, yVel3);
-    const forces4 = getNewForces(xPos4, yPos4, xVel4, yVel4);
-    const xAcc4 = getNewAccelerationX(forces4);
-    const yAcc4 = getNewAccelerationY(forces4);
-    xVel4 = getNewVelocity(xVel4, xAcc4);
-    yVel4 = getNewVelocity(yVel4, yAcc4);
-    xPos4 = getNewPosition(xPos4, xVel4);
-    yPos4 = getNewPosition(yPos4, yVel4);
-
-    const updatedXVelocity =
-      xVelocity +
-      timestepSize * (xAcc1 / 6.0 + xAcc2 / 3.0 + xAcc3 / 3.0 + xAcc4 / 6.0);
-    const updatedYVelocity =
-      yVelocity +
-      timestepSize * (yAcc1 / 6.0 + yAcc2 / 3.0 + yAcc3 / 3.0 + yAcc4 / 6.0);
-    const updatedXPosition =
-      xPosition +
-      timestepSize * (xVel1 / 6.0 + xVel2 / 3.0 + xVel3 / 3.0 + xVel4 / 6.0);
-    const updatedYPosition =
-      yPosition +
-      timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
-
-    setXVelocity(updatedXVelocity);
-    setYVelocity(updatedYVelocity);
-    setXPosition(updatedXPosition);
-    setYPosition(updatedYPosition);
-    setUpdatedForces(
-      getNewForces(
-        updatedXPosition,
-        updatedYPosition,
-        updatedXVelocity,
-        updatedYVelocity
-      )
-    );
-
-    //   // Eulerian update
-    //   const xVel = getNewVelocity(xVelocity, xAcceleration);
-    //   const yVel = getNewVelocity(yVelocity, yAcceleration);
-    //   setXVelocity(xVel);
-    //   setYVelocity(yVel);
-    //   setXPosition(getNewPosition(xPosition, xVel));
-    //   setYPosition(getNewPosition(yPosition, yVel));
+    setXVelocity(xVel);
+    setYVelocity(yVel);
+    setXPosition(xPos);
+    setYPosition(yPos);
+    setUpdatedForces(getNewForces(xPos, yPos, xVel, yVel));
   };
 
   let weightStyle = {

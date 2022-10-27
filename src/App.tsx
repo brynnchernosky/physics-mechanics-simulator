@@ -80,7 +80,7 @@ function App() {
 
   setInterval(() => {
     setTimer(timer + 1);
-  }, 100);
+  }, 60);
 
   return (
     <div className="mechanicsSimulationContainer">
@@ -173,7 +173,7 @@ function App() {
                       radius={element.radius ?? 5}
                       color={element.color}
                       mass={element.mass}
-                      timestepSize={0.1}
+                      timestepSize={0.005}
                       walls={wallPositions}
                       incrementTime={timer}
                       reset={simulationReset}
