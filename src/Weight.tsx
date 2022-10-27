@@ -92,35 +92,17 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (!paused) {
       if (pendulum) {
-        const x = window.innerWidth * 0.35 - xPosition - radius;
-        const y = yPosition + radius + 5;
-        let angle = (Math.atan(y / x) * 180) / Math.PI;
-        if (angle < 0) {
-          angle += 180;
-        }
-        let oppositeAngle = 90 - angle;
-        if (oppositeAngle < 0) {
-          oppositeAngle = 90 - (180 - angle);
-        }
-        setAngle(oppositeAngle);
-
-        const pendulumLength = Math.sqrt(x * x + y * y);
-
-        const mag =
-          mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
-          (mass * (xVelocity * xVelocity + yVelocity * yVelocity)) /
-            pendulumLength;
-
-        const forceOfTension: IForce = {
-          description: "Tension",
-          magnitude: mag,
-          directionInDegrees: angle,
-        };
-
-        setUpdatedForces([forceOfGravity, forceOfTension]);
-        updateAcceleration([forceOfGravity, forceOfTension]);
+        const newForces = getNewForces(xPosition, yPosition);
+        setUpdatedForces(newForces);
+        setXAcceleration(getNewAccelerationX(newForces));
+        setYAcceleration(getNewAccelerationY(newForces));
       }
       checkForCollisionsWithGround();
+
+      const displayPos = window.innerHeight * 0.8 - yPosition - 2 * radius + 5;
+      setPositionDisplay(Math.round(displayPos * 100) / 100);
+      setVelocityDisplay((-1 * Math.round(yVelocity * 100)) / 100);
+      setAccelerationDisplay((-1 * Math.round(yAcceleration * 100)) / 100);
     }
   }, [incrementTime]);
 
@@ -136,52 +118,67 @@ export const Weight = (props: IWeightProps) => {
     setXAcceleration(startAccX ?? 0);
     setYAcceleration(startAccY ?? 0);
     setUpdatedForces(forces);
-    updateAcceleration(forces);
+    setXAcceleration(getNewAccelerationX(forces));
+    setYAcceleration(getNewAccelerationY(forces));
   };
 
-  const updateAcceleration = (forceList: IForce[]) => {
-    let newXAcc = startAccX ?? 0;
-    let newYAcc = startAccY ?? 0;
+  const getNewAccelerationX = (forceList: IForce[]) => {
+    let newXAcc = 0;
     forceList.forEach((force) => {
-      const xComponent =
+      newXAcc +=
         (force.magnitude *
           Math.cos((force.directionInDegrees * Math.PI) / 180)) /
         mass;
-      const yComponent =
+    });
+    return newXAcc;
+  };
+
+  const getNewAccelerationY = (forceList: IForce[]) => {
+    let newYAcc = 0;
+    forceList.forEach((force) => {
+      newYAcc +=
         (-1 *
           (force.magnitude *
             Math.sin((force.directionInDegrees * Math.PI) / 180))) /
         mass;
-      newXAcc += xComponent;
-      newYAcc += yComponent;
     });
-    setXAcceleration(newXAcc);
-    setYAcceleration(newYAcc);
-    setAccelerationDisplay((-1 * Math.round(newYAcc * 100)) / 100);
+    return newYAcc;
   };
 
-  const updatePos = (timestep: number) => {
-    const newXPos =
-      xPosition +
-      xVelocity * timestep +
-      0.5 * xAcceleration * timestep * timestep;
-    setXPosition(newXPos);
-    const newYPos =
-      yPosition +
-      yVelocity * timestep +
-      0.5 * yAcceleration * timestep * timestep;
-    setYPosition(newYPos);
+  const getNewForces = (xPos: number, yPos: number) => {
+    const x = window.innerWidth * 0.35 - xPos - radius;
+    const y = yPos + radius + 5;
+    let angle = (Math.atan(y / x) * 180) / Math.PI;
+    if (angle < 0) {
+      angle += 180;
+    }
+    let oppositeAngle = 90 - angle;
+    if (oppositeAngle < 0) {
+      oppositeAngle = 90 - (180 - angle);
+    }
+    setAngle(oppositeAngle);
 
-    const displayPos = window.innerHeight * 0.8 - newYPos - 2 * radius + 5;
-    setPositionDisplay(Math.round(displayPos * 100) / 100);
+    const pendulumLength = Math.sqrt(x * x + y * y);
+
+    const mag =
+      mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
+      (mass * (xVelocity * xVelocity + yVelocity * yVelocity)) / pendulumLength;
+
+    const forceOfTension: IForce = {
+      description: "Tension",
+      magnitude: mag,
+      directionInDegrees: angle,
+    };
+
+    return [forceOfGravity, forceOfTension];
   };
 
-  const updateVelocity = (timestep: number) => {
-    const newXVelocity = xVelocity + xAcceleration * timestep;
-    setXVelocity(newXVelocity);
-    const newYVelocity = yVelocity + yAcceleration * timestep;
-    setYVelocity(newYVelocity);
-    setVelocityDisplay((-1 * Math.round(newYVelocity * 100)) / 100);
+  const getNewPosition = (pos: number, vel: number) => {
+    return pos + vel * timestepSize;
+  };
+
+  const getNewVelocity = (vel: number, acc: number) => {
+    return vel + acc * timestepSize;
   };
 
   const checkForCollisionsWithGround = () => {
@@ -205,15 +202,28 @@ export const Weight = (props: IWeightProps) => {
             forceList.push(newForce);
             setUpdatedForces(forceList);
             setYVelocity(0);
-            updateAcceleration(forceList);
+            setXAcceleration(getNewAccelerationX(forces));
+            setYAcceleration(getNewAccelerationY(forces));
           }
           collision = true;
         }
       });
     }
     if (!collision) {
-      updatePos(timestepSize);
-      updateVelocity(timestepSize);
+      // RK4 update
+      // if (pendulum) {
+      //   const newForces = getNewForces(xPosition, yPosition);
+      // }
+      // const xVel1 = getNewVelocity(xVelocity, xAcceleration);
+      // const yVel1 = getNewVelocity(yVelocity, yAcceleration);
+
+      // Eulerian update
+      const xVel = getNewVelocity(xVelocity, xAcceleration);
+      const yVel = getNewVelocity(yVelocity, yAcceleration);
+      setXVelocity(xVel);
+      setYVelocity(yVel);
+      setXPosition(getNewPosition(xPosition, xVel));
+      setYPosition(getNewPosition(yPosition, yVel));
     }
   };
 
