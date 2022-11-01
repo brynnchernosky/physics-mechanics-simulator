@@ -3,6 +3,7 @@ import { isAbsolute } from "node:path/win32";
 import { useState, useEffect, useCallback } from "react";
 import { couldStartTrivia } from "typescript";
 import { IWallProps } from "./Wall";
+import { OutlinedInput, TextField, InputAdornment } from "@mui/material";
 import "./Weight.scss";
 
 export interface IForce {
@@ -223,7 +224,7 @@ export const Weight = (props: IWeightProps) => {
     let yPos = yPosition;
     let xVel = xVelocity;
     let yVel = yVelocity;
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 60; i++) {
       let forces1 = getNewForces(xPos, yPos, xVel, yVel);
       const xAcc1 = getNewAccelerationX(forces1);
       const yAcc1 = getNewAccelerationY(forces1);
@@ -305,10 +306,15 @@ export const Weight = (props: IWeightProps) => {
   const [clickPositionX, setClickPositionX] = useState(0);
   const [clickPositionY, setClickPositionY] = useState(0);
 
+  const [weightMenuVisible, setWeightMenuVisible] = useState(false);
+
   return (
     <div style={{ zIndex: -1000 }}>
       <div
         className="weightContainer"
+        onDoubleClick={() => {
+          setWeightMenuVisible(true);
+        }}
         onPointerDown={(e) => {
           e.preventDefault();
           setPaused(true);
@@ -356,6 +362,26 @@ export const Weight = (props: IWeightProps) => {
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
+      {weightMenuVisible && !pendulum && (
+        <div
+          style={{
+            position: "absolute",
+            top: yPosition - 70 + "px",
+            left: xPosition + "px",
+          }}
+        >
+          <TextField
+            id="outlined-basic"
+            label="Velocity"
+            variant="outlined"
+            type="number"
+            defaultValue="0"
+            InputProps={{
+              endAdornment: <InputAdornment position="end">m/s</InputAdornment>,
+            }}
+          />
+        </div>
+      )}
       {pendulum && (
         <div
           className="rod"
@@ -520,12 +546,12 @@ export const Weight = (props: IWeightProps) => {
           let arrowEndY: number =
             arrowStartY -
             Math.abs(force.magnitude) *
-              3 *
+              2 *
               Math.sin((force.directionInDegrees * Math.PI) / 180);
           const arrowEndX: number =
             arrowStartX +
             Math.abs(force.magnitude) *
-              3 *
+              2 *
               Math.cos((force.directionInDegrees * Math.PI) / 180);
 
           let color = "#0d0d0d";

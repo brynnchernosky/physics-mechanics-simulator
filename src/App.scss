@@ -27,10 +27,6 @@
 
     .mechanicsSimulationFooter {
       display: flex;
-
-      .controlButton {
-        margin-right: 0.5em;
-      }
     }
 
     .slider {
@@ -49,13 +45,4 @@ td {
 
 tr:nth-child(even) {
   background-color: #d6eeee;
-}
-
-button {
-  height: 30px;
-  min-width: 100px;
-  font-size: 20px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
 }

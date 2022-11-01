@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import { Weight, IForce } from "./Weight";
 import "./App.scss";
-import { start } from "repl";
 import { IWallProps, Wall } from "./Wall";
-import { RiPlayFill, RiPauseFill, RiArrowGoBackFill } from "react-icons/ri";
-import { ChakraProvider } from "@chakra-ui/react";
-import {
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderMark,
-} from "@chakra-ui/react";
+import ToolTip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import ReplayIcon from "@mui/icons-material/Replay";
+import AddIcon from "@mui/icons-material/Add";
+import Popover from "@mui/material/Popover";
+import Stack from "@mui/material/Stack";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import ClearIcon from "@mui/icons-material/Clear";
+
 export interface ISimulationElement {
   type: string;
   startPosX: number;
@@ -53,11 +58,12 @@ function App() {
       startPosX: 0,
       startPosY: 0,
       color: "red",
-      mass: 5,
+      mass: 10,
       radius: 50,
       pendulum: false,
     };
     setSimulationElements((state) => [...state, weight]);
+    handleClose();
   };
 
   const addPendulum = () => {
@@ -66,11 +72,12 @@ function App() {
       startPosX: 0,
       startPosY: 0,
       color: "red",
-      mass: 5,
+      mass: 10,
       radius: 50,
       pendulum: true,
     };
     setSimulationElements((state) => [...state, weight]);
+    handleClose();
   };
 
   useEffect(() => {
@@ -83,29 +90,86 @@ function App() {
     setTimer(timer + 1);
   }, 60);
 
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
   return (
     <div className="mechanicsSimulationContainer">
       <div className="mechanicsSimulationContentContainer">
         <div className="mechanicsSimulationButtonsAndElements">
           <div className="mechanicsSimulationButtons">
             <div>
-              <button onClick={() => setSimulationElements([])}>
-                Clear elements
-              </button>
-              <button
-                onClick={addWeight}
-                disabled={simulationElements.length > 0}
+              <IconButton onClick={handleClick}>
+                <AddIcon />
+              </IconButton>
+              <Popover
+                open={open}
+                id={id}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
               >
-                {" "}
-                Add weight
-              </button>
-              <button
-                onClick={addPendulum}
-                disabled={simulationElements.length > 0}
-              >
-                {" "}
-                Add pendulum
-              </button>
+                <nav aria-label="add simulation element options">
+                  <List>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        onClick={addWeight}
+                        disabled={simulationElements.length > 0}
+                      >
+                        <ListItemIcon>
+                          <PlayArrowIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Add free weight" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        onClick={addPendulum}
+                        disabled={simulationElements.length > 0}
+                      >
+                        <ListItemIcon>
+                          <PlayArrowIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Add pendulum" />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+                </nav>
+                <Divider />
+                <nav aria-label="clear simulation elements">
+                  <List>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        disabled={simulationElements.length == 0}
+                        onClick={() => {
+                          setSimulationElements([]);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemIcon>
+                          <ClearIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Clear simulation" />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+                </nav>
+              </Popover>
             </div>
             <div>
               {!elasticCollisions && (
@@ -216,38 +280,36 @@ function App() {
       </div>
       <div className="mechanicsSimulationEquationContainer">
         <div className="mechanicsSimulationFooter">
-          <button
-            className="controlButton"
-            onClick={() => {
-              setSimulationPaused(false);
-            }}
-          >
-            {" "}
-            Start
-            <i className="ri-admin-line"></i>
-            <RiPlayFill />
-          </button>
-          <button
-            className="controlButton"
-            onClick={() => {
-              setSimulationPaused(true);
-            }}
-          >
-            {" "}
-            Pause
-            <RiPauseFill />
-          </button>
-          <button
-            className="controlButton"
-            onClick={() => {
-              setSimulationPaused(true);
-              setSimulationReset(!simulationReset);
-            }}
-          >
-            {" "}
-            Reset
-            <RiArrowGoBackFill />
-          </button>
+          <Stack direction="row" spacing={1}>
+            <ToolTip title="Start simulation">
+              <IconButton
+                onClick={() => {
+                  setSimulationPaused(false);
+                }}
+              >
+                <PlayArrowIcon />
+              </IconButton>
+            </ToolTip>
+            <ToolTip title="Pause simulation">
+              <IconButton
+                onClick={() => {
+                  setSimulationPaused(true);
+                }}
+              >
+                <PauseIcon />
+              </IconButton>
+            </ToolTip>
+            <ToolTip title="Reset simulation">
+              <IconButton
+                onClick={() => {
+                  setSimulationPaused(true);
+                  setSimulationReset(!simulationReset);
+                }}
+              >
+                <ReplayIcon />
+              </IconButton>
+            </ToolTip>
+          </Stack>
         </div>
         <div className="slider">ADD SLIDER</div>
         <div className="mechanicsSimulationEquation">
