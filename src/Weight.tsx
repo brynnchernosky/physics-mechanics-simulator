@@ -38,6 +38,9 @@ export interface IWeightProps {
   setDisplayYAcceleration: (val: number) => any;
   elasticCollisions: boolean;
   pendulum: boolean;
+  setStartPendulumAngle: (val: number) => any;
+  setPendulumAngle: (val: number) => any;
+  setPendulumLength: (val: number) => any;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -67,6 +70,9 @@ export const Weight = (props: IWeightProps) => {
     setDisplayYAcceleration,
     elasticCollisions,
     pendulum,
+    setStartPendulumAngle,
+    setPendulumAngle,
+    setPendulumLength
   } = props;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
@@ -117,6 +123,21 @@ export const Weight = (props: IWeightProps) => {
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
     setUpdatedForces(forces);
+
+    const x = window.innerWidth * 0.35 - updatedStartPosX - radius;
+    const y = updatedStartPosY + radius + 5;
+    let angle = (Math.atan(y / x) * 180) / Math.PI;
+    if (angle < 0) {
+      angle += 180;
+    }
+    let oppositeAngle = 90 - angle;
+    if (oppositeAngle < 0) {
+      oppositeAngle = 90 - (180 - angle);
+    }
+
+    setPendulumLength(Math.sqrt(x * x + y * y));
+    setStartPendulumAngle((oppositeAngle * Math.PI) / 180)
+
   };
 
   const getNewAccelerationX = (forceList: IForce[]) => {
@@ -163,6 +184,8 @@ export const Weight = (props: IWeightProps) => {
     }
 
     const pendulumLength = Math.sqrt(x * x + y * y);
+    setPendulumAngle((oppositeAngle * Math.PI) / 180)
+    // setPendulumLength(pendulumLength)
 
     const mag =
       mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
@@ -546,12 +569,12 @@ export const Weight = (props: IWeightProps) => {
           let arrowEndY: number =
             arrowStartY -
             Math.abs(force.magnitude) *
-              2 *
+              20 *
               Math.sin((force.directionInDegrees * Math.PI) / 180);
           const arrowEndX: number =
             arrowStartX +
             Math.abs(force.magnitude) *
-              2 *
+              20 *
               Math.cos((force.directionInDegrees * Math.PI) / 180);
 
           let color = "#0d0d0d";

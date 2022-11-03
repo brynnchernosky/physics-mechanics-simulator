@@ -1,23 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Weight, IForce } from "./Weight";
-import "./App.scss";
-import { IWallProps, Wall } from "./Wall";
-import ToolTip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
-import ReplayIcon from "@mui/icons-material/Replay";
 import AddIcon from "@mui/icons-material/Add";
-import Popover from "@mui/material/Popover";
-import Stack from "@mui/material/Stack";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ClearIcon from "@mui/icons-material/Clear";
+import PauseIcon from "@mui/icons-material/Pause";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import ReplayIcon from "@mui/icons-material/Replay";
+import Checkbox from "@mui/material/Checkbox";
+import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import FormLabel from "@mui/material/FormLabel";
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-import ClearIcon from "@mui/icons-material/Clear";
-
+import Popover from "@mui/material/Popover";
+import Stack from "@mui/material/Stack";
+import Switch from "@mui/material/Switch";
+import ToolTip from "@mui/material/Tooltip";
+import React, { useEffect, useState } from "react";
+import "./App.scss";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import { IWallProps, Wall } from "./Wall";
+import { IForce, Weight } from "./Weight";
 export interface ISimulationElement {
   type: string;
   startPosX: number;
@@ -43,7 +53,7 @@ function App() {
   const [showForces, setShowForces] = useState<boolean>(true);
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
-  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
+  const [elasticCollisions, setElasticCollisions] = useState<boolean>(true);
 
   const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
@@ -51,14 +61,17 @@ function App() {
   const [positionXDisplay, setPositionXDisplay] = useState(0);
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
+  const [startPendulumAngle, setStartPendulumAngle] = useState(0)
+  const [pendulumAngle, setPendulumAngle] = useState(0)
+  const [pendulumLength, setPendulumLength] = useState(0)
 
   const addWeight = () => {
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: 0,
-      startPosY: 0,
+      startPosX: 30,
+      startPosY: 30,
       color: "red",
-      mass: 10,
+      mass: 1,
       radius: 50,
       pendulum: false,
     };
@@ -69,10 +82,10 @@ function App() {
   const addPendulum = () => {
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: 0,
-      startPosY: 0,
+      startPosX: 30,
+      startPosY: 30,
       color: "red",
-      mass: 10,
+      mass: 1,
       radius: 50,
       pendulum: true,
     };
@@ -111,9 +124,13 @@ function App() {
         <div className="mechanicsSimulationButtonsAndElements">
           <div className="mechanicsSimulationButtons">
             <div>
-              <IconButton onClick={handleClick}>
-                <AddIcon />
-              </IconButton>
+              <div style={{ zIndex: 1000 }}>
+                <ToolTip title="Add/remove elements">
+                  <IconButton onClick={handleClick} size="large">
+                    <AddIcon />
+                  </IconButton>
+                </ToolTip>
+              </div>
               <Popover
                 open={open}
                 id={id}
@@ -132,7 +149,7 @@ function App() {
                         disabled={simulationElements.length > 0}
                       >
                         <ListItemIcon>
-                          <PlayArrowIcon />
+                          <AddCircleIcon />
                         </ListItemIcon>
                         <ListItemText primary="Add free weight" />
                       </ListItemButton>
@@ -143,7 +160,7 @@ function App() {
                         disabled={simulationElements.length > 0}
                       >
                         <ListItemIcon>
-                          <PlayArrowIcon />
+                          <AddCircleIcon />
                         </ListItemIcon>
                         <ListItemText primary="Add pendulum" />
                       </ListItemButton>
@@ -170,56 +187,6 @@ function App() {
                   </List>
                 </nav>
               </Popover>
-            </div>
-            <div>
-              {!elasticCollisions && (
-                <button onClick={() => setElasticCollisions(true)}>
-                  {" "}
-                  Make collisions elastic
-                </button>
-              )}
-              {elasticCollisions && (
-                <button onClick={() => setElasticCollisions(false)}>
-                  {" "}
-                  Make collisions inelastic
-                </button>
-              )}
-              {!showForces && (
-                <button onClick={() => setShowForces(true)}>
-                  {" "}
-                  Show forces
-                </button>
-              )}
-              {showForces && (
-                <button onClick={() => setShowForces(false)}>
-                  {" "}
-                  Hide forces
-                </button>
-              )}
-              {!showVelocity && (
-                <button onClick={() => setShowVelocity(true)}>
-                  {" "}
-                  Show velocity
-                </button>
-              )}
-              {showVelocity && (
-                <button onClick={() => setShowVelocity(false)}>
-                  {" "}
-                  Hide velocity
-                </button>
-              )}
-              {!showAcceleration && (
-                <button onClick={() => setShowAcceleration(true)}>
-                  {" "}
-                  Show acceleration
-                </button>
-              )}
-              {showAcceleration && (
-                <button onClick={() => setShowAcceleration(false)}>
-                  {" "}
-                  Hide acceleration
-                </button>
-              )}
             </div>
           </div>
           <div className="mechanicsSimulationElements">
@@ -256,6 +223,9 @@ function App() {
                       setDisplayXAcceleration={setAccelerationXDisplay}
                       elasticCollisions={elasticCollisions}
                       pendulum={element.pendulum ?? false}
+                      setStartPendulumAngle={setStartPendulumAngle}
+                      setPendulumAngle={setPendulumAngle}
+                      setPendulumLength={setPendulumLength}
                     />
                   </div>
                 );
@@ -311,7 +281,69 @@ function App() {
             </ToolTip>
           </Stack>
         </div>
-        <div className="slider">ADD SLIDER</div>
+        {/* <Box sx={{ width: 300 }}>
+          <Slider
+            aria-label="Timestep"
+            defaultValue={0}
+            valueLabelDisplay="auto"
+            step={10}
+            marks={[
+              { value: 0, label: "0s" },
+              { value: 10, label: "1s" },
+              { value: 20, label: "2s" },
+              { value: 30, label: "3s" },
+              { value: 40, label: "4s" },
+              { value: 50, label: "5s" },
+              { value: 60, label: "6s" },
+              { value: 70, label: "7s" },
+              { value: 80, label: "8s" },
+              { value: 90, label: "9s" },
+              { value: 100, label: "10s" },
+            ]}
+          />
+        </Box> */}
+        <div>
+          <FormControl component="fieldset">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    onChange={() => setElasticCollisions(!elasticCollisions)}
+                  />
+                }
+                label="Make collisions inelastic"
+                labelPlacement="start"
+              />
+              <Divider />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    onChange={() => setShowForces(!showForces)}
+                    defaultChecked
+                  />
+                }
+                label="Show force vectors"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    onChange={() => setShowAcceleration(!showAcceleration)}
+                  />
+                }
+                label="Show acceleration vector"
+                labelPlacement="start"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox onChange={() => setShowVelocity(!showVelocity)} />
+                }
+                label="Show velocity vector"
+                labelPlacement="start"
+              />
+            </FormGroup>
+          </FormControl>
+        </div>
         <div className="mechanicsSimulationEquation">
           <table>
             <tr>
@@ -344,6 +376,34 @@ function App() {
               </td>
               <td>
                 {accelerationYDisplay} m/s<sup>2</sup>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div className="mechanicsSimulationEquation">
+          <table>
+            <tr>
+              <td>&nbsp;</td>
+              <td>Value</td>
+            </tr>
+            <tr>
+              <td>Potential Energy</td>
+              <td>{Math.round(pendulumLength * (1-Math.cos(pendulumAngle)) * 9.81 * 10) / 10} J</td>
+            </tr>
+            <tr>
+              <td>Kinetic Energy</td>
+              <td>
+                {Math.round(((Math.round(pendulumLength * (1-Math.cos(startPendulumAngle)) * 9.81 * 10) / 10)-(Math.round(pendulumLength * (1-Math.cos(pendulumAngle)) * 9.81 * 10) / 10))*10)/10}{" "}
+                J
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Total Energy</b>
+              </td>
+              <td>
+                {Math.round(pendulumLength * (1-Math.cos(startPendulumAngle)) * 9.81 * 10) / 10}{" "}
+                J
               </td>
             </tr>
           </table>
