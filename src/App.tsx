@@ -61,9 +61,9 @@ function App() {
   const [positionXDisplay, setPositionXDisplay] = useState(0);
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
-  const [startPendulumAngle, setStartPendulumAngle] = useState(0)
-  const [pendulumAngle, setPendulumAngle] = useState(0)
-  const [pendulumLength, setPendulumLength] = useState(0)
+  const [startPendulumAngle, setStartPendulumAngle] = useState(0);
+  const [pendulumAngle, setPendulumAngle] = useState(0);
+  const [pendulumLength, setPendulumLength] = useState(0);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -380,34 +380,62 @@ function App() {
             </tr>
           </table>
         </div>
-        <div className="mechanicsSimulationEquation">
-          <table>
-            <tr>
-              <td>&nbsp;</td>
-              <td>Value</td>
-            </tr>
-            <tr>
-              <td>Potential Energy</td>
-              <td>{Math.round(pendulumLength * (1-Math.cos(pendulumAngle)) * 9.81 * 10) / 10} J</td>
-            </tr>
-            <tr>
-              <td>Kinetic Energy</td>
-              <td>
-                {Math.round(((Math.round(pendulumLength * (1-Math.cos(startPendulumAngle)) * 9.81 * 10) / 10)-(Math.round(pendulumLength * (1-Math.cos(pendulumAngle)) * 9.81 * 10) / 10))*10)/10}{" "}
-                J
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <b>Total Energy</b>
-              </td>
-              <td>
-                {Math.round(pendulumLength * (1-Math.cos(startPendulumAngle)) * 9.81 * 10) / 10}{" "}
-                J
-              </td>
-            </tr>
-          </table>
-        </div>
+        {simulationElements.length > 0 && simulationElements[0].pendulum && (
+          <div className="mechanicsSimulationEquation">
+            <table>
+              <tr>
+                <td>&nbsp;</td>
+                <td>Value</td>
+              </tr>
+              <tr>
+                <td>Potential Energy</td>
+                <td>
+                  {Math.round(
+                    pendulumLength * (1 - Math.cos(pendulumAngle)) * 9.81 * 10
+                  ) / 10}{" "}
+                  J
+                </td>
+              </tr>
+              <tr>
+                <td>Kinetic Energy</td>
+                <td>
+                  {Math.round(
+                    (Math.round(
+                      pendulumLength *
+                        (1 - Math.cos(startPendulumAngle)) *
+                        9.81 *
+                        10
+                    ) /
+                      10 -
+                      Math.round(
+                        pendulumLength *
+                          (1 - Math.cos(pendulumAngle)) *
+                          9.81 *
+                          10
+                      ) /
+                        10) *
+                      10
+                  ) / 10}{" "}
+                  J
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b>Total Energy</b>
+                </td>
+                <td>
+                  {Math.round(
+                    pendulumLength *
+                      (1 - Math.cos(startPendulumAngle)) *
+                      9.81 *
+                      10
+                  ) / 10}{" "}
+                  J
+                </td>
+              </tr>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
