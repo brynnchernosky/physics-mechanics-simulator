@@ -149,7 +149,7 @@ export const Weight = (props: IWeightProps) => {
 
     if (displayYVelocity != yVelocity) {
       let y = displayYVelocity;
-      setYVelocity(y);
+      setYVelocity(-y);
       setDisplayYVelocity(y);
     }
   }, [updateDisplay]);

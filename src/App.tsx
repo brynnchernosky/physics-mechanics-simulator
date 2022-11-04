@@ -385,7 +385,7 @@ function App() {
                     }}
                     onChange={(e) => {
                       const regex = /^[0-9\b]+$/;
-                      if (e.target.value == "" || regex.test(e.target.value)) {
+                      if (regex.test(e.target.value)) {
                         setPositionXDisplay(parseFloat(e.target.value));
                         setDisplayChange(!displayChange);
                       }
@@ -410,7 +410,7 @@ function App() {
                     }}
                     onChange={(e) => {
                       const regex = /^[0-9\b]+$/;
-                      if (e.target.value == "" || regex.test(e.target.value)) {
+                      if (regex.test(e.target.value)) {
                         setPositionYDisplay(parseFloat(e.target.value));
                         setDisplayChange(!displayChange);
                       }
@@ -422,10 +422,11 @@ function App() {
             <tr>
               <td>Velocity</td>
               <td>
-                {!simulationPaused ||
-                  (simulationType == "pendulum" && velocityXDisplay)}{" "}
-                {!simulationPaused ||
-                  (simulationType == "pendulum" && <p>m/s</p>)}{" "}
+                {(!simulationPaused || simulationType == "pendulum") &&
+                  velocityXDisplay}{" "}
+                {(!simulationPaused || simulationType == "pendulum") && (
+                  <p>m/s</p>
+                )}{" "}
                 {simulationPaused && simulationType != "pendulum" && (
                   <TextField
                     type="number"
@@ -440,7 +441,7 @@ function App() {
                     }}
                     onChange={(e) => {
                       const regex = /^[0-9\b]+$/;
-                      if (e.target.value == "" || regex.test(e.target.value)) {
+                      if (regex.test(e.target.value)) {
                         setVelocityXDisplay(parseFloat(e.target.value));
                         setDisplayChange(!displayChange);
                       }
@@ -448,7 +449,34 @@ function App() {
                   />
                 )}{" "}
               </td>
-              <td>{velocityYDisplay} m/s</td>
+              <td>
+                {(!simulationPaused || simulationType == "pendulum") &&
+                  velocityYDisplay}{" "}
+                {(!simulationPaused || simulationType == "pendulum") && (
+                  <p>m/s</p>
+                )}{" "}
+                {simulationPaused && simulationType != "pendulum" && (
+                  <TextField
+                    type="number"
+                    variant="standard"
+                    defaultValue={velocityYDisplay}
+                    value={velocityYDisplay}
+                    style={{ width: "5rem" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">m</InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      const regex = /^[0-9\b]+$/;
+                      if (regex.test(e.target.value)) {
+                        setVelocityYDisplay(parseFloat(e.target.value));
+                        setDisplayChange(!displayChange);
+                      }
+                    }}
+                  />
+                )}{" "}
+              </td>
             </tr>
             <tr>
               <td>Acceleration</td>
