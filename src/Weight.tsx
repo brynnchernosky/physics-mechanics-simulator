@@ -30,6 +30,9 @@ export interface IWeightProps {
   showForces: boolean;
   showVelocity: boolean;
   showAcceleration: boolean;
+  displayXPosition: number;
+  displayYPosition: number;
+  updatePositionBasedOnDisplayPosition: boolean;
   setDisplayXPosition: (val: number) => any;
   setDisplayXVelocity: (val: number) => any;
   setDisplayXAcceleration: (val: number) => any;
@@ -41,6 +44,8 @@ export interface IWeightProps {
   setStartPendulumAngle: (val: number) => any;
   setPendulumAngle: (val: number) => any;
   setPendulumLength: (val: number) => any;
+  xMax: number;
+  yMax: number;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -72,7 +77,12 @@ export const Weight = (props: IWeightProps) => {
     pendulum,
     setStartPendulumAngle,
     setPendulumAngle,
-    setPendulumLength
+    setPendulumLength,
+    displayXPosition,
+    displayYPosition,
+    updatePositionBasedOnDisplayPosition,
+    xMax,
+    yMax,
   } = props;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
@@ -93,23 +103,43 @@ export const Weight = (props: IWeightProps) => {
     directionInDegrees: 270,
   };
 
+  const setDisplayValues = () => {
+    const displayPos = yMax - yPosition - 2 * radius + 5;
+    setDisplayYPosition(Math.round(displayPos * 100) / 100);
+    setDisplayXPosition(Math.round(xPosition * 100) / 100);
+    setDisplayYVelocity((-1 * Math.round(yVelocity * 100)) / 100);
+    setDisplayXVelocity(Math.round(xVelocity * 100) / 100);
+    setDisplayYAcceleration(
+      (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
+    );
+    setDisplayXAcceleration(
+      Math.round(getNewAccelerationX(updatedForces) * 100) / 100
+    );
+  };
+
+  useEffect(() => {
+    let x = displayXPosition;
+    x = Math.max(0, x);
+    x = Math.min(x, xMax - 2 * radius);
+    setUpdatedStartPosX(x);
+    setXPosition(x);
+    setDisplayXPosition(x);
+
+    let y = displayYPosition;
+    y = Math.max(0, y);
+    y = Math.min(y, yMax - 2 * radius);
+    setUpdatedStartPosY(y);
+    setYPosition(y);
+    setDisplayYPosition(y);
+  }, [updatePositionBasedOnDisplayPosition]);
+
   useEffect(() => {
     if (!paused) {
       const collisions = checkForCollisionsWithGround(yPosition);
       if (!collisions) {
         update();
       }
-      const displayPos = window.innerHeight * 0.8 - yPosition - 2 * radius + 5;
-      setDisplayYPosition(Math.round(displayPos * 100) / 100);
-      setDisplayXPosition(Math.round(xPosition * 100) / 100);
-      setDisplayYVelocity((-1 * Math.round(yVelocity * 100)) / 100);
-      setDisplayXVelocity(Math.round(xVelocity * 100) / 100);
-      setDisplayYAcceleration(
-        (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
-      );
-      setDisplayXAcceleration(
-        Math.round(getNewAccelerationX(updatedForces) * 100) / 100
-      );
+      setDisplayValues();
     }
   }, [incrementTime]);
 
@@ -124,20 +154,21 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(startVelY ?? 0);
     setUpdatedForces(forces);
 
-    const x = window.innerWidth * 0.35 - updatedStartPosX - radius;
-    const y = updatedStartPosY + radius + 5;
-    let angle = (Math.atan(y / x) * 180) / Math.PI;
-    if (angle < 0) {
-      angle += 180;
+    if (pendulum) {
+      const x = xMax / 2 - updatedStartPosX - radius;
+      const y = updatedStartPosY + radius + 5;
+      let angle = (Math.atan(y / x) * 180) / Math.PI;
+      if (angle < 0) {
+        angle += 180;
+      }
+      let oppositeAngle = 90 - angle;
+      if (oppositeAngle < 0) {
+        oppositeAngle = 90 - (180 - angle);
+      }
+      setPendulumLength(Math.sqrt(x * x + y * y));
+      setStartPendulumAngle((oppositeAngle * Math.PI) / 180);
     }
-    let oppositeAngle = 90 - angle;
-    if (oppositeAngle < 0) {
-      oppositeAngle = 90 - (180 - angle);
-    }
-
-    setPendulumLength(Math.sqrt(x * x + y * y));
-    setStartPendulumAngle((oppositeAngle * Math.PI) / 180)
-
+    setDisplayValues();
   };
 
   const getNewAccelerationX = (forceList: IForce[]) => {
@@ -172,7 +203,7 @@ export const Weight = (props: IWeightProps) => {
     if (!pendulum) {
       return updatedForces;
     }
-    const x = window.innerWidth * 0.35 - xPos - radius;
+    const x = xMax / 2 - xPos - radius;
     const y = yPos + radius + 5;
     let angle = (Math.atan(y / x) * 180) / Math.PI;
     if (angle < 0) {
@@ -184,7 +215,7 @@ export const Weight = (props: IWeightProps) => {
     }
 
     const pendulumLength = Math.sqrt(x * x + y * y);
-    setPendulumAngle((oppositeAngle * Math.PI) / 180)
+    setPendulumAngle((oppositeAngle * Math.PI) / 180);
     // setPendulumLength(pendulumLength)
 
     const mag =
@@ -326,6 +357,20 @@ export const Weight = (props: IWeightProps) => {
     weightStyle.borderColor = "lightblue";
   }
 
+  // useEffect(() => {
+  //   if (paused) {
+  //     setUpdatedStartPosX(displayXPosition);
+  //     setXPosition(displayXPosition);
+  //   }
+  // }, [displayXPosition]);
+
+  // useEffect(() => {
+  //   if (paused) {
+  //     setUpdatedStartPosX(displayYPosition);
+  //     setXPosition(setDisplayYPosition);
+  //   }
+  // }, [displayYPosition]);
+
   const [clickPositionX, setClickPositionX] = useState(0);
   const [clickPositionY, setClickPositionY] = useState(0);
 
@@ -335,9 +380,6 @@ export const Weight = (props: IWeightProps) => {
     <div style={{ zIndex: -1000 }}>
       <div
         className="weightContainer"
-        onDoubleClick={() => {
-          setWeightMenuVisible(true);
-        }}
         onPointerDown={(e) => {
           e.preventDefault();
           setPaused(true);
@@ -350,14 +392,14 @@ export const Weight = (props: IWeightProps) => {
           if (dragging) {
             const originalYPosition = yPosition;
             let newY = yPosition + e.clientY - clickPositionY;
-            if (newY > window.innerHeight * 0.81 - 2 * radius) {
-              newY = window.innerHeight * 0.81 - 2 * radius;
+            if (newY > yMax - 2 * radius) {
+              newY = yMax - 2 * radius;
             }
 
             const originalXPosition = xPosition;
             let newX = xPosition + e.clientX - clickPositionX;
-            if (newX > window.innerWidth * 0.7 - 2 * radius) {
-              newX = window.innerWidth * 0.7 - 2 * radius;
+            if (newX > xMax - 2 * radius) {
+              newX = xMax - 2 * radius;
             } else if (newX < 0) {
               newX = 0;
             }
@@ -367,12 +409,11 @@ export const Weight = (props: IWeightProps) => {
             setUpdatedStartPosX(newX);
             setUpdatedStartPosY(newY);
             setDisplayYPosition(
-              Math.round(
-                (window.innerHeight * 0.8 - 2 * radius - newY + 5) * 100
-              ) / 100
+              Math.round((yMax - 2 * radius - newY + 5) * 100) / 100
             );
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
+            setDisplayValues();
           }
         }}
         onPointerUp={(e) => {
@@ -423,7 +464,7 @@ export const Weight = (props: IWeightProps) => {
             <line
               x1={xPosition + radius}
               y1={yPosition + radius}
-              x2={window.innerWidth * 0.35}
+              x2={xMax / 2}
               y2={-5}
               stroke={"#deb887"}
               strokeWidth="10"

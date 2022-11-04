@@ -4,28 +4,26 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
-import Checkbox from "@mui/material/Checkbox";
-import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import FormLabel from "@mui/material/FormLabel";
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Popover from "@mui/material/Popover";
-import Stack from "@mui/material/Stack";
-import Switch from "@mui/material/Switch";
-import ToolTip from "@mui/material/Tooltip";
+import {
+  Checkbox,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+  Stack,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import "./App.scss";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
 import { IWallProps, Wall } from "./Wall";
 import { IForce, Weight } from "./Weight";
 export interface ISimulationElement {
@@ -118,6 +116,8 @@ function App() {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
+  const [displayChange, setDisplayChange] = useState(false);
+
   return (
     <div className="mechanicsSimulationContainer">
       <div className="mechanicsSimulationContentContainer">
@@ -125,11 +125,11 @@ function App() {
           <div className="mechanicsSimulationButtons">
             <div>
               <div style={{ zIndex: 1000 }}>
-                <ToolTip title="Add/remove elements">
+                <Tooltip title="Add/remove elements">
                   <IconButton onClick={handleClick} size="large">
                     <AddIcon />
                   </IconButton>
-                </ToolTip>
+                </Tooltip>
               </div>
               <Popover
                 open={open}
@@ -215,6 +215,8 @@ function App() {
                       showForces={showForces}
                       showVelocity={showVelocity}
                       showAcceleration={showAcceleration}
+                      displayXPosition={positionXDisplay}
+                      displayYPosition={positionYDisplay}
                       setDisplayYPosition={setPositionYDisplay}
                       setDisplayYVelocity={setVelocityYDisplay}
                       setDisplayYAcceleration={setAccelerationYDisplay}
@@ -226,6 +228,9 @@ function App() {
                       setStartPendulumAngle={setStartPendulumAngle}
                       setPendulumAngle={setPendulumAngle}
                       setPendulumLength={setPendulumLength}
+                      updatePositionBasedOnDisplayPosition={displayChange}
+                      xMax={window.innerWidth * 0.7}
+                      yMax={window.innerHeight * 0.8}
                     />
                   </div>
                 );
@@ -251,25 +256,29 @@ function App() {
       <div className="mechanicsSimulationEquationContainer">
         <div className="mechanicsSimulationFooter">
           <Stack direction="row" spacing={1}>
-            <ToolTip title="Start simulation">
-              <IconButton
-                onClick={() => {
-                  setSimulationPaused(false);
-                }}
-              >
-                <PlayArrowIcon />
-              </IconButton>
-            </ToolTip>
-            <ToolTip title="Pause simulation">
-              <IconButton
-                onClick={() => {
-                  setSimulationPaused(true);
-                }}
-              >
-                <PauseIcon />
-              </IconButton>
-            </ToolTip>
-            <ToolTip title="Reset simulation">
+            {simulationPaused && (
+              <Tooltip title="Start simulation">
+                <IconButton
+                  onClick={() => {
+                    setSimulationPaused(false);
+                  }}
+                >
+                  <PlayArrowIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {!simulationPaused && (
+              <Tooltip title="Pause simulation">
+                <IconButton
+                  onClick={() => {
+                    setSimulationPaused(true);
+                  }}
+                >
+                  <PauseIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Reset simulation">
               <IconButton
                 onClick={() => {
                   setSimulationPaused(true);
@@ -278,7 +287,7 @@ function App() {
               >
                 <ReplayIcon />
               </IconButton>
-            </ToolTip>
+            </Tooltip>
           </Stack>
         </div>
         {/* <Box sx={{ width: 300 }}>
@@ -357,8 +366,56 @@ function App() {
               {/* <td>
                 p<sub>1</sub>=p<sub>0</sub>+vt+at<sup>2</sup>
               </td> */}
-              <td>{positionXDisplay} m</td>
-              <td>{positionYDisplay} m</td>
+              <td>
+                {!simulationPaused && positionXDisplay}{" "}
+                {!simulationPaused && <p>m</p>}{" "}
+                {simulationPaused && (
+                  <TextField
+                    type="number"
+                    variant="standard"
+                    defaultValue={positionXDisplay}
+                    value={positionXDisplay}
+                    style={{ width: "5rem" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">m</InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      const regex = /^[0-9\b]+$/;
+                      if (e.target.value == "" || regex.test(e.target.value)) {
+                        setPositionXDisplay(parseFloat(e.target.value));
+                        setDisplayChange(!displayChange);
+                      }
+                    }}
+                  />
+                )}{" "}
+              </td>
+              <td>
+                {!simulationPaused && positionYDisplay}{" "}
+                {!simulationPaused && <p>m</p>}{" "}
+                {simulationPaused && (
+                  <TextField
+                    type="number"
+                    variant="standard"
+                    defaultValue={positionYDisplay}
+                    value={positionYDisplay}
+                    style={{ width: "5rem" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">m</InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      const regex = /^[0-9\b]+$/;
+                      if (e.target.value == "" || regex.test(e.target.value)) {
+                        setPositionYDisplay(parseFloat(e.target.value));
+                        setDisplayChange(!displayChange);
+                      }
+                    }}
+                  />
+                )}{" "}
+              </td>
             </tr>
             <tr>
               <td>Velocity</td>
