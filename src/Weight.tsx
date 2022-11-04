@@ -13,74 +13,78 @@ export interface IForce {
   directionInDegrees: number;
 }
 export interface IWeightProps {
+  color: string;
+  displayXPosition: number;
+  displayYPosition: number;
+  displayXVelocity: number;
+  displayYVelocity: number;
+  elasticCollisions: boolean;
+  forces: IForce[];
+  incrementTime: number;
+  mass: number;
+  paused: boolean;
+  pendulum: boolean;
+  radius: number;
+  reset: boolean;
+  setDisplayXAcceleration: (val: number) => any;
+  setDisplayXPosition: (val: number) => any;
+  setDisplayXVelocity: (val: number) => any;
+  setDisplayYAcceleration: (val: number) => any;
+  setDisplayYPosition: (val: number) => any;
+  setDisplayYVelocity: (val: number) => any;
+  setPaused: (bool: boolean) => any;
+  setPendulumAngle: (val: number) => any;
+  setPendulumLength: (val: number) => any;
+  setStartPendulumAngle: (val: number) => any;
+  showAcceleration: boolean;
+  showForces: boolean;
+  showVelocity: boolean;
   startPosX: number;
   startPosY: number;
   startVelX?: number;
   startVelY?: number;
-  radius: number;
-  color: string;
-  mass: number;
   timestepSize: number;
-  incrementTime: number;
-  paused: boolean;
-  setPaused: (bool: boolean) => any;
-  reset: boolean;
+  updateDisplay: boolean;
   walls: IWallProps[];
-  forces: IForce[];
-  showForces: boolean;
-  showVelocity: boolean;
-  showAcceleration: boolean;
-  displayXPosition: number;
-  displayYPosition: number;
-  updatePositionBasedOnDisplayPosition: boolean;
-  setDisplayXPosition: (val: number) => any;
-  setDisplayXVelocity: (val: number) => any;
-  setDisplayXAcceleration: (val: number) => any;
-  setDisplayYPosition: (val: number) => any;
-  setDisplayYVelocity: (val: number) => any;
-  setDisplayYAcceleration: (val: number) => any;
-  elasticCollisions: boolean;
-  pendulum: boolean;
-  setStartPendulumAngle: (val: number) => any;
-  setPendulumAngle: (val: number) => any;
-  setPendulumLength: (val: number) => any;
   xMax: number;
   yMax: number;
 }
 
 export const Weight = (props: IWeightProps) => {
   const {
+    color,
+    displayXPosition,
+    displayYPosition,
+    displayXVelocity,
+    displayYVelocity,
+    elasticCollisions,
+    forces,
+    incrementTime,
+    mass,
+    paused,
+    pendulum,
+    radius,
+    reset,
+    setDisplayXAcceleration,
+    setDisplayXPosition,
+    setDisplayXVelocity,
+    setDisplayYAcceleration,
+    setDisplayYPosition,
+    setDisplayYVelocity,
+    setPaused,
+    setPendulumAngle,
+    setPendulumLength,
+    setStartPendulumAngle,
+    showAcceleration,
+    showForces,
+    showVelocity,
     startPosX,
     startPosY,
     startVelX,
     startVelY,
-    radius,
-    color,
-    mass,
     timestepSize,
-    incrementTime,
-    paused,
-    setPaused,
-    reset,
+    updateDisplay,
     walls,
-    forces,
-    showForces,
-    showVelocity,
-    showAcceleration,
-    setDisplayXPosition,
-    setDisplayXVelocity,
-    setDisplayXAcceleration,
-    setDisplayYPosition,
-    setDisplayYVelocity,
-    setDisplayYAcceleration,
-    elasticCollisions,
-    pendulum,
-    setStartPendulumAngle,
-    setPendulumAngle,
-    setPendulumLength,
-    displayXPosition,
-    displayYPosition,
-    updatePositionBasedOnDisplayPosition,
     xMax,
     yMax,
   } = props;
@@ -118,24 +122,44 @@ export const Weight = (props: IWeightProps) => {
   };
 
   useEffect(() => {
-    let x = displayXPosition;
-    x = Math.max(0, x);
-    x = Math.min(x, xMax - 2 * radius);
-    setUpdatedStartPosX(x);
-    setXPosition(x);
-    setDisplayXPosition(x);
+    if (displayXPosition != xPosition) {
+      let x = displayXPosition;
+      x = Math.max(0, x);
+      x = Math.min(x, xMax - 2 * radius);
+      setUpdatedStartPosX(x);
+      setXPosition(x);
+      setDisplayXPosition(x);
+    }
 
-    let y = displayYPosition;
-    y = Math.max(0, y);
-    y = Math.min(y, yMax - 2 * radius);
-    setUpdatedStartPosY(y);
-    setYPosition(y);
-    setDisplayYPosition(y);
-  }, [updatePositionBasedOnDisplayPosition]);
+    if (displayYPosition != yPosition) {
+      let y = displayYPosition;
+      y = Math.max(0, y);
+      y = Math.min(y, yMax - 2 * radius);
+      setDisplayYPosition(y);
+      let coordinatePosition = Math.abs(y - yMax) - 2 * radius;
+      setUpdatedStartPosY(coordinatePosition);
+      setYPosition(coordinatePosition);
+    }
+
+    if (displayXVelocity != xVelocity) {
+      let x = displayXVelocity;
+      setXVelocity(x);
+      setDisplayXVelocity(x);
+    }
+
+    if (displayYVelocity != yVelocity) {
+      let y = displayYVelocity;
+      setYVelocity(y);
+      setDisplayYVelocity(y);
+    }
+  }, [updateDisplay]);
 
   useEffect(() => {
     if (!paused) {
-      const collisions = checkForCollisionsWithGround(yPosition);
+      let collisions = false;
+      if (!pendulum) {
+        collisions = checkForCollisionsWithGround(yPosition);
+      }
       if (!collisions) {
         update();
       }

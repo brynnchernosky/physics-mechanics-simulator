@@ -27,15 +27,15 @@ import "./App.scss";
 import { IWallProps, Wall } from "./Wall";
 import { IForce, Weight } from "./Weight";
 export interface ISimulationElement {
-  type: string;
-  startPosX: number;
-  startPosY: number;
   color: string;
   mass: number;
+  pendulum?: boolean;
   radius?: number;
+  startPosX: number;
+  startPosY: number;
   startVelX?: number;
   startVelY?: number;
-  pendulum?: boolean;
+  type: string;
 }
 
 function App() {
@@ -52,6 +52,7 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(true);
+  const [simulationType, setSimulationType] = useState("");
 
   const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
@@ -64,6 +65,7 @@ function App() {
   const [pendulumLength, setPendulumLength] = useState(0);
 
   const addWeight = () => {
+    setSimulationType("weight");
     const weight: ISimulationElement = {
       type: "weight",
       startPosX: 30,
@@ -78,6 +80,7 @@ function App() {
   };
 
   const addPendulum = () => {
+    setSimulationType("pendulum");
     const weight: ISimulationElement = {
       type: "weight",
       startPosX: 30,
@@ -174,6 +177,7 @@ function App() {
                       <ListItemButton
                         disabled={simulationElements.length == 0}
                         onClick={() => {
+                          setSimulationType("");
                           setSimulationElements([]);
                           handleClose();
                         }}
@@ -200,35 +204,37 @@ function App() {
                 return (
                   <div key={index}>
                     <Weight
-                      startPosX={element.startPosX}
-                      startPosY={element.startPosY}
-                      radius={element.radius ?? 5}
                       color={element.color}
-                      mass={element.mass}
-                      timestepSize={0.002}
-                      walls={wallPositions}
-                      incrementTime={timer}
-                      reset={simulationReset}
-                      paused={simulationPaused}
-                      setPaused={setSimulationPaused}
-                      forces={[forceOfGravity]}
-                      showForces={showForces}
-                      showVelocity={showVelocity}
-                      showAcceleration={showAcceleration}
                       displayXPosition={positionXDisplay}
                       displayYPosition={positionYDisplay}
-                      setDisplayYPosition={setPositionYDisplay}
-                      setDisplayYVelocity={setVelocityYDisplay}
-                      setDisplayYAcceleration={setAccelerationYDisplay}
+                      displayXVelocity={velocityXDisplay}
+                      displayYVelocity={velocityYDisplay}
+                      elasticCollisions={elasticCollisions}
+                      forces={[forceOfGravity]}
+                      incrementTime={timer}
+                      mass={element.mass}
+                      paused={simulationPaused}
+                      pendulum={element.pendulum ?? false}
+                      radius={element.radius ?? 5}
+                      reset={simulationReset}
+                      setDisplayXAcceleration={setAccelerationXDisplay}
                       setDisplayXPosition={setPositionXDisplay}
                       setDisplayXVelocity={setVelocityXDisplay}
-                      setDisplayXAcceleration={setAccelerationXDisplay}
-                      elasticCollisions={elasticCollisions}
-                      pendulum={element.pendulum ?? false}
-                      setStartPendulumAngle={setStartPendulumAngle}
+                      setDisplayYAcceleration={setAccelerationYDisplay}
+                      setDisplayYPosition={setPositionYDisplay}
+                      setDisplayYVelocity={setVelocityYDisplay}
+                      setPaused={setSimulationPaused}
                       setPendulumAngle={setPendulumAngle}
                       setPendulumLength={setPendulumLength}
-                      updatePositionBasedOnDisplayPosition={displayChange}
+                      setStartPendulumAngle={setStartPendulumAngle}
+                      showAcceleration={showAcceleration}
+                      showForces={showForces}
+                      showVelocity={showVelocity}
+                      startPosX={element.startPosX}
+                      startPosY={element.startPosY}
+                      timestepSize={0.002}
+                      updateDisplay={displayChange}
+                      walls={wallPositions}
                       xMax={window.innerWidth * 0.7}
                       yMax={window.innerHeight * 0.8}
                     />
@@ -357,15 +363,11 @@ function App() {
           <table>
             <tr>
               <td>&nbsp;</td>
-              {/* <td>Formula</td> */}
               <td>X</td>
               <td>Y</td>
             </tr>
             <tr>
               <td>Position</td>
-              {/* <td>
-                p<sub>1</sub>=p<sub>0</sub>+vt+at<sup>2</sup>
-              </td> */}
               <td>
                 {!simulationPaused && positionXDisplay}{" "}
                 {!simulationPaused && <p>m</p>}{" "}
@@ -419,10 +421,33 @@ function App() {
             </tr>
             <tr>
               <td>Velocity</td>
-              {/* <td>
-                v<sub>1</sub>=v<sub>0</sub>+at
-              </td> */}
-              <td>{velocityXDisplay} m/s</td>
+              <td>
+                {!simulationPaused ||
+                  (simulationType == "pendulum" && velocityXDisplay)}{" "}
+                {!simulationPaused ||
+                  (simulationType == "pendulum" && <p>m/s</p>)}{" "}
+                {simulationPaused && simulationType != "pendulum" && (
+                  <TextField
+                    type="number"
+                    variant="standard"
+                    defaultValue={velocityXDisplay}
+                    value={velocityXDisplay}
+                    style={{ width: "5rem" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">m</InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      const regex = /^[0-9\b]+$/;
+                      if (e.target.value == "" || regex.test(e.target.value)) {
+                        setVelocityXDisplay(parseFloat(e.target.value));
+                        setDisplayChange(!displayChange);
+                      }
+                    }}
+                  />
+                )}{" "}
+              </td>
               <td>{velocityYDisplay} m/s</td>
             </tr>
             <tr>
