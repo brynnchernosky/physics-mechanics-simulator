@@ -52,7 +52,7 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(true);
-  const [simulationType, setSimulationType] = useState("");
+  const [pendulum, setPendulum] = useState(false);
 
   const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
@@ -65,7 +65,6 @@ function App() {
   const [pendulumLength, setPendulumLength] = useState(0);
 
   const addWeight = () => {
-    setSimulationType("weight");
     const weight: ISimulationElement = {
       type: "weight",
       startPosX: 30,
@@ -80,7 +79,7 @@ function App() {
   };
 
   const addPendulum = () => {
-    setSimulationType("pendulum");
+    setPendulum(true);
     const weight: ISimulationElement = {
       type: "weight",
       startPosX: 30,
@@ -122,181 +121,193 @@ function App() {
   const [displayChange, setDisplayChange] = useState(false);
 
   return (
-    <div className="mechanicsSimulationContainer">
-      <div className="mechanicsSimulationContentContainer">
-        <div className="mechanicsSimulationButtonsAndElements">
-          <div className="mechanicsSimulationButtons">
-            <div>
-              <div style={{ zIndex: 1000 }}>
-                <Tooltip title="Add/remove elements">
-                  <IconButton onClick={handleClick} size="large">
-                    <AddIcon />
-                  </IconButton>
-                </Tooltip>
-              </div>
-              <Popover
-                open={open}
-                id={id}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-              >
-                <nav aria-label="add simulation element options">
-                  <List>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={addWeight}
-                        disabled={simulationElements.length > 0}
-                      >
-                        <ListItemIcon>
-                          <AddCircleIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Add free weight" />
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={addPendulum}
-                        disabled={simulationElements.length > 0}
-                      >
-                        <ListItemIcon>
-                          <AddCircleIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Add pendulum" />
-                      </ListItemButton>
-                    </ListItem>
-                  </List>
-                </nav>
-                <Divider />
-                <nav aria-label="clear simulation elements">
-                  <List>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        disabled={simulationElements.length == 0}
-                        onClick={() => {
-                          setSimulationType("");
-                          setSimulationElements([]);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemIcon>
-                          <ClearIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Clear simulation" />
-                      </ListItemButton>
-                    </ListItem>
-                  </List>
-                </nav>
-              </Popover>
-            </div>
-          </div>
-          <div className="mechanicsSimulationElements">
-            {simulationElements.map((element, index) => {
-              if (element.type === "weight") {
-                const forceOfGravity: IForce = {
-                  description: "Gravity",
-                  magnitude: element.mass * 9.81,
-                  directionInDegrees: 270,
-                };
-                return (
-                  <div key={index}>
-                    <Weight
-                      color={element.color}
-                      displayXPosition={positionXDisplay}
-                      displayYPosition={positionYDisplay}
-                      displayXVelocity={velocityXDisplay}
-                      displayYVelocity={velocityYDisplay}
-                      elasticCollisions={elasticCollisions}
-                      forces={[forceOfGravity]}
-                      incrementTime={timer}
-                      mass={element.mass}
-                      paused={simulationPaused}
-                      pendulum={element.pendulum ?? false}
-                      radius={element.radius ?? 5}
-                      reset={simulationReset}
-                      setDisplayXAcceleration={setAccelerationXDisplay}
-                      setDisplayXPosition={setPositionXDisplay}
-                      setDisplayXVelocity={setVelocityXDisplay}
-                      setDisplayYAcceleration={setAccelerationYDisplay}
-                      setDisplayYPosition={setPositionYDisplay}
-                      setDisplayYVelocity={setVelocityYDisplay}
-                      setPaused={setSimulationPaused}
-                      setPendulumAngle={setPendulumAngle}
-                      setPendulumLength={setPendulumLength}
-                      setStartPendulumAngle={setStartPendulumAngle}
-                      showAcceleration={showAcceleration}
-                      showForces={showForces}
-                      showVelocity={showVelocity}
-                      startPosX={element.startPosX}
-                      startPosY={element.startPosY}
-                      timestepSize={0.002}
-                      updateDisplay={displayChange}
-                      walls={wallPositions}
-                      xMax={window.innerWidth * 0.7}
-                      yMax={window.innerHeight * 0.8}
-                    />
-                  </div>
-                );
-              }
-              return <div key={index} />;
-            })}
-          </div>
-          <div>
-            {wallPositions.map((element, index) => {
-              return (
-                <Wall
-                  key={index}
-                  length={element.length}
-                  xPos={element.xPos}
-                  yPos={element.yPos}
-                  angleInDegrees={element.angleInDegrees}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </div>
-      <div className="mechanicsSimulationEquationContainer">
-        <div className="mechanicsSimulationFooter">
-          <Stack direction="row" spacing={1}>
-            {simulationPaused && (
-              <Tooltip title="Start simulation">
-                <IconButton
-                  onClick={() => {
-                    setSimulationPaused(false);
+    <div>
+      <div className="mechanicsSimulationContainer">
+        <div className="mechanicsSimulationContentContainer">
+          <div className="mechanicsSimulationButtonsAndElements">
+            <div className="mechanicsSimulationButtons">
+              <div>
+                <div style={{ zIndex: 10000 }}>
+                  <Tooltip title="Add/remove elements">
+                    <IconButton onClick={handleClick} size="large">
+                      <AddIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+                <Popover
+                  open={open}
+                  id={id}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
                   }}
                 >
-                  <PlayArrowIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            {!simulationPaused && (
-              <Tooltip title="Pause simulation">
+                  <nav aria-label="add simulation element options">
+                    <List>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          onClick={addWeight}
+                          disabled={simulationElements.length > 0}
+                        >
+                          <ListItemIcon>
+                            <AddCircleIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Add free weight" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          onClick={addPendulum}
+                          disabled={simulationElements.length > 0}
+                        >
+                          <ListItemIcon>
+                            <AddCircleIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Add pendulum" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          onClick={addPendulum}
+                          disabled={simulationElements.length > 0}
+                        >
+                          <ListItemIcon>
+                            <AddCircleIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Add wedge" />
+                        </ListItemButton>
+                      </ListItem>
+                    </List>
+                  </nav>
+                  <Divider />
+                  <nav aria-label="clear simulation elements">
+                    <List>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          disabled={simulationElements.length == 0}
+                          onClick={() => {
+                            setPendulum(false);
+                            setSimulationElements([]);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemIcon>
+                            <ClearIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Clear simulation" />
+                        </ListItemButton>
+                      </ListItem>
+                    </List>
+                  </nav>
+                </Popover>
+              </div>
+            </div>
+            <div className="mechanicsSimulationElements">
+              {simulationElements.map((element, index) => {
+                if (element.type === "weight") {
+                  const forceOfGravity: IForce = {
+                    description: "Gravity",
+                    magnitude: element.mass * 9.81,
+                    directionInDegrees: 270,
+                  };
+                  return (
+                    <div key={index}>
+                      <Weight
+                        color={element.color}
+                        displayXPosition={positionXDisplay}
+                        displayYPosition={positionYDisplay}
+                        displayXVelocity={velocityXDisplay}
+                        displayYVelocity={velocityYDisplay}
+                        elasticCollisions={elasticCollisions}
+                        forces={[forceOfGravity]}
+                        incrementTime={timer}
+                        mass={element.mass}
+                        paused={simulationPaused}
+                        pendulum={element.pendulum ?? false}
+                        radius={element.radius ?? 5}
+                        reset={simulationReset}
+                        setDisplayXAcceleration={setAccelerationXDisplay}
+                        setDisplayXPosition={setPositionXDisplay}
+                        setDisplayXVelocity={setVelocityXDisplay}
+                        setDisplayYAcceleration={setAccelerationYDisplay}
+                        setDisplayYPosition={setPositionYDisplay}
+                        setDisplayYVelocity={setVelocityYDisplay}
+                        setPaused={setSimulationPaused}
+                        setPendulumAngle={setPendulumAngle}
+                        setPendulumLength={setPendulumLength}
+                        setStartPendulumAngle={setStartPendulumAngle}
+                        showAcceleration={showAcceleration}
+                        showForces={showForces}
+                        showVelocity={showVelocity}
+                        startPosX={element.startPosX}
+                        startPosY={element.startPosY}
+                        timestepSize={0.002}
+                        updateDisplay={displayChange}
+                        walls={wallPositions}
+                        xMax={window.innerWidth * 0.7}
+                        yMax={window.innerHeight * 0.8}
+                      />
+                    </div>
+                  );
+                }
+                return <div key={index} />;
+              })}
+            </div>
+            <div>
+              {wallPositions.map((element, index) => {
+                return (
+                  <Wall
+                    key={index}
+                    length={element.length}
+                    xPos={element.xPos}
+                    yPos={element.yPos}
+                    angleInDegrees={element.angleInDegrees}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <div className="mechanicsSimulationEquationContainer">
+          <div className="mechanicsSimulationFooter">
+            <Stack direction="row" spacing={1}>
+              {simulationPaused && (
+                <Tooltip title="Start simulation">
+                  <IconButton
+                    onClick={() => {
+                      setSimulationPaused(false);
+                    }}
+                  >
+                    <PlayArrowIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {!simulationPaused && (
+                <Tooltip title="Pause simulation">
+                  <IconButton
+                    onClick={() => {
+                      setSimulationPaused(true);
+                    }}
+                  >
+                    <PauseIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="Reset simulation">
                 <IconButton
                   onClick={() => {
                     setSimulationPaused(true);
+                    setSimulationReset(!simulationReset);
                   }}
                 >
-                  <PauseIcon />
+                  <ReplayIcon />
                 </IconButton>
               </Tooltip>
-            )}
-            <Tooltip title="Reset simulation">
-              <IconButton
-                onClick={() => {
-                  setSimulationPaused(true);
-                  setSimulationReset(!simulationReset);
-                }}
-              >
-                <ReplayIcon />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        </div>
-        {/* <Box sx={{ width: 300 }}>
+            </Stack>
+          </div>
+          {/* <Box sx={{ width: 300 }}>
           <Slider
             aria-label="Timestep"
             defaultValue={0}
@@ -317,235 +328,297 @@ function App() {
             ]}
           />
         </Box> */}
-        <div>
-          <FormControl component="fieldset">
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    onChange={() => setElasticCollisions(!elasticCollisions)}
-                  />
-                }
-                label="Make collisions inelastic"
-                labelPlacement="start"
-              />
-              <Divider />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    onChange={() => setShowForces(!showForces)}
-                    defaultChecked
-                  />
-                }
-                label="Show force vectors"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    onChange={() => setShowAcceleration(!showAcceleration)}
-                  />
-                }
-                label="Show acceleration vector"
-                labelPlacement="start"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox onChange={() => setShowVelocity(!showVelocity)} />
-                }
-                label="Show velocity vector"
-                labelPlacement="start"
-              />
-            </FormGroup>
-          </FormControl>
-        </div>
-        <div className="mechanicsSimulationEquation">
-          <table>
-            <tr>
-              <td>&nbsp;</td>
-              <td>X</td>
-              <td>Y</td>
-            </tr>
-            <tr>
-              <td>Position</td>
-              <td>
-                {!simulationPaused && positionXDisplay}{" "}
-                {!simulationPaused && <p>m</p>}{" "}
-                {simulationPaused && (
-                  <TextField
-                    type="number"
-                    variant="standard"
-                    defaultValue={positionXDisplay}
-                    value={positionXDisplay}
-                    style={{ width: "5rem" }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">m</InputAdornment>
-                      ),
-                    }}
-                    onChange={(e) => {
-                      const regex = /^[0-9\b]+$/;
-                      if (regex.test(e.target.value)) {
-                        setPositionXDisplay(parseFloat(e.target.value));
-                        setDisplayChange(!displayChange);
-                      }
-                    }}
-                  />
-                )}{" "}
-              </td>
-              <td>
-                {!simulationPaused && positionYDisplay}{" "}
-                {!simulationPaused && <p>m</p>}{" "}
-                {simulationPaused && (
-                  <TextField
-                    type="number"
-                    variant="standard"
-                    defaultValue={positionYDisplay}
-                    value={positionYDisplay}
-                    style={{ width: "5rem" }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">m</InputAdornment>
-                      ),
-                    }}
-                    onChange={(e) => {
-                      const regex = /^[0-9\b]+$/;
-                      if (regex.test(e.target.value)) {
-                        setPositionYDisplay(parseFloat(e.target.value));
-                        setDisplayChange(!displayChange);
-                      }
-                    }}
-                  />
-                )}{" "}
-              </td>
-            </tr>
-            <tr>
-              <td>Velocity</td>
-              <td>
-                {(!simulationPaused || simulationType == "pendulum") &&
-                  velocityXDisplay}{" "}
-                {(!simulationPaused || simulationType == "pendulum") && (
-                  <p>m/s</p>
-                )}{" "}
-                {simulationPaused && simulationType != "pendulum" && (
-                  <TextField
-                    type="number"
-                    variant="standard"
-                    defaultValue={velocityXDisplay}
-                    value={velocityXDisplay}
-                    style={{ width: "5rem" }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">m</InputAdornment>
-                      ),
-                    }}
-                    onChange={(e) => {
-                      const regex = /^[0-9\b]+$/;
-                      if (regex.test(e.target.value)) {
-                        setVelocityXDisplay(parseFloat(e.target.value));
-                        setDisplayChange(!displayChange);
-                      }
-                    }}
-                  />
-                )}{" "}
-              </td>
-              <td>
-                {(!simulationPaused || simulationType == "pendulum") &&
-                  velocityYDisplay}{" "}
-                {(!simulationPaused || simulationType == "pendulum") && (
-                  <p>m/s</p>
-                )}{" "}
-                {simulationPaused && simulationType != "pendulum" && (
-                  <TextField
-                    type="number"
-                    variant="standard"
-                    defaultValue={velocityYDisplay}
-                    value={velocityYDisplay}
-                    style={{ width: "5rem" }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">m</InputAdornment>
-                      ),
-                    }}
-                    onChange={(e) => {
-                      const regex = /^[0-9\b]+$/;
-                      if (regex.test(e.target.value)) {
-                        setVelocityYDisplay(parseFloat(e.target.value));
-                        setDisplayChange(!displayChange);
-                      }
-                    }}
-                  />
-                )}{" "}
-              </td>
-            </tr>
-            <tr>
-              <td>Acceleration</td>
-              {/* <td>a=f/m</td> */}
-              <td>
-                {accelerationXDisplay} m/s<sup>2</sup>
-              </td>
-              <td>
-                {accelerationYDisplay} m/s<sup>2</sup>
-              </td>
-            </tr>
-          </table>
-        </div>
-        {simulationElements.length > 0 && simulationElements[0].pendulum && (
+          <div>
+            <FormControl component="fieldset">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={() => setElasticCollisions(!elasticCollisions)}
+                    />
+                  }
+                  label="Make collisions inelastic"
+                  labelPlacement="start"
+                />
+                <Divider />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={() => setShowForces(!showForces)}
+                      defaultChecked
+                    />
+                  }
+                  label="Show force vectors"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={() => setShowAcceleration(!showAcceleration)}
+                    />
+                  }
+                  label="Show acceleration vector"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox onChange={() => setShowVelocity(!showVelocity)} />
+                  }
+                  label="Show velocity vector"
+                  labelPlacement="start"
+                />
+              </FormGroup>
+            </FormControl>
+          </div>
           <div className="mechanicsSimulationEquation">
             <table>
               <tr>
                 <td>&nbsp;</td>
-                <td>Value</td>
+                <td>X</td>
+                <td>Y</td>
               </tr>
               <tr>
-                <td>Potential Energy</td>
+                <td>Position</td>
                 <td>
-                  {Math.round(
-                    pendulumLength * (1 - Math.cos(pendulumAngle)) * 9.81 * 10
-                  ) / 10}{" "}
-                  J
+                  {!simulationPaused && positionXDisplay}{" "}
+                  {!simulationPaused && <p>m</p>}{" "}
+                  {simulationPaused && (
+                    <TextField
+                      type="number"
+                      variant="standard"
+                      defaultValue={positionXDisplay}
+                      value={positionXDisplay}
+                      style={{ width: "5rem" }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">m</InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => {
+                        const regex = /^[0-9\b]+$/;
+                        if (regex.test(e.target.value)) {
+                          setPositionXDisplay(parseFloat(e.target.value));
+                          setDisplayChange(!displayChange);
+                        }
+                      }}
+                    />
+                  )}{" "}
+                </td>
+                <td>
+                  {!simulationPaused && positionYDisplay}{" "}
+                  {!simulationPaused && <p>m</p>}{" "}
+                  {simulationPaused && (
+                    <TextField
+                      type="number"
+                      variant="standard"
+                      defaultValue={positionYDisplay}
+                      value={positionYDisplay}
+                      style={{ width: "5rem" }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">m</InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => {
+                        const regex = /^[0-9\b]+$/;
+                        if (regex.test(e.target.value)) {
+                          setPositionYDisplay(parseFloat(e.target.value));
+                          setDisplayChange(!displayChange);
+                        }
+                      }}
+                    />
+                  )}{" "}
                 </td>
               </tr>
               <tr>
-                <td>Kinetic Energy</td>
+                <td>Velocity</td>
                 <td>
-                  {Math.round(
-                    (Math.round(
-                      pendulumLength *
-                        (1 - Math.cos(startPendulumAngle)) *
-                        9.81 *
-                        10
-                    ) /
-                      10 -
-                      Math.round(
-                        pendulumLength *
-                          (1 - Math.cos(pendulumAngle)) *
-                          9.81 *
-                          10
-                      ) /
-                        10) *
-                      10
-                  ) / 10}{" "}
-                  J
+                  {(!simulationPaused || pendulum) && velocityXDisplay}{" "}
+                  {(!simulationPaused || pendulum) && <p>m/s</p>}{" "}
+                  {simulationPaused && !pendulum && (
+                    <TextField
+                      type="number"
+                      variant="standard"
+                      defaultValue={velocityXDisplay}
+                      value={velocityXDisplay}
+                      style={{ width: "5rem" }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">m</InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => {
+                        const regex = /^[0-9\b]+$/;
+                        if (regex.test(e.target.value)) {
+                          setVelocityXDisplay(parseFloat(e.target.value));
+                          setDisplayChange(!displayChange);
+                        }
+                      }}
+                    />
+                  )}{" "}
+                </td>
+                <td>
+                  {(!simulationPaused || pendulum) && velocityYDisplay}{" "}
+                  {(!simulationPaused || pendulum) && <p>m/s</p>}{" "}
+                  {simulationPaused && !pendulum && (
+                    <TextField
+                      type="number"
+                      variant="standard"
+                      defaultValue={velocityYDisplay}
+                      value={velocityYDisplay}
+                      style={{ width: "5rem" }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">m</InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => {
+                        const regex = /^[0-9\b]+$/;
+                        if (regex.test(e.target.value)) {
+                          setVelocityYDisplay(parseFloat(e.target.value));
+                          setDisplayChange(!displayChange);
+                        }
+                      }}
+                    />
+                  )}{" "}
                 </td>
               </tr>
               <tr>
+                <td>Acceleration</td>
+                {/* <td>a=f/m</td> */}
                 <td>
-                  <b>Total Energy</b>
+                  {accelerationXDisplay} m/s<sup>2</sup>
                 </td>
                 <td>
-                  {Math.round(
-                    pendulumLength *
-                      (1 - Math.cos(startPendulumAngle)) *
-                      9.81 *
-                      10
-                  ) / 10}{" "}
-                  J
+                  {accelerationYDisplay} m/s<sup>2</sup>
                 </td>
               </tr>
             </table>
           </div>
-        )}
+          {simulationElements.length > 0 && simulationElements[0].pendulum && (
+            <div className="mechanicsSimulationEquation">
+              <table>
+                <tr>
+                  <td>&nbsp;</td>
+                  <td>Value</td>
+                </tr>
+                <tr>
+                  <td>Potential Energy</td>
+                  <td>
+                    {Math.round(
+                      pendulumLength * (1 - Math.cos(pendulumAngle)) * 9.81 * 10
+                    ) / 10}{" "}
+                    J
+                  </td>
+                </tr>
+                <tr>
+                  <td>Kinetic Energy</td>
+                  <td>
+                    {Math.round(
+                      (Math.round(
+                        pendulumLength *
+                          (1 - Math.cos(startPendulumAngle)) *
+                          9.81 *
+                          10
+                      ) /
+                        10 -
+                        Math.round(
+                          pendulumLength *
+                            (1 - Math.cos(pendulumAngle)) *
+                            9.81 *
+                            10
+                        ) /
+                          10) *
+                        10
+                    ) / 10}{" "}
+                    J
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Total Energy</b>
+                  </td>
+                  <td>
+                    {Math.round(
+                      pendulumLength *
+                        (1 - Math.cos(startPendulumAngle)) *
+                        9.81 *
+                        10
+                    ) / 10}{" "}
+                    J
+                  </td>
+                </tr>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="coordinateSystem">
+        <div
+          style={{
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            zIndex: -10000,
+          }}
+        >
+          <svg
+            width={window.innerWidth + "px"}
+            height={window.innerHeight + "px"}
+          >
+            <defs>
+              <marker
+                id="miniArrow"
+                markerWidth="20"
+                markerHeight="20"
+                refX="0"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <path d="M0,0 L0,6 L9,3 z" fill={"#000000"} />
+              </marker>
+            </defs>
+            <line
+              x1={window.innerHeight * 0.05}
+              y1={window.innerHeight * 0.95}
+              x2={window.innerHeight * 0.05}
+              y2={window.innerHeight * 0.9}
+              stroke={"#000000"}
+              strokeWidth="2"
+              markerEnd="url(#miniArrow)"
+            />
+            <line
+              x1={window.innerHeight * 0.05}
+              y1={window.innerHeight * 0.95}
+              x2={window.innerHeight * 0.1}
+              y2={window.innerHeight * 0.95}
+              stroke={"#000000"}
+              strokeWidth="2"
+              markerEnd="url(#miniArrow)"
+            />
+          </svg>
+        </div>
+        <p
+          style={{
+            position: "absolute",
+            top: window.innerHeight * 0.95 + "px",
+            left: window.innerHeight * 0.1 + "px",
+            zIndex: -10000,
+          }}
+        >
+          X
+        </p>
+        <p
+          style={{
+            position: "absolute",
+            top: window.innerHeight * 0.85 + "px",
+            left: window.innerHeight * 0.02 + "px",
+            zIndex: -10000,
+          }}
+        >
+          Y
+        </p>
       </div>
     </div>
   );

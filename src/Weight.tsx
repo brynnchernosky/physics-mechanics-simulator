@@ -513,7 +513,7 @@ export const Weight = (props: IWeightProps) => {
             >
               <defs>
                 <marker
-                  id="arrow"
+                  id="accArrow"
                   markerWidth="10"
                   markerHeight="10"
                   refX="0"
@@ -531,7 +531,7 @@ export const Weight = (props: IWeightProps) => {
                 y2={yPosition + radius + getNewAccelerationY(updatedForces) * 5}
                 stroke={"green"}
                 strokeWidth="5"
-                markerEnd="url(#arrow)"
+                markerEnd="url(#accArrow)"
               />
             </svg>
             <div
@@ -585,7 +585,7 @@ export const Weight = (props: IWeightProps) => {
             >
               <defs>
                 <marker
-                  id="arrow"
+                  id="velArrow"
                   markerWidth="10"
                   markerHeight="10"
                   refX="0"
@@ -603,7 +603,7 @@ export const Weight = (props: IWeightProps) => {
                 y2={yPosition + radius + yVelocity * 3}
                 stroke={"blue"}
                 strokeWidth="5"
-                markerEnd="url(#arrow)"
+                markerEnd="url(#velArrow)"
               />
             </svg>
             <div
@@ -661,7 +661,7 @@ export const Weight = (props: IWeightProps) => {
                 >
                   <defs>
                     <marker
-                      id="arrow"
+                      id="forceArrow"
                       markerWidth="10"
                       markerHeight="10"
                       refX="0"
@@ -679,7 +679,7 @@ export const Weight = (props: IWeightProps) => {
                     y2={arrowEndY}
                     stroke={color}
                     strokeWidth="5"
-                    markerEnd="url(#arrow)"
+                    markerEnd="url(#forceArrow)"
                   />
                 </svg>
               </div>
