@@ -55,7 +55,7 @@ function App() {
   const [showForces, setShowForces] = useState<boolean>(true);
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
-  const [elasticCollisions, setElasticCollisions] = useState<boolean>(true);
+  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
   const [pendulum, setPendulum] = useState(false);
   const [wedge, setWedge] = useState(false);
 
@@ -227,6 +227,7 @@ function App() {
                           disabled={simulationElements.length == 0}
                           onClick={() => {
                             setPendulum(false);
+                            setWedge(false);
                             setSimulationElements([]);
                             handleClose();
                           }}
@@ -264,7 +265,8 @@ function App() {
                     const width = simulationElements[0].width ?? 400;
                     const normalForce: IForce = {
                       description: "Normal Force",
-                      magnitude: gravityMagnitude,
+                      magnitude:
+                        gravityMagnitude * Math.cos(Math.atan(height / width)),
                       directionInDegrees:
                         180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
                     };
@@ -403,6 +405,8 @@ function App() {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      defaultChecked
+                      disabled={wedge}
                       onChange={() => setElasticCollisions(!elasticCollisions)}
                     />
                   }
