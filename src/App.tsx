@@ -257,10 +257,6 @@ function App() {
                   };
                   let forces = [forceOfGravity];
                   if (element.wedge) {
-                    console.log(
-                      simulationElements[0].height,
-                      simulationElements[0].width
-                    );
                     const height = simulationElements[0].height ?? 200;
                     const width = simulationElements[0].width ?? 400;
                     const normalForce: IForce = {

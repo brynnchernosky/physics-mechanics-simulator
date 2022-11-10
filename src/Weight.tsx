@@ -277,15 +277,17 @@ export const Weight = (props: IWeightProps) => {
           } else {
             setYVelocity(0);
             setYPosition(wallHeight - 2 * radius + 5);
-            // setYPosition(wallHeight - 2 * radius + 5);
-            const newForce: IForce = {
+            const forceOfGravity: IForce = {
+              description: "Gravity",
+              magnitude: gravityMagnitude,
+              directionInDegrees: 270,
+            };
+            const normalForce: IForce = {
               description: "Normal force",
               magnitude: 9.81 * mass,
               directionInDegrees: wall.angleInDegrees + 90,
             };
-            const forceList = updatedForces;
-            forceList.push(newForce);
-            setUpdatedForces(forceList);
+            setUpdatedForces([forceOfGravity,normalForce]);
           }
           collision = true;
         }
