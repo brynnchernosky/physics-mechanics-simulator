@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/physics-mechanics-simulator/static/css/main.8d067ad8.css",
-    "main.js": "/physics-mechanics-simulator/static/js/main.f122754c.js",
+    "main.js": "/physics-mechanics-simulator/static/js/main.68612535.js",
     "static/js/787.3eb9ff80.chunk.js": "/physics-mechanics-simulator/static/js/787.3eb9ff80.chunk.js",
     "index.html": "/physics-mechanics-simulator/index.html",
     "main.8d067ad8.css.map": "/physics-mechanics-simulator/static/css/main.8d067ad8.css.map",
-    "main.f122754c.js.map": "/physics-mechanics-simulator/static/js/main.f122754c.js.map",
+    "main.68612535.js.map": "/physics-mechanics-simulator/static/js/main.68612535.js.map",
     "787.3eb9ff80.chunk.js.map": "/physics-mechanics-simulator/static/js/787.3eb9ff80.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8d067ad8.css",
-    "static/js/main.f122754c.js"
+    "static/js/main.68612535.js"
   ]
 }
