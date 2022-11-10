@@ -187,7 +187,7 @@ function App() {
         180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
     };
     let frictionForce: IForce = {
-      description: "Friction Force",
+      description: "Static Friction Force",
       magnitude:
         coefficient *
         forceOfGravity.magnitude *
@@ -232,8 +232,11 @@ function App() {
   const handleCoefficientOfKineticFrictionBlur = () => {
     if (coefficientOfKineticFriction < 0) {
       setCoefficientOfKineticFriction(0);
-    } else if (coefficientOfKineticFriction > 1) {
-      setCoefficientOfKineticFriction(1);
+    } else if (coefficientOfKineticFriction > coefficientOfStaticFriction) {
+      setCoefficientOfKineticFriction(coefficientOfStaticFriction);
+      alert(
+        "Coefficient of kinetic friction must be less than coefficient of static friction!"
+      );
     }
   };
 
@@ -395,6 +398,11 @@ function App() {
                         updatedForces={updatedForces}
                         setUpdatedForces={setUpdatedForces}
                         walls={wallPositions}
+                        wedgeHeight={wedgeHeight}
+                        wedgeWidth={wedgeWidth}
+                        coefficientOfKineticFriction={Number(
+                          coefficientOfKineticFriction
+                        )}
                         xMax={window.innerWidth * 0.7}
                         yMax={window.innerHeight * 0.8}
                       />

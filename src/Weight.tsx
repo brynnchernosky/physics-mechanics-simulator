@@ -49,6 +49,9 @@ export interface IWeightProps {
   walls: IWallProps[];
   xMax: number;
   yMax: number;
+  coefficientOfKineticFriction: number;
+  wedgeWidth: number;
+  wedgeHeight: number;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -91,6 +94,9 @@ export const Weight = (props: IWeightProps) => {
     walls,
     xMax,
     yMax,
+    coefficientOfKineticFriction,
+    wedgeWidth,
+    wedgeHeight,
   } = props;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
@@ -100,6 +106,7 @@ export const Weight = (props: IWeightProps) => {
   const [yPosition, setYPosition] = useState(startPosY);
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
+  const [kineticFriction, setKineticFriction] = useState(false);
 
   const [dragging, setDragging] = useState(false);
 
@@ -188,6 +195,7 @@ export const Weight = (props: IWeightProps) => {
   }, [startForces]);
 
   const resetEverything = () => {
+    setKineticFriction(false);
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
@@ -347,6 +355,31 @@ export const Weight = (props: IWeightProps) => {
     }
     return collision;
   };
+
+  useEffect(() => {
+    if (wedge && xVelocity != 0 && !kineticFriction) {
+      setKineticFriction(true);
+      //switch from static to kinetic friction
+      const normalForce: IForce = {
+        description: "Normal Force",
+        magnitude:
+          forceOfGravity.magnitude *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+      };
+      let frictionForce: IForce = {
+        description: "Kinetic Friction Force",
+        magnitude:
+          coefficientOfKineticFriction *
+          forceOfGravity.magnitude *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+      };
+      setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+    }
+  }, [xVelocity]);
 
   const update = () => {
     // RK4 update
@@ -676,7 +709,7 @@ export const Weight = (props: IWeightProps) => {
             force.directionInDegrees < 180
           ) {
             labelTop += 25;
-            labelLeft -= 120;
+            labelLeft -= 160;
           } else if (
             force.directionInDegrees >= 180 &&
             force.directionInDegrees < 270
