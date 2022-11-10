@@ -52,3 +52,7 @@ table {
 tr:nth-child(even) {
   background-color: #d6eeee;
 }
+
+button {
+  z-index: 5000;
+}

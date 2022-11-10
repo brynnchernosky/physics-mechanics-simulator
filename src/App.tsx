@@ -127,6 +127,8 @@ function App() {
     if (!pendulum) {
       const walls: IWallProps[] = [];
       walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
+      walls.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
+      walls.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
       setWallPositions(walls);
     } else {
       setWallPositions([]);

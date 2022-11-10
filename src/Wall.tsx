@@ -15,17 +15,21 @@ export interface IWallProps {
 export const Wall = (props: IWallProps) => {
   const { length, xPos, yPos, angleInDegrees } = props;
 
-  const wallStyle = {
+  let wallStyle = {
     width: length + "%",
-    height: 5 + "px",
+    height: 0.5 + "vw",
     position: "absolute" as "absolute",
-    left: 0,
-    top: window.innerHeight * 0.8 + "px",
+    left: xPos + "%",
+    top: yPos + "%",
     backgroundColor: "#6c7b8b",
     zIndex: -1000,
     margin: 0,
     padding: 0,
   };
+  if (angleInDegrees != 0) {
+    wallStyle.width = 0.5 + "vw";
+    wallStyle.height = length + "%";
+  }
 
   return <div style={wallStyle}></div>;
 };

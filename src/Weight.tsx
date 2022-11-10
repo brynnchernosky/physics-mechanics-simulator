@@ -158,7 +158,9 @@ export const Weight = (props: IWeightProps) => {
     if (!paused) {
       let collisions = false;
       if (!pendulum) {
-        collisions = checkForCollisionsWithGround(yPosition);
+        const collisionsWithGround = checkForCollisionsWithGround();
+        const collisionsWithWalls = checkForCollisionsWithWall();
+        collisions = collisionsWithGround || collisionsWithWalls;
       }
       if (!collisions) {
         update();
@@ -263,33 +265,70 @@ export const Weight = (props: IWeightProps) => {
     return vel + acc * timestepSize;
   };
 
-  const checkForCollisionsWithGround = (yPos: number) => {
+  const checkForCollisionsWithWall = () => {
     let collision = false;
-    const maxY = yPos + 2 * radius;
-    const containerHeight = window.innerHeight;
+    const minX = xPosition;
+    const maxX = xPosition + 2 * radius;
+    const containerWidth = window.innerWidth;
+    console.log(walls);
+    if (xVelocity != 0) {
+      walls.forEach((wall) => {
+        if (wall.angleInDegrees == 90) {
+          const wallX = (wall.xPos / 100) * window.innerWidth;
+          if (wall.xPos < 0.35) {
+            if (minX <= wallX) {
+              if (elasticCollisions) {
+                setXVelocity(-xVelocity);
+              } else {
+                setXVelocity(0);
+                setXPosition(wallX - 2 * radius + 5);
+              }
+              collision = true;
+            }
+          } else {
+            if (maxX >= wallX) {
+              if (elasticCollisions) {
+                setXVelocity(-xVelocity);
+              } else {
+                setXVelocity(0);
+                setXPosition(wallX - 2 * radius + 5);
+              }
+              collision = true;
+            }
+          }
+        }
+      });
+    }
+    return collision;
+  };
+
+  const checkForCollisionsWithGround = () => {
+    let collision = false;
+    const maxY = yPosition + 2 * radius;
     if (yVelocity > 0) {
       walls.forEach((wall) => {
-        const wallHeight = (wall.yPos / 100) * containerHeight;
-        if (maxY >= wallHeight) {
-          //setYPosition(wallHeight + Math.abs(wallHeight - maxY) + 0.001);
-          if (elasticCollisions) {
-            setYVelocity(-yVelocity);
-          } else {
-            setYVelocity(0);
-            setYPosition(wallHeight - 2 * radius + 5);
-            const forceOfGravity: IForce = {
-              description: "Gravity",
-              magnitude: gravityMagnitude,
-              directionInDegrees: 270,
-            };
-            const normalForce: IForce = {
-              description: "Normal force",
-              magnitude: 9.81 * mass,
-              directionInDegrees: wall.angleInDegrees + 90,
-            };
-            setUpdatedForces([forceOfGravity,normalForce]);
+        if (wall.angleInDegrees == 0) {
+          const groundY = (wall.yPos / 100) * window.innerHeight;
+          if (maxY >= groundY) {
+            if (elasticCollisions) {
+              setYVelocity(-yVelocity);
+            } else {
+              setYVelocity(0);
+              setYPosition(groundY - 2 * radius + 5);
+              const forceOfGravity: IForce = {
+                description: "Gravity",
+                magnitude: 9.81 * mass,
+                directionInDegrees: 270,
+              };
+              const normalForce: IForce = {
+                description: "Normal force",
+                magnitude: 9.81 * mass,
+                directionInDegrees: wall.angleInDegrees + 90,
+              };
+              setUpdatedForces([forceOfGravity, normalForce]);
+            }
+            collision = true;
           }
-          collision = true;
         }
       });
     }
