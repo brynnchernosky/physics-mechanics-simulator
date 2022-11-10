@@ -17,7 +17,7 @@ export interface IWeightProps {
   displayXVelocity: number;
   displayYVelocity: number;
   elasticCollisions: boolean;
-  forces: IForce[];
+  startForces: IForce[];
   incrementTime: number;
   mass: number;
   paused: boolean;
@@ -44,6 +44,8 @@ export interface IWeightProps {
   startVelY?: number;
   timestepSize: number;
   updateDisplay: boolean;
+  updatedForces: IForce[];
+  setUpdatedForces: (val: IForce[]) => any;
   walls: IWallProps[];
   xMax: number;
   yMax: number;
@@ -57,7 +59,7 @@ export const Weight = (props: IWeightProps) => {
     displayXVelocity,
     displayYVelocity,
     elasticCollisions,
-    forces,
+    startForces,
     incrementTime,
     mass,
     paused,
@@ -84,6 +86,8 @@ export const Weight = (props: IWeightProps) => {
     startVelY,
     timestepSize,
     updateDisplay,
+    updatedForces,
+    setUpdatedForces,
     walls,
     xMax,
     yMax,
@@ -96,7 +100,6 @@ export const Weight = (props: IWeightProps) => {
   const [yPosition, setYPosition] = useState(startPosY);
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
-  const [updatedForces, setUpdatedForces] = useState(forces);
 
   const [draggable, setDraggable] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -173,12 +176,17 @@ export const Weight = (props: IWeightProps) => {
     resetEverything();
   }, [reset]);
 
+  useEffect(() => {
+    setXVelocity(startVelX ?? 0);
+    setYVelocity(startVelY ?? 0);
+  }, [startForces])
+
   const resetEverything = () => {
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
-    setUpdatedForces(forces);
+    setUpdatedForces(startForces);
 
     if (pendulum) {
       const x = xMax / 2 - updatedStartPosX - radius;

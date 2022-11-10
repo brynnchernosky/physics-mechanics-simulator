@@ -88,13 +88,14 @@ function App() {
     handleClose();
   };
 
+  const [wedgeWidth, setWedgeWidth] = useState(400)
+  const [wedgeHeight, setWedgeHeight] = useState(200)
+
   const addWedge = () => {
     setWedge(true);
     const wedge: ISimulationElement = {
       startPosX: window.innerWidth * 0.7 * 0.5 - 200,
       startPosY: window.innerHeight * 0.8,
-      height: 200,
-      width: 400,
       type: "wedge",
     };
     const weight: ISimulationElement = {
@@ -108,6 +109,7 @@ function App() {
       wedge: true,
     };
     setSimulationElements([wedge, weight]);
+    updateForcesWithFriction(Number(coefficientOfStaticFriction));
     handleClose();
   };
 
@@ -146,36 +148,60 @@ function App() {
   // Coefficient of static friction
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
     React.useState<number | string | Array<number | string>>(0);
-  const handleCoefficientOfStaticFrictionSliderChange = (
-    event: Event,
-    newValue: number | number[]
-  ) => {
-    setCoefficientOfStaticFriction(newValue);
-  };
   const handleCoefficientOfStaticFrictionInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setCoefficientOfStaticFriction(
       event.target.value === "" ? "" : Number(event.target.value)
     );
+    updateForcesWithFriction(event.target.value === "" ? 0 : Number(event.target.value))
   };
   const handleCoefficientOfStaticFrictionBlur = () => {
     if (coefficientOfStaticFriction < 0) {
       setCoefficientOfStaticFriction(0);
+      updateForcesWithFriction(0);
     } else if (coefficientOfStaticFriction > 1) {
       setCoefficientOfStaticFriction(1);
+      updateForcesWithFriction(1);
     }
   };
+
+  const updateForcesWithFriction = (coefficient: number) => {
+    const normalForce: IForce = {
+      description: "Normal Force",
+      magnitude:
+      forceOfGravity.magnitude * Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+      directionInDegrees:
+        180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+    };
+    let frictionForce: IForce = {
+      description: "Friction Force",
+      magnitude:
+        coefficient *
+        forceOfGravity.magnitude *
+        Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+      directionInDegrees:
+      180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+    };
+    // reduce magnitude of friction force if necessary such that block cannot slide up plane
+    let yForce = -forceOfGravity.magnitude
+    yForce += normalForce.magnitude * Math.sin(normalForce.directionInDegrees * Math.PI/180)
+    yForce += frictionForce.magnitude * Math.sin(frictionForce.directionInDegrees * Math.PI / 180)
+    if (yForce > 0) {
+      frictionForce.magnitude = ( - normalForce.magnitude * Math.sin(normalForce.directionInDegrees * Math.PI/180) + forceOfGravity.magnitude) / Math.sin(frictionForce.directionInDegrees * Math.PI / 180)
+    }
+    if (coefficient != 0) {
+      setStartForces([forceOfGravity, normalForce, frictionForce]);
+      setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+    } else {
+      setStartForces([forceOfGravity, normalForce]);
+      setUpdatedForces([forceOfGravity, normalForce]);
+    }
+  }
 
   // Coefficient of kinetic friction
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
-  const handleCoefficientOfKineticFrictionSliderChange = (
-    event: Event,
-    newValue: number | number[]
-  ) => {
-    setCoefficientOfKineticFriction(newValue);
-  };
   const handleCoefficientOfKineticFrictionInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -205,6 +231,16 @@ function App() {
   const id = open ? "simple-popover" : undefined;
 
   const [displayChange, setDisplayChange] = useState(false);
+
+  let gravityMagnitude = 9.81;
+  const forceOfGravity: IForce = {
+    description: "Gravity",
+    magnitude: gravityMagnitude,
+    directionInDegrees: 270,
+  }; 
+  
+  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity])
+  const [updatedForces, setUpdatedForces] = useState<IForce[]>([forceOfGravity])
 
   return (
     <div>
@@ -298,41 +334,7 @@ function App() {
             <div className="mechanicsSimulationElements">
               {simulationElements.map((element, index) => {
                 if (element.type === "weight") {
-                  let gravityMagnitude = 9.81;
-                  if (element.mass && element.mass != undefined) {
-                    gravityMagnitude *= element.mass;
-                  }
-                  const forceOfGravity: IForce = {
-                    description: "Gravity",
-                    magnitude: gravityMagnitude,
-                    directionInDegrees: 270,
-                  };
-                  let forces = [forceOfGravity];
-                  if (element.wedge) {
-                    const height = simulationElements[0].height ?? 200;
-                    const width = simulationElements[0].width ?? 400;
-                    const normalForce: IForce = {
-                      description: "Normal Force",
-                      magnitude:
-                        gravityMagnitude * Math.cos(Math.atan(height / width)),
-                      directionInDegrees:
-                        180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
-                    };
-                    if (Number(coefficientOfStaticFriction) != 0) {
-                      const frictionForce: IForce = {
-                        description: "Force of Static Friction",
-                        magnitude:
-                          Number(coefficientOfStaticFriction) *
-                          gravityMagnitude *
-                          Math.cos(Math.atan(height / width)),
-                        directionInDegrees:
-                          (Math.atan(height / width) * 180) / Math.PI,
-                      };
-                      forces = [forceOfGravity, normalForce, frictionForce];
-                    } else {
-                      forces = [forceOfGravity, normalForce];
-                    }
-                  }
+              
                   return (
                     <div key={index}>
                       <Weight
@@ -342,7 +344,7 @@ function App() {
                         displayXVelocity={velocityXDisplay}
                         displayYVelocity={velocityYDisplay}
                         elasticCollisions={elasticCollisions}
-                        forces={forces}
+                        startForces={startForces}
                         incrementTime={timer}
                         mass={element.mass ?? 1}
                         paused={simulationPaused}
@@ -367,6 +369,8 @@ function App() {
                         startPosY={element.startPosY}
                         timestepSize={0.002}
                         updateDisplay={displayChange}
+                        updatedForces={updatedForces}
+                        setUpdatedForces={setUpdatedForces}
                         walls={wallPositions}
                         xMax={window.innerWidth * 0.7}
                         yMax={window.innerHeight * 0.8}
@@ -377,8 +381,8 @@ function App() {
                   return (
                     <div key={index}>
                       <Wedge
-                        startWidth={element.width ?? 100}
-                        startHeight={element.height ?? 100}
+                        startWidth={wedgeWidth}
+                        startHeight={wedgeHeight}
                         startLeft={element.startPosX}
                       />
                     </div>
@@ -590,9 +594,8 @@ function App() {
                     <TextField
                       type="number"
                       variant="standard"
-                      defaultValue={positionXDisplay}
                       value={positionXDisplay}
-                      style={{ width: "5rem" }}
+                      style={{ width: "7em" }}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">m</InputAdornment>
@@ -615,9 +618,8 @@ function App() {
                     <TextField
                       type="number"
                       variant="standard"
-                      defaultValue={positionYDisplay}
                       value={positionYDisplay}
-                      style={{ width: "5rem" }}
+                      style={{ width: "7em" }}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">m</InputAdornment>
@@ -643,12 +645,11 @@ function App() {
                     <TextField
                       type="number"
                       variant="standard"
-                      defaultValue={velocityXDisplay}
                       value={velocityXDisplay}
-                      style={{ width: "5rem" }}
+                      style={{ width: "7em" }}
                       InputProps={{
                         endAdornment: (
-                          <InputAdornment position="end">m</InputAdornment>
+                          <InputAdornment position="end">m/s</InputAdornment>
                         ),
                       }}
                       onChange={(e) => {
@@ -668,12 +669,11 @@ function App() {
                     <TextField
                       type="number"
                       variant="standard"
-                      defaultValue={velocityYDisplay}
                       value={velocityYDisplay}
-                      style={{ width: "5rem" }}
+                      style={{ width: "7em" }}
                       InputProps={{
                         endAdornment: (
-                          <InputAdornment position="end">m</InputAdornment>
+                          <InputAdornment position="end">m/s</InputAdornment>
                         ),
                       }}
                       onChange={(e) => {
