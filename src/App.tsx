@@ -318,7 +318,20 @@ function App() {
                       directionInDegrees:
                         180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
                     };
-                    forces = [forceOfGravity, normalForce];
+                    if (Number(coefficientOfStaticFriction) != 0) {
+                      const frictionForce: IForce = {
+                        description: "Force of Static Friction",
+                        magnitude:
+                          Number(coefficientOfStaticFriction) *
+                          gravityMagnitude *
+                          Math.cos(Math.atan(height / width)),
+                        directionInDegrees:
+                          (Math.atan(height / width) * 180) / Math.PI,
+                      };
+                      forces = [forceOfGravity, normalForce, frictionForce];
+                    } else {
+                      forces = [forceOfGravity, normalForce];
+                    }
                   }
                   return (
                     <div key={index}>
@@ -468,106 +481,98 @@ function App() {
                   label="Show velocity vector"
                   labelPlacement="start"
                 />
-                {wedge && (
-                  <Box>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs>
-                        <Typography
-                          id="input-slider"
-                          sx={{ textAlign: "right" }}
-                        >
-                          <p>
-                            &mu; <sub>s</sub>
-                          </p>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs>
-                        <Slider
-                          value={
-                            typeof coefficientOfStaticFriction === "number"
-                              ? coefficientOfStaticFriction
-                              : 0
-                          }
-                          onChange={
-                            handleCoefficientOfStaticFrictionSliderChange
-                          }
-                          aria-labelledby="input-slider"
-                          defaultValue={0}
-                          step={0.1}
-                          marks
-                          min={0}
-                          max={1}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Input
-                          value={coefficientOfStaticFriction}
-                          size="medium"
-                          onChange={
-                            handleCoefficientOfStaticFrictionInputChange
-                          }
-                          onBlur={handleCoefficientOfStaticFrictionBlur}
-                          inputProps={{
-                            step: 0.1,
-                            min: 0,
-                            max: 1,
-                            type: "number",
-                            "aria-labelledby": "input-slider",
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs>
-                        <Typography
-                          id="input-slider"
-                          sx={{ textAlign: "right" }}
-                        >
-                          <p>
-                            &mu; <sub>k</sub>
-                          </p>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs>
-                        <Slider
-                          value={
-                            typeof coefficientOfKineticFriction === "number"
-                              ? coefficientOfKineticFriction
-                              : 0
-                          }
-                          onChange={
-                            handleCoefficientOfKineticFrictionSliderChange
-                          }
-                          aria-labelledby="input-slider"
-                          defaultValue={0}
-                          step={0.1}
-                          marks
-                          min={0}
-                          max={1}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Input
-                          value={coefficientOfKineticFriction}
-                          size="medium"
-                          onChange={
-                            handleCoefficientOfKineticFrictionInputChange
-                          }
-                          onBlur={handleCoefficientOfKineticFrictionBlur}
-                          inputProps={{
-                            step: 0.1,
-                            min: 0,
-                            max: 1,
-                            type: "number",
-                            "aria-labelledby": "input-slider",
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                )}
               </FormGroup>
             </FormControl>
+            {wedge && (
+              <Box>
+                <FormControl>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs>
+                      <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                        <p>
+                          &mu; <sub>s</sub>
+                        </p>
+                      </Typography>
+                    </Grid>
+                    {/* <Grid item xs>
+                      <Slider
+                        value={
+                          typeof coefficientOfStaticFriction === "number"
+                            ? coefficientOfStaticFriction
+                            : 0
+                        }
+                        onChange={handleCoefficientOfStaticFrictionSliderChange}
+                        aria-labelledby="input-slider"
+                        defaultValue={0}
+                        step={0.1}
+                        marks
+                        min={0}
+                        max={1}
+                      />
+                    </Grid> */}
+                    <Grid item>
+                      <Input
+                        value={coefficientOfStaticFriction}
+                        size="medium"
+                        onChange={handleCoefficientOfStaticFrictionInputChange}
+                        onBlur={handleCoefficientOfStaticFrictionBlur}
+                        inputProps={{
+                          step: 0.1,
+                          min: 0,
+                          max: 1,
+                          type: "number",
+                          "aria-labelledby": "input-slider",
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </FormControl>
+                <FormControl>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs>
+                      <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                        <p>
+                          &mu; <sub>k</sub>
+                        </p>
+                      </Typography>
+                    </Grid>
+                    {/* <Grid item xs>
+                      <Slider
+                        value={
+                          typeof coefficientOfKineticFriction === "number"
+                            ? coefficientOfKineticFriction
+                            : 0
+                        }
+                        onChange={
+                          handleCoefficientOfKineticFrictionSliderChange
+                        }
+                        aria-labelledby="input-slider"
+                        defaultValue={0}
+                        step={0.1}
+                        marks
+                        min={0}
+                        max={1}
+                      />
+                    </Grid> */}
+                    <Grid item>
+                      <Input
+                        value={coefficientOfKineticFriction}
+                        size="medium"
+                        onChange={handleCoefficientOfKineticFrictionInputChange}
+                        onBlur={handleCoefficientOfKineticFrictionBlur}
+                        inputProps={{
+                          step: 0.1,
+                          min: 0,
+                          max: 1,
+                          type: "number",
+                          "aria-labelledby": "input-slider",
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </FormControl>
+              </Box>
+            )}
           </div>
           <div className="mechanicsSimulationEquation">
             <table>
