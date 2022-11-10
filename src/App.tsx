@@ -31,6 +31,7 @@ export interface ISimulationElement {
   color?: string;
   mass?: number;
   pendulum?: boolean;
+  wedge?: boolean;
   radius?: number;
   startPosX: number;
   startPosY: number;
@@ -77,21 +78,32 @@ function App() {
       mass: 1,
       radius: 50,
       pendulum: false,
+      wedge: false,
     };
-    setSimulationElements((state) => [...state, weight]);
+    setSimulationElements([weight]);
     handleClose();
   };
 
   const addWedge = () => {
     setWedge(true);
     const wedge: ISimulationElement = {
-      startPosX: 50,
+      startPosX: window.innerWidth * 0.7 * 0.5 - 200,
       startPosY: window.innerHeight * 0.8,
-      height: 100,
-      width: 200,
+      height: 200,
+      width: 400,
       type: "wedge",
     };
-    setSimulationElements((state) => [...state, wedge]);
+    const weight: ISimulationElement = {
+      type: "weight",
+      startPosX: window.innerWidth * 0.7 * 0.5 - 200,
+      startPosY: window.innerHeight * 0.8 - 200 - 50 - 25,
+      color: "red",
+      mass: 1,
+      radius: 50,
+      pendulum: false,
+      wedge: true,
+    };
+    setSimulationElements([wedge, weight]);
     handleClose();
   };
 
@@ -105,8 +117,9 @@ function App() {
       mass: 1,
       radius: 50,
       pendulum: true,
+      wedge: false,
     };
-    setSimulationElements((state) => [...state, weight]);
+    setSimulationElements([weight]);
     handleClose();
   };
 
@@ -168,7 +181,10 @@ function App() {
                   <nav aria-label="add simulation element options">
                     <List>
                       <ListItem disablePadding>
-                        <ListItemButton onClick={addWeight} disabled={pendulum}>
+                        <ListItemButton
+                          onClick={() => addWeight()}
+                          disabled={simulationElements.length > 0}
+                        >
                           <ListItemIcon>
                             <AddCircleIcon />
                           </ListItemIcon>
@@ -177,7 +193,9 @@ function App() {
                       </ListItem>
                       <ListItem disablePadding>
                         <ListItemButton
-                          onClick={addPendulum}
+                          onClick={() => {
+                            addPendulum();
+                          }}
                           disabled={simulationElements.length > 0}
                         >
                           <ListItemIcon>
@@ -188,8 +206,10 @@ function App() {
                       </ListItem>
                       <ListItem disablePadding>
                         <ListItemButton
-                          onClick={addWedge}
-                          disabled={pendulum || wedge}
+                          onClick={() => {
+                            addWedge();
+                          }}
+                          disabled={simulationElements.length > 0}
                         >
                           <ListItemIcon>
                             <AddCircleIcon />
@@ -234,6 +254,22 @@ function App() {
                     magnitude: gravityMagnitude,
                     directionInDegrees: 270,
                   };
+                  let forces = [forceOfGravity];
+                  if (element.wedge) {
+                    console.log(
+                      simulationElements[0].height,
+                      simulationElements[0].width
+                    );
+                    const height = simulationElements[0].height ?? 200;
+                    const width = simulationElements[0].width ?? 400;
+                    const normalForce: IForce = {
+                      description: "Normal Force",
+                      magnitude: gravityMagnitude,
+                      directionInDegrees:
+                        180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
+                    };
+                    forces = [forceOfGravity, normalForce];
+                  }
                   return (
                     <div key={index}>
                       <Weight
@@ -243,11 +279,12 @@ function App() {
                         displayXVelocity={velocityXDisplay}
                         displayYVelocity={velocityYDisplay}
                         elasticCollisions={elasticCollisions}
-                        forces={[forceOfGravity]}
+                        forces={forces}
                         incrementTime={timer}
                         mass={element.mass ?? 1}
                         paused={simulationPaused}
                         pendulum={element.pendulum ?? false}
+                        wedge={element.wedge ?? false}
                         radius={element.radius ?? 5}
                         reset={simulationReset}
                         setDisplayXAcceleration={setAccelerationXDisplay}

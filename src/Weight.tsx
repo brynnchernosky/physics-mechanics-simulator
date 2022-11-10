@@ -2,6 +2,7 @@ import { InputAdornment, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
+import { Wedge } from "./Wedge";
 
 export interface IForce {
   description?: string;
@@ -21,6 +22,7 @@ export interface IWeightProps {
   mass: number;
   paused: boolean;
   pendulum: boolean;
+  wedge: boolean;
   radius: number;
   reset: boolean;
   setDisplayXAcceleration: (val: number) => any;
@@ -60,6 +62,7 @@ export const Weight = (props: IWeightProps) => {
     mass,
     paused,
     pendulum,
+    wedge,
     radius,
     reset,
     setDisplayXAcceleration,

@@ -32,11 +32,10 @@ export const Wedge = (props: IWedgeProps) => {
       Math.round(left) + "," + Math.round(window.innerHeight * 0.8 - height);
     const coord = coordinatePair1 + coordinatePair2 + coordinatePair3;
     setCoordinates(coord);
-    console.log(window.innerHeight * 0.8);
   }, [left, width, height]);
 
   return (
-    <div style={{ position: "absolute", left: "0", top: "0" }}>
+    <div style={{ position: "absolute", left: "0", top: "0", zIndex: -5 }}>
       <svg width={window.innerWidth + "px"} height={window.innerHeight + "px"}>
         <polygon points={coordinates} style={{ fill: "sienna" }} />
       </svg>
