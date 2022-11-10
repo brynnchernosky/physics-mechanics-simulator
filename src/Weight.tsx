@@ -666,6 +666,28 @@ export const Weight = (props: IWeightProps) => {
 
           let color = "#0d0d0d";
 
+          let labelTop = arrowEndY;
+          let labelLeft = arrowEndX;
+          if (force.directionInDegrees >= 0 && force.directionInDegrees < 90) {
+            labelTop += 25;
+            labelLeft += 25;
+          } else if (
+            force.directionInDegrees >= 90 &&
+            force.directionInDegrees < 180
+          ) {
+            labelTop += 25;
+            labelLeft -= 120;
+          } else if (
+            force.directionInDegrees >= 180 &&
+            force.directionInDegrees < 270
+          ) {
+            labelTop += 25;
+            labelLeft += 25;
+          } else {
+            labelTop += 25;
+            labelLeft += 25;
+          }
+
           return (
             <div key={index}>
               <div
@@ -709,8 +731,8 @@ export const Weight = (props: IWeightProps) => {
                 style={{
                   pointerEvents: "none",
                   position: "absolute",
-                  left: arrowEndX + 25 + "px",
-                  top: arrowEndY + "px",
+                  left: labelLeft + "px",
+                  top: labelTop + "px",
                   zIndex: -1,
                   lineHeight: 0.5,
                 }}
