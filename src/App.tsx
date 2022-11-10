@@ -72,6 +72,8 @@ function App() {
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
   const [wedge, setWedge] = useState(false);
+  const [wedgeWidth, setWedgeWidth] = useState(400);
+  const [wedgeHeight, setWedgeHeight] = useState(200);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -85,11 +87,10 @@ function App() {
       wedge: false,
     };
     setSimulationElements([weight]);
+    setUpdatedForces([forceOfGravity]);
+    setStartForces([forceOfGravity]);
     handleClose();
   };
-
-  const [wedgeWidth, setWedgeWidth] = useState(400);
-  const [wedgeHeight, setWedgeHeight] = useState(200);
 
   const addWedge = () => {
     setWedge(true);
@@ -109,6 +110,7 @@ function App() {
       wedge: true,
     };
     setSimulationElements([wedge, weight]);
+    setStartForces([forceOfGravity]);
     updateForcesWithFriction(Number(coefficientOfStaticFriction));
     handleClose();
   };
@@ -126,6 +128,7 @@ function App() {
       wedge: false,
     };
     setSimulationElements([weight]);
+    setUpdatedForces([forceOfGravity]);
     handleClose();
   };
 
@@ -330,6 +333,8 @@ function App() {
                             setPendulum(false);
                             setWedge(false);
                             setSimulationElements([]);
+                            setUpdatedForces([forceOfGravity]);
+                            setStartForces([forceOfGravity]);
                             handleClose();
                           }}
                         >
@@ -443,16 +448,18 @@ function App() {
                   </IconButton>
                 </Tooltip>
               )}
-              <Tooltip title="Reset simulation">
-                <IconButton
-                  onClick={() => {
-                    setSimulationPaused(true);
-                    setSimulationReset(!simulationReset);
-                  }}
-                >
-                  <ReplayIcon />
-                </IconButton>
-              </Tooltip>
+              {simulationPaused && (
+                <Tooltip title="Reset simulation">
+                  <IconButton
+                    onClick={() => {
+                      setSimulationPaused(true);
+                      setSimulationReset(!simulationReset);
+                    }}
+                  >
+                    <ReplayIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Stack>
           </div>
 
