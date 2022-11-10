@@ -4,6 +4,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
+import VolumeUp from "@mui/icons-material/VolumeUp";
 import {
   Checkbox,
   Divider,
@@ -11,6 +12,7 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Input,
   InputAdornment,
   List,
   ListItem,
@@ -22,11 +24,16 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Slider from "@mui/material/Slider";
+import Typography from "@mui/material/Typography";
 import React, { useEffect, useState } from "react";
 import "./App.scss";
 import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { IForce, Weight } from "./Weight";
+
 export interface ISimulationElement {
   color?: string;
   mass?: number;
@@ -43,31 +50,28 @@ export interface ISimulationElement {
 }
 
 function App() {
+  const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
+  const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
+  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
+  const [pendulum, setPendulum] = useState(false);
+  const [pendulumAngle, setPendulumAngle] = useState(0);
+  const [pendulumLength, setPendulumLength] = useState(0);
+  const [positionXDisplay, setPositionXDisplay] = useState(0);
+  const [positionYDisplay, setPositionYDisplay] = useState(0);
+  const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
+  const [showForces, setShowForces] = useState<boolean>(true);
+  const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationElements, setSimulationElements] = useState<
     ISimulationElement[]
   >([]);
-  const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
-  const [simulationReset, setSimulationReset] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
-  const [timer, setTimer] = useState<number>(0);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
-
-  const [showForces, setShowForces] = useState<boolean>(true);
-  const [showVelocity, setShowVelocity] = useState<boolean>(false);
-  const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
-  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
-  const [pendulum, setPendulum] = useState(false);
-  const [wedge, setWedge] = useState(false);
-
-  const [positionYDisplay, setPositionYDisplay] = useState(0);
-  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
-  const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
-  const [positionXDisplay, setPositionXDisplay] = useState(0);
-  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
-  const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
+  const [simulationReset, setSimulationReset] = useState<boolean>(false);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
-  const [pendulumAngle, setPendulumAngle] = useState(0);
-  const [pendulumLength, setPendulumLength] = useState(0);
+  const [timer, setTimer] = useState<number>(0);
+  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
+  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
+  const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
+  const [wedge, setWedge] = useState(false);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -139,18 +143,64 @@ function App() {
     setTimer(timer + 1);
   }, 60);
 
+  // Coefficient of static friction
+  const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
+    React.useState<number | string | Array<number | string>>(0);
+  const handleCoefficientOfStaticFrictionSliderChange = (
+    event: Event,
+    newValue: number | number[]
+  ) => {
+    setCoefficientOfStaticFriction(newValue);
+  };
+  const handleCoefficientOfStaticFrictionInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCoefficientOfStaticFriction(
+      event.target.value === "" ? "" : Number(event.target.value)
+    );
+  };
+  const handleCoefficientOfStaticFrictionBlur = () => {
+    if (coefficientOfStaticFriction < 0) {
+      setCoefficientOfStaticFriction(0);
+    } else if (coefficientOfStaticFriction > 1) {
+      setCoefficientOfStaticFriction(1);
+    }
+  };
+
+  // Coefficient of kinetic friction
+  const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
+    React.useState<number | string | Array<number | string>>(0);
+  const handleCoefficientOfKineticFrictionSliderChange = (
+    event: Event,
+    newValue: number | number[]
+  ) => {
+    setCoefficientOfKineticFriction(newValue);
+  };
+  const handleCoefficientOfKineticFrictionInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCoefficientOfKineticFriction(
+      event.target.value === "" ? "" : Number(event.target.value)
+    );
+  };
+  const handleCoefficientOfKineticFrictionBlur = () => {
+    if (coefficientOfKineticFriction < 0) {
+      setCoefficientOfKineticFriction(0);
+    } else if (coefficientOfKineticFriction > 1) {
+      setCoefficientOfKineticFriction(1);
+    }
+  };
+
+  // Add/remove elements menu
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
@@ -376,27 +426,7 @@ function App() {
               </Tooltip>
             </Stack>
           </div>
-          {/* <Box sx={{ width: 300 }}>
-          <Slider
-            aria-label="Timestep"
-            defaultValue={0}
-            valueLabelDisplay="auto"
-            step={10}
-            marks={[
-              { value: 0, label: "0s" },
-              { value: 10, label: "1s" },
-              { value: 20, label: "2s" },
-              { value: 30, label: "3s" },
-              { value: 40, label: "4s" },
-              { value: 50, label: "5s" },
-              { value: 60, label: "6s" },
-              { value: 70, label: "7s" },
-              { value: 80, label: "8s" },
-              { value: 90, label: "9s" },
-              { value: 100, label: "10s" },
-            ]}
-          />
-        </Box> */}
+
           <div>
             <FormControl component="fieldset">
               <FormGroup>
@@ -438,6 +468,104 @@ function App() {
                   label="Show velocity vector"
                   labelPlacement="start"
                 />
+                {wedge && (
+                  <Box>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs>
+                        <Typography
+                          id="input-slider"
+                          sx={{ textAlign: "right" }}
+                        >
+                          <p>
+                            &mu; <sub>s</sub>
+                          </p>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs>
+                        <Slider
+                          value={
+                            typeof coefficientOfStaticFriction === "number"
+                              ? coefficientOfStaticFriction
+                              : 0
+                          }
+                          onChange={
+                            handleCoefficientOfStaticFrictionSliderChange
+                          }
+                          aria-labelledby="input-slider"
+                          defaultValue={0}
+                          step={0.1}
+                          marks
+                          min={0}
+                          max={1}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Input
+                          value={coefficientOfStaticFriction}
+                          size="medium"
+                          onChange={
+                            handleCoefficientOfStaticFrictionInputChange
+                          }
+                          onBlur={handleCoefficientOfStaticFrictionBlur}
+                          inputProps={{
+                            step: 0.1,
+                            min: 0,
+                            max: 1,
+                            type: "number",
+                            "aria-labelledby": "input-slider",
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs>
+                        <Typography
+                          id="input-slider"
+                          sx={{ textAlign: "right" }}
+                        >
+                          <p>
+                            &mu; <sub>k</sub>
+                          </p>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs>
+                        <Slider
+                          value={
+                            typeof coefficientOfKineticFriction === "number"
+                              ? coefficientOfKineticFriction
+                              : 0
+                          }
+                          onChange={
+                            handleCoefficientOfKineticFrictionSliderChange
+                          }
+                          aria-labelledby="input-slider"
+                          defaultValue={0}
+                          step={0.1}
+                          marks
+                          min={0}
+                          max={1}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Input
+                          value={coefficientOfKineticFriction}
+                          size="medium"
+                          onChange={
+                            handleCoefficientOfKineticFrictionInputChange
+                          }
+                          onBlur={handleCoefficientOfKineticFrictionBlur}
+                          inputProps={{
+                            step: 0.1,
+                            min: 0,
+                            max: 1,
+                            type: "number",
+                            "aria-labelledby": "input-slider",
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )}
               </FormGroup>
             </FormControl>
           </div>
