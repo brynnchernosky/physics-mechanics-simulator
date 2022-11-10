@@ -36,7 +36,7 @@ export const Wedge = (props: IWedgeProps) => {
   }, [left, width, height]);
 
   return (
-    <div style={{ position: "absolute" }}>
+    <div style={{ position: "absolute", left: "0", top: "0" }}>
       <svg width={window.innerWidth + "px"} height={window.innerHeight + "px"}>
         <polygon points={coordinates} style={{ fill: "sienna" }} />
       </svg>

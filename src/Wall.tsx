@@ -23,6 +23,8 @@ export const Wall = (props: IWallProps) => {
     top: window.innerHeight * 0.8 + "px",
     backgroundColor: "#6c7b8b",
     zIndex: -1000,
+    margin: 0,
+    padding: 0,
   };
 
   return <div style={wallStyle}></div>;
