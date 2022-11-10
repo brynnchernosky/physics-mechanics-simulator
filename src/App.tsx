@@ -86,6 +86,8 @@ function App() {
       pendulum: false,
       wedge: false,
     };
+    setPositionXDisplay(30);
+    setPositionYDisplay(window.innerHeight * 0.8 - 30 - 2 * 50 + 5);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
@@ -109,6 +111,8 @@ function App() {
       pendulum: false,
       wedge: true,
     };
+    setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
+    setPositionYDisplay(200 + 50 + 25 - 2 * 50 + 5);
     setSimulationElements([wedge, weight]);
     setStartForces([forceOfGravity]);
     updateForcesWithFriction(Number(coefficientOfStaticFriction));
@@ -127,6 +131,8 @@ function App() {
       pendulum: true,
       wedge: false,
     };
+    setPositionXDisplay(30);
+    setPositionYDisplay(window.innerHeight * 0.8 - 30 - 2 * 50 + 5);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     handleClose();
@@ -452,7 +458,6 @@ function App() {
                 <Tooltip title="Reset simulation">
                   <IconButton
                     onClick={() => {
-                      setSimulationPaused(true);
                       setSimulationReset(!simulationReset);
                     }}
                   >

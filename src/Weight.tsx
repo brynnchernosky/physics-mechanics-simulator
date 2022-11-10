@@ -109,8 +109,15 @@ export const Weight = (props: IWeightProps) => {
     directionInDegrees: 270,
   };
 
+  const getDisplayYPos = (yPos: number) => {
+    return yMax - yPos - 2 * radius + 5;
+  };
+  const getYPosFromDisplay = (yDisplay: number) => {
+    return yMax - yDisplay - 2 * radius + 5;
+  };
+
   const setDisplayValues = () => {
-    const displayPos = yMax - yPosition - 2 * radius + 5;
+    const displayPos = getDisplayYPos(yPosition);
     setDisplayYPosition(Math.round(displayPos * 100) / 100);
     setDisplayXPosition(Math.round(xPosition * 100) / 100);
     setDisplayYVelocity((-1 * Math.round(yVelocity * 100)) / 100);
@@ -133,12 +140,18 @@ export const Weight = (props: IWeightProps) => {
       setDisplayXPosition(x);
     }
 
-    if (displayYPosition != yPosition) {
+    if (displayYPosition != getDisplayYPos(yPosition)) {
+      console.log("display pos y: ", displayYPosition);
+      console.log("coordinate y: ", yPosition);
+      console.log(
+        "coordinate y based on display y pos: ",
+        getYPosFromDisplay(yPosition)
+      );
       let y = displayYPosition;
       y = Math.max(0, y);
       y = Math.min(y, yMax - 2 * radius);
       setDisplayYPosition(y);
-      let coordinatePosition = Math.abs(y - yMax) - 2 * radius;
+      let coordinatePosition = getYPosFromDisplay(y);
       setUpdatedStartPosY(coordinatePosition);
       setYPosition(coordinatePosition);
     }
@@ -149,7 +162,7 @@ export const Weight = (props: IWeightProps) => {
       setDisplayXVelocity(x);
     }
 
-    if (displayYVelocity != yVelocity) {
+    if (displayYVelocity != -yVelocity) {
       let y = displayYVelocity;
       setYVelocity(-y);
       setDisplayYVelocity(y);
@@ -172,8 +185,16 @@ export const Weight = (props: IWeightProps) => {
   }, [incrementTime]);
 
   useEffect(() => {
+    console.log("use effect reset");
     resetEverything();
   }, [reset]);
+
+  useEffect(() => {
+    console.log("Updated x pos: ", updatedStartPosX);
+  }, [updatedStartPosX]);
+  useEffect(() => {
+    console.log("Updated y pos: ", updatedStartPosY);
+  }, [updatedStartPosY]);
 
   useEffect(() => {
     setXVelocity(startVelX ?? 0);
@@ -181,6 +202,20 @@ export const Weight = (props: IWeightProps) => {
   }, [startForces]);
 
   const resetEverything = () => {
+    console.log(
+      "Start: ",
+      startPosX,
+      ",",
+      startPosY,
+      " Current: ",
+      xPosition,
+      ",",
+      yPosition,
+      " Updated: ",
+      updatedStartPosX,
+      ",",
+      updatedStartPosY
+    );
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
@@ -277,7 +312,6 @@ export const Weight = (props: IWeightProps) => {
     const minX = xPosition;
     const maxX = xPosition + 2 * radius;
     const containerWidth = window.innerWidth;
-    console.log(walls);
     if (xVelocity != 0) {
       walls.forEach((wall) => {
         if (wall.angleInDegrees == 90) {
@@ -437,8 +471,8 @@ export const Weight = (props: IWeightProps) => {
       <div
         className="weightContainer"
         onPointerDown={(e) => {
-          e.preventDefault();
           if (!wedge) {
+            e.preventDefault();
             setPaused(true);
             setDragging(true);
             setClickPositionX(e.clientX);
