@@ -101,7 +101,6 @@ export const Weight = (props: IWeightProps) => {
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
 
-  const [draggable, setDraggable] = useState(false);
   const [dragging, setDragging] = useState(false);
 
   const forceOfGravity: IForce = {
@@ -179,7 +178,7 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
-  }, [startForces])
+  }, [startForces]);
 
   const resetEverything = () => {
     setXPosition(updatedStartPosX);
@@ -424,23 +423,9 @@ export const Weight = (props: IWeightProps) => {
     alignItems: "center",
     touchAction: "none",
   };
-  if (draggable || dragging) {
+  if (dragging) {
     weightStyle.borderColor = "lightblue";
   }
-
-  // useEffect(() => {
-  //   if (paused) {
-  //     setUpdatedStartPosX(displayXPosition);
-  //     setXPosition(displayXPosition);
-  //   }
-  // }, [displayXPosition]);
-
-  // useEffect(() => {
-  //   if (paused) {
-  //     setUpdatedStartPosX(displayYPosition);
-  //     setXPosition(setDisplayYPosition);
-  //   }
-  // }, [displayYPosition]);
 
   const [clickPositionX, setClickPositionX] = useState(0);
   const [clickPositionY, setClickPositionY] = useState(0);
@@ -453,10 +438,12 @@ export const Weight = (props: IWeightProps) => {
         className="weightContainer"
         onPointerDown={(e) => {
           e.preventDefault();
-          setPaused(true);
-          setDragging(true);
-          setClickPositionX(e.clientX);
-          setClickPositionY(e.clientY);
+          if (!wedge) {
+            setPaused(true);
+            setDragging(true);
+            setClickPositionX(e.clientX);
+            setClickPositionY(e.clientY);
+          }
         }}
         onPointerMove={(e) => {
           e.preventDefault();
@@ -488,35 +475,17 @@ export const Weight = (props: IWeightProps) => {
           }
         }}
         onPointerUp={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          resetEverything();
+          if (dragging) {
+            e.preventDefault();
+            setDragging(false);
+            resetEverything();
+          }
         }}
       >
         <div className="weight" style={weightStyle}>
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
-      {weightMenuVisible && !pendulum && (
-        <div
-          style={{
-            position: "absolute",
-            top: yPosition - 70 + "px",
-            left: xPosition + "px",
-          }}
-        >
-          <TextField
-            id="outlined-basic"
-            label="Velocity"
-            variant="outlined"
-            type="number"
-            defaultValue="0"
-            InputProps={{
-              endAdornment: <InputAdornment position="end">m/s</InputAdornment>,
-            }}
-          />
-        </div>
-      )}
       {pendulum && (
         <div
           className="rod"

@@ -88,8 +88,8 @@ function App() {
     handleClose();
   };
 
-  const [wedgeWidth, setWedgeWidth] = useState(400)
-  const [wedgeHeight, setWedgeHeight] = useState(200)
+  const [wedgeWidth, setWedgeWidth] = useState(400);
+  const [wedgeHeight, setWedgeHeight] = useState(200);
 
   const addWedge = () => {
     setWedge(true);
@@ -154,7 +154,9 @@ function App() {
     setCoefficientOfStaticFriction(
       event.target.value === "" ? "" : Number(event.target.value)
     );
-    updateForcesWithFriction(event.target.value === "" ? 0 : Number(event.target.value))
+    updateForcesWithFriction(
+      event.target.value === "" ? 0 : Number(event.target.value)
+    );
   };
   const handleCoefficientOfStaticFrictionBlur = () => {
     if (coefficientOfStaticFriction < 0) {
@@ -170,7 +172,8 @@ function App() {
     const normalForce: IForce = {
       description: "Normal Force",
       magnitude:
-      forceOfGravity.magnitude * Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        forceOfGravity.magnitude *
+        Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
       directionInDegrees:
         180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
     };
@@ -181,14 +184,22 @@ function App() {
         forceOfGravity.magnitude *
         Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
       directionInDegrees:
-      180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
     };
     // reduce magnitude of friction force if necessary such that block cannot slide up plane
-    let yForce = -forceOfGravity.magnitude
-    yForce += normalForce.magnitude * Math.sin(normalForce.directionInDegrees * Math.PI/180)
-    yForce += frictionForce.magnitude * Math.sin(frictionForce.directionInDegrees * Math.PI / 180)
+    let yForce = -forceOfGravity.magnitude;
+    yForce +=
+      normalForce.magnitude *
+      Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
+    yForce +=
+      frictionForce.magnitude *
+      Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
     if (yForce > 0) {
-      frictionForce.magnitude = ( - normalForce.magnitude * Math.sin(normalForce.directionInDegrees * Math.PI/180) + forceOfGravity.magnitude) / Math.sin(frictionForce.directionInDegrees * Math.PI / 180)
+      frictionForce.magnitude =
+        (-normalForce.magnitude *
+          Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
+          forceOfGravity.magnitude) /
+        Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
     }
     if (coefficient != 0) {
       setStartForces([forceOfGravity, normalForce, frictionForce]);
@@ -197,7 +208,7 @@ function App() {
       setStartForces([forceOfGravity, normalForce]);
       setUpdatedForces([forceOfGravity, normalForce]);
     }
-  }
+  };
 
   // Coefficient of kinetic friction
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
@@ -237,10 +248,12 @@ function App() {
     description: "Gravity",
     magnitude: gravityMagnitude,
     directionInDegrees: 270,
-  }; 
-  
-  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity])
-  const [updatedForces, setUpdatedForces] = useState<IForce[]>([forceOfGravity])
+  };
+
+  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
+  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
+    forceOfGravity,
+  ]);
 
   return (
     <div>
@@ -334,7 +347,6 @@ function App() {
             <div className="mechanicsSimulationElements">
               {simulationElements.map((element, index) => {
                 if (element.type === "weight") {
-              
                   return (
                     <div key={index}>
                       <Weight
@@ -487,7 +499,7 @@ function App() {
                 />
               </FormGroup>
             </FormControl>
-            {wedge && (
+            {wedge && simulationPaused && (
               <Box>
                 <FormControl>
                   <Grid container spacing={2} alignItems="center">
@@ -577,6 +589,16 @@ function App() {
                 </FormControl>
               </Box>
             )}
+            {wedge && !simulationPaused && (
+              <Typography>
+                <p>
+                  &mu; <sub>s</sub>: {coefficientOfStaticFriction}
+                </p>
+                <p>
+                  &mu; <sub>k</sub>: {coefficientOfKineticFriction}
+                </p>
+              </Typography>
+            )}
           </div>
           <div className="mechanicsSimulationEquation">
             <table>
@@ -588,9 +610,9 @@ function App() {
               <tr>
                 <td>Position</td>
                 <td>
-                  {!simulationPaused && positionXDisplay}{" "}
-                  {!simulationPaused && <p>m</p>}{" "}
-                  {simulationPaused && (
+                  {(!simulationPaused || wedge) && positionXDisplay}{" "}
+                  {(!simulationPaused || wedge) && <p>m</p>}{" "}
+                  {simulationPaused && !wedge && (
                     <TextField
                       type="number"
                       variant="standard"
@@ -612,9 +634,9 @@ function App() {
                   )}{" "}
                 </td>
                 <td>
-                  {!simulationPaused && positionYDisplay}{" "}
-                  {!simulationPaused && <p>m</p>}{" "}
-                  {simulationPaused && (
+                  {(!simulationPaused || wedge) && positionYDisplay}{" "}
+                  {(!simulationPaused || wedge) && <p>m</p>}{" "}
+                  {simulationPaused && !wedge && (
                     <TextField
                       type="number"
                       variant="standard"
@@ -639,9 +661,9 @@ function App() {
               <tr>
                 <td>Velocity</td>
                 <td>
-                  {(!simulationPaused || pendulum) && velocityXDisplay}{" "}
-                  {(!simulationPaused || pendulum) && <p>m/s</p>}{" "}
-                  {simulationPaused && !pendulum && (
+                  {(!simulationPaused || pendulum || wedge) && velocityXDisplay}{" "}
+                  {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
+                  {simulationPaused && !pendulum && !wedge && (
                     <TextField
                       type="number"
                       variant="standard"
@@ -663,9 +685,9 @@ function App() {
                   )}{" "}
                 </td>
                 <td>
-                  {(!simulationPaused || pendulum) && velocityYDisplay}{" "}
-                  {(!simulationPaused || pendulum) && <p>m/s</p>}{" "}
-                  {simulationPaused && !pendulum && (
+                  {(!simulationPaused || pendulum || wedge) && velocityYDisplay}{" "}
+                  {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
+                  {simulationPaused && !pendulum && !wedge && (
                     <TextField
                       type="number"
                       variant="standard"
