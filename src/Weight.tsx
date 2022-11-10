@@ -141,12 +141,6 @@ export const Weight = (props: IWeightProps) => {
     }
 
     if (displayYPosition != getDisplayYPos(yPosition)) {
-      console.log("display pos y: ", displayYPosition);
-      console.log("coordinate y: ", yPosition);
-      console.log(
-        "coordinate y based on display y pos: ",
-        getYPosFromDisplay(yPosition)
-      );
       let y = displayYPosition;
       y = Math.max(0, y);
       y = Math.min(y, yMax - 2 * radius);
@@ -185,16 +179,8 @@ export const Weight = (props: IWeightProps) => {
   }, [incrementTime]);
 
   useEffect(() => {
-    console.log("use effect reset");
     resetEverything();
   }, [reset]);
-
-  useEffect(() => {
-    console.log("Updated x pos: ", updatedStartPosX);
-  }, [updatedStartPosX]);
-  useEffect(() => {
-    console.log("Updated y pos: ", updatedStartPosY);
-  }, [updatedStartPosY]);
 
   useEffect(() => {
     setXVelocity(startVelX ?? 0);
@@ -202,20 +188,6 @@ export const Weight = (props: IWeightProps) => {
   }, [startForces]);
 
   const resetEverything = () => {
-    console.log(
-      "Start: ",
-      startPosX,
-      ",",
-      startPosY,
-      " Current: ",
-      xPosition,
-      ",",
-      yPosition,
-      " Updated: ",
-      updatedStartPosX,
-      ",",
-      updatedStartPosY
-    );
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
