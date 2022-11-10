@@ -25,10 +25,11 @@ import {
 import React, { useEffect, useState } from "react";
 import "./App.scss";
 import { IWallProps, Wall } from "./Wall";
+import { Wedge } from "./Wedge";
 import { IForce, Weight } from "./Weight";
 export interface ISimulationElement {
-  color: string;
-  mass: number;
+  color?: string;
+  mass?: number;
   pendulum?: boolean;
   radius?: number;
   startPosX: number;
@@ -36,6 +37,8 @@ export interface ISimulationElement {
   startVelX?: number;
   startVelY?: number;
   type: string;
+  height?: number;
+  width?: number;
 }
 
 function App() {
@@ -53,6 +56,7 @@ function App() {
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(true);
   const [pendulum, setPendulum] = useState(false);
+  const [wedge, setWedge] = useState(false);
 
   const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
@@ -78,6 +82,19 @@ function App() {
     handleClose();
   };
 
+  const addWedge = () => {
+    setWedge(true);
+    const wedge: ISimulationElement = {
+      startPosX: 50,
+      startPosY: window.innerHeight * 0.8,
+      height: 100,
+      width: 200,
+      type: "wedge",
+    };
+    setSimulationElements((state) => [...state, wedge]);
+    handleClose();
+  };
+
   const addPendulum = () => {
     setPendulum(true);
     const weight: ISimulationElement = {
@@ -94,10 +111,14 @@ function App() {
   };
 
   useEffect(() => {
-    const walls: IWallProps[] = [];
-    walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
-    setWallPositions(walls);
-  }, []);
+    if (!pendulum) {
+      const walls: IWallProps[] = [];
+      walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
+      setWallPositions(walls);
+    } else {
+      setWallPositions([]);
+    }
+  }, [pendulum]);
 
   setInterval(() => {
     setTimer(timer + 1);
@@ -147,10 +168,7 @@ function App() {
                   <nav aria-label="add simulation element options">
                     <List>
                       <ListItem disablePadding>
-                        <ListItemButton
-                          onClick={addWeight}
-                          disabled={simulationElements.length > 0}
-                        >
+                        <ListItemButton onClick={addWeight} disabled={pendulum}>
                           <ListItemIcon>
                             <AddCircleIcon />
                           </ListItemIcon>
@@ -170,8 +188,8 @@ function App() {
                       </ListItem>
                       <ListItem disablePadding>
                         <ListItemButton
-                          onClick={addPendulum}
-                          disabled={simulationElements.length > 0}
+                          onClick={addWedge}
+                          disabled={pendulum || wedge}
                         >
                           <ListItemIcon>
                             <AddCircleIcon />
@@ -207,15 +225,19 @@ function App() {
             <div className="mechanicsSimulationElements">
               {simulationElements.map((element, index) => {
                 if (element.type === "weight") {
+                  let gravityMagnitude = 9.81;
+                  if (element.mass && element.mass != undefined) {
+                    gravityMagnitude *= element.mass;
+                  }
                   const forceOfGravity: IForce = {
                     description: "Gravity",
-                    magnitude: element.mass * 9.81,
+                    magnitude: gravityMagnitude,
                     directionInDegrees: 270,
                   };
                   return (
                     <div key={index}>
                       <Weight
-                        color={element.color}
+                        color={element.color ?? "red"}
                         displayXPosition={positionXDisplay}
                         displayYPosition={positionYDisplay}
                         displayXVelocity={velocityXDisplay}
@@ -223,7 +245,7 @@ function App() {
                         elasticCollisions={elasticCollisions}
                         forces={[forceOfGravity]}
                         incrementTime={timer}
-                        mass={element.mass}
+                        mass={element.mass ?? 1}
                         paused={simulationPaused}
                         pendulum={element.pendulum ?? false}
                         radius={element.radius ?? 5}
@@ -248,6 +270,16 @@ function App() {
                         walls={wallPositions}
                         xMax={window.innerWidth * 0.7}
                         yMax={window.innerHeight * 0.8}
+                      />
+                    </div>
+                  );
+                } else if (element.type === "wedge") {
+                  return (
+                    <div key={index}>
+                      <Wedge
+                        startWidth={element.width ?? 100}
+                        startHeight={element.height ?? 100}
+                        startLeft={element.startPosX}
                       />
                     </div>
                   );

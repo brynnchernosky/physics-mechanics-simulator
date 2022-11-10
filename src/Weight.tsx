@@ -1,9 +1,6 @@
-import { sign } from "node:crypto";
-import { isAbsolute } from "node:path/win32";
-import { useState, useEffect, useCallback } from "react";
-import { couldStartTrivia } from "typescript";
+import { InputAdornment, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { IWallProps } from "./Wall";
-import { OutlinedInput, TextField, InputAdornment } from "@mui/material";
 import "./Weight.scss";
 
 export interface IForce {
@@ -251,8 +248,6 @@ export const Weight = (props: IWeightProps) => {
       magnitude: mag,
       directionInDegrees: angle,
     };
-
-    console.log(angle);
 
     return [forceOfGravity, forceOfTension];
   };

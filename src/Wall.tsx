@@ -19,8 +19,8 @@ export const Wall = (props: IWallProps) => {
     width: length + "%",
     height: 5 + "px",
     position: "absolute" as "absolute",
-    left: xPos + "%",
-    top: yPos + "%",
+    left: 0,
+    top: window.innerHeight * 0.8 + "px",
     backgroundColor: "#6c7b8b",
     zIndex: -1000,
   };
