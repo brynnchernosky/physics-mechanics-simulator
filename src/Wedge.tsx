@@ -10,8 +10,6 @@ export interface IWedgeProps {
 export const Wedge = (props: IWedgeProps) => {
   const { startHeight, startWidth, startLeft } = props;
 
-  const [height, setHeight] = useState(startHeight);
-  const [width, setWidth] = useState(startWidth);
   const [angleInRadians, setAngleInRadians] = useState(
     Math.atan(startHeight / startWidth)
   );
@@ -24,21 +22,40 @@ export const Wedge = (props: IWedgeProps) => {
     const coordinatePair1 =
       Math.round(left) + "," + Math.round(window.innerHeight * 0.8) + " ";
     const coordinatePair2 =
-      Math.round(left + width) +
+      Math.round(left + startWidth) +
       "," +
       Math.round(window.innerHeight * 0.8) +
       " ";
     const coordinatePair3 =
-      Math.round(left) + "," + Math.round(window.innerHeight * 0.8 - height);
+      Math.round(left) +
+      "," +
+      Math.round(window.innerHeight * 0.8 - startHeight);
     const coord = coordinatePair1 + coordinatePair2 + coordinatePair3;
     setCoordinates(coord);
-  }, [left, width, height]);
+    console.log("generate new points");
+  }, [left, startWidth, startHeight]);
 
   return (
-    <div style={{ position: "absolute", left: "0", top: "0", zIndex: -5 }}>
-      <svg width={window.innerWidth + "px"} height={window.innerHeight + "px"}>
-        <polygon points={coordinates} style={{ fill: "sienna" }} />
-      </svg>
+    <div>
+      <div style={{ position: "absolute", left: "0", top: "0", zIndex: -5 }}>
+        <svg
+          width={window.innerWidth + "px"}
+          height={window.innerHeight + "px"}
+        >
+          <polygon points={coordinates} style={{ fill: "burlywood" }} />
+        </svg>
+      </div>
+
+      <p
+        style={{
+          position: "absolute",
+          zIndex: 500,
+          left: Math.round(left + startWidth - 80) + "px",
+          top: Math.round(window.innerHeight * 0.8 - 40) + "px",
+        }}
+      >
+        {Math.round(((angleInRadians * 180) / Math.PI) * 100) / 100}°
+      </p>
     </div>
   );
 };

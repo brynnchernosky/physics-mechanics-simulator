@@ -71,9 +71,6 @@ function App() {
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
-  const [wedge, setWedge] = useState(false);
-  const [wedgeWidth, setWedgeWidth] = useState(400);
-  const [wedgeHeight, setWedgeHeight] = useState(200);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -237,6 +234,46 @@ function App() {
       alert(
         "Coefficient of kinetic friction must be less than coefficient of static friction!"
       );
+    }
+  };
+
+  // Wedge angle
+  const [wedge, setWedge] = useState(false);
+  const [wedgeHeight, setWedgeHeight] = useState(200);
+  const [wedgeWidth, setWedgeWidth] = useState(400);
+  const [wedgeAngle, setWedgeAngle] = React.useState<
+    number | string | Array<number | string>
+  >((Math.atan(200 / 400) * 180) / Math.PI);
+  const handleWedgeAngleChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setWedgeAngle(event.target.value === "" ? "" : Number(event.target.value));
+    if (Number(event.target.value) < 50) {
+      setWedgeWidth(400);
+      setWedgeHeight(
+        Math.tan((Number(event.target.value) * Math.PI) / 180) * 400
+      );
+    } else if (Number(event.target.value) < 70) {
+      setWedgeWidth(200);
+      setWedgeHeight(
+        Math.tan((Number(event.target.value) * Math.PI) / 180) * 200
+      );
+    } else if (Number(event.target.value) < 80) {
+      setWedgeWidth(100);
+      setWedgeHeight(
+        Math.tan((Number(event.target.value) * Math.PI) / 180) * 100
+      );
+    }
+  };
+  const handleWedgeAngleBlur = () => {
+    if (wedgeAngle < 1) {
+      setWedgeAngle(1);
+      setWedgeWidth(400);
+      setWedgeHeight(Math.tan((1 * Math.PI) / 180) * 400);
+    } else if (wedgeAngle > 80) {
+      setWedgeAngle(79);
+      setWedgeWidth(50);
+      setWedgeHeight(Math.tan((89 * Math.PI) / 180) * 50);
     }
   };
 
@@ -525,40 +562,34 @@ function App() {
                   <Grid container spacing={2} alignItems="center">
                     <Grid item xs>
                       <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                        <p>&theta;</p>
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Input
+                        value={wedgeAngle}
+                        size="medium"
+                        onChange={handleWedgeAngleChange}
+                        onBlur={handleWedgeAngleBlur}
+                      />
+                    </Grid>
+                  </Grid>
+                </FormControl>
+                <FormControl>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs>
+                      <Typography id="input-slider" sx={{ textAlign: "right" }}>
                         <p>
                           &mu; <sub>s</sub>
                         </p>
                       </Typography>
                     </Grid>
-                    {/* <Grid item xs>
-                      <Slider
-                        value={
-                          typeof coefficientOfStaticFriction === "number"
-                            ? coefficientOfStaticFriction
-                            : 0
-                        }
-                        onChange={handleCoefficientOfStaticFrictionSliderChange}
-                        aria-labelledby="input-slider"
-                        defaultValue={0}
-                        step={0.1}
-                        marks
-                        min={0}
-                        max={1}
-                      />
-                    </Grid> */}
                     <Grid item>
                       <Input
                         value={coefficientOfStaticFriction}
                         size="medium"
                         onChange={handleCoefficientOfStaticFrictionInputChange}
                         onBlur={handleCoefficientOfStaticFrictionBlur}
-                        inputProps={{
-                          step: 0.1,
-                          min: 0,
-                          max: 1,
-                          type: "number",
-                          "aria-labelledby": "input-slider",
-                        }}
                       />
                     </Grid>
                   </Grid>
@@ -572,37 +603,12 @@ function App() {
                         </p>
                       </Typography>
                     </Grid>
-                    {/* <Grid item xs>
-                      <Slider
-                        value={
-                          typeof coefficientOfKineticFriction === "number"
-                            ? coefficientOfKineticFriction
-                            : 0
-                        }
-                        onChange={
-                          handleCoefficientOfKineticFrictionSliderChange
-                        }
-                        aria-labelledby="input-slider"
-                        defaultValue={0}
-                        step={0.1}
-                        marks
-                        min={0}
-                        max={1}
-                      />
-                    </Grid> */}
                     <Grid item>
                       <Input
                         value={coefficientOfKineticFriction}
                         size="medium"
                         onChange={handleCoefficientOfKineticFrictionInputChange}
                         onBlur={handleCoefficientOfKineticFrictionBlur}
-                        inputProps={{
-                          step: 0.1,
-                          min: 0,
-                          max: 1,
-                          type: "number",
-                          "aria-labelledby": "input-slider",
-                        }}
                       />
                     </Grid>
                   </Grid>
@@ -611,6 +617,7 @@ function App() {
             )}
             {wedge && !simulationPaused && (
               <Typography>
+                <p>&theta;: {Math.round(Number(wedgeAngle) * 100) / 100}°</p>
                 <p>
                   &mu; <sub>s</sub>: {coefficientOfStaticFriction}
                 </p>
