@@ -32,8 +32,11 @@ export const Wedge = (props: IWedgeProps) => {
       Math.round(window.innerHeight * 0.8 - startHeight);
     const coord = coordinatePair1 + coordinatePair2 + coordinatePair3;
     setCoordinates(coord);
-    console.log("generate new points");
   }, [left, startWidth, startHeight]);
+
+  useEffect(() => {
+    setAngleInRadians(Math.atan(startHeight / startWidth));
+  }, [startWidth, startHeight]);
 
   return (
     <div>

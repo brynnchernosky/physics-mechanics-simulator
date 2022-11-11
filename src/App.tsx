@@ -239,42 +239,91 @@ function App() {
 
   // Wedge angle
   const [wedge, setWedge] = useState(false);
-  const [wedgeHeight, setWedgeHeight] = useState(200);
+  const [wedgeHeight, setWedgeHeight] = useState(
+    Math.tan((26 * Math.PI) / 180) * 400
+  );
   const [wedgeWidth, setWedgeWidth] = useState(400);
   const [wedgeAngle, setWedgeAngle] = React.useState<
     number | string | Array<number | string>
-  >((Math.atan(200 / 400) * 180) / Math.PI);
+  >(26);
   const handleWedgeAngleChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setWedgeAngle(event.target.value === "" ? "" : Number(event.target.value));
-    if (Number(event.target.value) < 50) {
-      setWedgeWidth(400);
+    let angle = Number(event.target.value);
+    let width = 0;
+    if (angle < 50) {
+      width = 400;
+      setWedgeWidth(width);
       setWedgeHeight(
         Math.tan((Number(event.target.value) * Math.PI) / 180) * 400
       );
-    } else if (Number(event.target.value) < 70) {
-      setWedgeWidth(200);
+    } else if (angle < 70) {
+      width = 200;
+      setWedgeWidth(width);
       setWedgeHeight(
         Math.tan((Number(event.target.value) * Math.PI) / 180) * 200
       );
-    } else if (Number(event.target.value) < 80) {
-      setWedgeWidth(100);
+    } else {
+      width = 100;
+      setWedgeWidth(width);
       setWedgeHeight(
         Math.tan((Number(event.target.value) * Math.PI) / 180) * 100
       );
     }
-  };
-  const handleWedgeAngleBlur = () => {
-    if (wedgeAngle < 1) {
-      setWedgeAngle(1);
-      setWedgeWidth(400);
-      setWedgeHeight(Math.tan((1 * Math.PI) / 180) * 400);
-    } else if (wedgeAngle > 80) {
-      setWedgeAngle(79);
-      setWedgeWidth(50);
-      setWedgeHeight(Math.tan((89 * Math.PI) / 180) * 50);
+
+    // update weight position based on updated wedge width/height
+    let yPos = (width - 50) * Math.tan((angle * Math.PI) / 180);
+    if (angle < 40) {
+      yPos += Math.sqrt(angle);
+    } else if (angle < 58) {
+      yPos += angle / 2;
+    } else if (angle < 68) {
+      yPos += angle;
+    } else if (angle < 70) {
+      yPos += 2 * angle;
+    } else if (angle < 75) {
+      yPos += angle * 1.5;
+    } else if (angle < 78) {
+      yPos += angle * 2;
+    } else if (angle < 79) {
+      yPos += angle * 2.5;
+    } else if (angle < 80) {
+      yPos += angle * 4;
+    } else {
+      yPos += angle * 5;
     }
+    setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
+    setPositionYDisplay(yPos);
+    setDisplayChange(!displayChange);
+    console.log("change");
+  };
+
+  const handleWedgeAngleBlur = () => {
+    let width = 0;
+    let angle = 0;
+    if (wedgeAngle < 1) {
+      angle = 1;
+      width = 400;
+      setWedgeAngle(angle);
+      setWedgeWidth(width);
+      setWedgeHeight(Math.tan((1 * Math.PI) / 180) * 400);
+      // update weight position based on updated wedge width/height
+      setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
+      setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
+      setDisplayChange(!displayChange);
+    } else if (wedgeAngle > 80) {
+      angle = 79;
+      width = 50;
+      setWedgeAngle(angle);
+      setWedgeWidth(width);
+      setWedgeHeight(Math.tan((89 * Math.PI) / 180) * 50);
+      // update weight position based on updated wedge width/height
+      setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
+      setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
+      setDisplayChange(!displayChange);
+    }
+    console.log("blur");
   };
 
   // Add/remove elements menu
