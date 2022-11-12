@@ -36,6 +36,7 @@ export interface IWeightProps {
   setPendulumLength: (val: number) => any;
   setStartPendulumAngle: (val: number) => any;
   showAcceleration: boolean;
+  pendulumAngle: number;
   showForces: boolean;
   showVelocity: boolean;
   startPosX: number;
@@ -69,6 +70,7 @@ export const Weight = (props: IWeightProps) => {
     pendulum,
     wedge,
     radius,
+    pendulumAngle,
     reset,
     setDisplayXAcceleration,
     setDisplayXPosition,
@@ -568,6 +570,16 @@ export const Weight = (props: IWeightProps) => {
               strokeWidth="10"
             />
           </svg>
+          <p
+            style={{
+              position: "absolute",
+              zIndex: -1,
+              left: xMax / 2 + "px",
+              top: 30 + "px",
+            }}
+          >
+            {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
+          </p>
         </div>
       )}
       {!dragging && showAcceleration && (

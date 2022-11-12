@@ -311,10 +311,10 @@ function App() {
     let width = 0;
     let angle = 0;
     let height = 0;
-    if (wedgeAngle < 1) {
-      angle = 1;
+    if (wedgeAngle < 0) {
+      angle = 0;
       width = 400;
-      height = Math.tan((1 * Math.PI) / 180) * 400;
+      height = 0;
       setWedgeAngle(angle);
       setWedgeWidth(width);
       setWedgeHeight(height);
@@ -480,6 +480,7 @@ function App() {
                         incrementTime={timer}
                         mass={element.mass ?? 1}
                         paused={simulationPaused}
+                        pendulumAngle={pendulumAngle}
                         pendulum={element.pendulum ?? false}
                         wedge={element.wedge ?? false}
                         radius={element.radius ?? 5}
@@ -640,6 +641,13 @@ function App() {
                         size="medium"
                         onChange={handleWedgeAngleChange}
                         onBlur={handleWedgeAngleBlur}
+                        inputProps={{
+                          step: 1,
+                          min: 0,
+                          max: 79,
+                          type: "number",
+                          "aria-labelledby": "input-slider",
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -659,6 +667,13 @@ function App() {
                         size="medium"
                         onChange={handleCoefficientOfStaticFrictionInputChange}
                         onBlur={handleCoefficientOfStaticFrictionBlur}
+                        inputProps={{
+                          step: 0.1,
+                          min: 0,
+                          max: 1,
+                          type: "number",
+                          "aria-labelledby": "input-slider",
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -678,6 +693,13 @@ function App() {
                         size="medium"
                         onChange={handleCoefficientOfKineticFrictionInputChange}
                         onBlur={handleCoefficientOfKineticFrictionBlur}
+                        inputProps={{
+                          step: 0.1,
+                          min: 0,
+                          max: 1,
+                          type: "number",
+                          "aria-labelledby": "input-slider",
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -693,6 +715,11 @@ function App() {
                 <p>
                   &mu; <sub>k</sub>: {coefficientOfKineticFriction}
                 </p>
+              </Typography>
+            )}
+            {pendulum && !simulationPaused && (
+              <Typography>
+                <p>&theta;: {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°</p>
               </Typography>
             )}
           </div>
