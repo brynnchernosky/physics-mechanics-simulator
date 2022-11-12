@@ -113,6 +113,7 @@ function App() {
     setSimulationElements([wedge, weight]);
     setStartForces([forceOfGravity]);
     updateForcesWithFriction(Number(coefficientOfStaticFriction));
+    changeWedgeAngle(26);
     handleClose();
   };
 
@@ -174,23 +175,24 @@ function App() {
     }
   };
 
-  const updateForcesWithFriction = (coefficient: number) => {
+  const updateForcesWithFriction = (
+    coefficient: number,
+    width: number = wedgeWidth,
+    height: number = wedgeHeight
+  ) => {
     const normalForce: IForce = {
       description: "Normal Force",
-      magnitude:
-        forceOfGravity.magnitude *
-        Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+      magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
       directionInDegrees:
-        180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
     };
     let frictionForce: IForce = {
       description: "Static Friction Force",
       magnitude:
         coefficient *
         forceOfGravity.magnitude *
-        Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
-      directionInDegrees:
-        180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        Math.cos(Math.atan(height / width)),
+      directionInDegrees: 180 - (Math.atan(height / width) * 180) / Math.PI,
     };
     // reduce magnitude of friction force if necessary such that block cannot slide up plane
     let yForce = -forceOfGravity.magnitude;
@@ -246,30 +248,32 @@ function App() {
   const [wedgeAngle, setWedgeAngle] = React.useState<
     number | string | Array<number | string>
   >(26);
+
   const handleWedgeAngleChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setWedgeAngle(event.target.value === "" ? "" : Number(event.target.value));
-    let angle = Number(event.target.value);
+    changeWedgeAngle(Number(event.target.value));
+  };
+
+  const changeWedgeAngle = (angle: number) => {
     let width = 0;
+    let height = 0;
     if (angle < 50) {
       width = 400;
+      height = Math.tan((angle * Math.PI) / 180) * 400;
       setWedgeWidth(width);
-      setWedgeHeight(
-        Math.tan((Number(event.target.value) * Math.PI) / 180) * 400
-      );
+      setWedgeHeight(height);
     } else if (angle < 70) {
       width = 200;
+      height = Math.tan((angle * Math.PI) / 180) * 200;
       setWedgeWidth(width);
-      setWedgeHeight(
-        Math.tan((Number(event.target.value) * Math.PI) / 180) * 200
-      );
+      setWedgeHeight(height);
     } else {
       width = 100;
+      height = Math.tan((angle * Math.PI) / 180) * 100;
       setWedgeWidth(width);
-      setWedgeHeight(
-        Math.tan((Number(event.target.value) * Math.PI) / 180) * 100
-      );
+      setWedgeHeight(height);
     }
 
     // update weight position based on updated wedge width/height
@@ -281,49 +285,65 @@ function App() {
     } else if (angle < 68) {
       yPos += angle;
     } else if (angle < 70) {
-      yPos += 2 * angle;
+      yPos += angle * 1.3;
     } else if (angle < 75) {
       yPos += angle * 1.5;
     } else if (angle < 78) {
       yPos += angle * 2;
     } else if (angle < 79) {
-      yPos += angle * 2.5;
+      yPos += angle * 2.25;
     } else if (angle < 80) {
-      yPos += angle * 4;
+      yPos += angle * 2.6;
     } else {
-      yPos += angle * 5;
+      yPos += angle * 3;
     }
     setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
     setPositionYDisplay(yPos);
     setDisplayChange(!displayChange);
-    console.log("change");
+    updateForcesWithFriction(
+      Number(coefficientOfStaticFriction),
+      width,
+      height
+    );
   };
 
   const handleWedgeAngleBlur = () => {
     let width = 0;
     let angle = 0;
+    let height = 0;
     if (wedgeAngle < 1) {
       angle = 1;
       width = 400;
+      height = Math.tan((1 * Math.PI) / 180) * 400;
       setWedgeAngle(angle);
       setWedgeWidth(width);
-      setWedgeHeight(Math.tan((1 * Math.PI) / 180) * 400);
+      setWedgeHeight(height);
       // update weight position based on updated wedge width/height
       setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
       setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
       setDisplayChange(!displayChange);
+      updateForcesWithFriction(
+        Number(coefficientOfStaticFriction),
+        width,
+        height
+      );
     } else if (wedgeAngle > 80) {
       angle = 79;
       width = 50;
+      height = Math.tan((89 * Math.PI) / 180) * 50;
       setWedgeAngle(angle);
       setWedgeWidth(width);
-      setWedgeHeight(Math.tan((89 * Math.PI) / 180) * 50);
+      setWedgeHeight(height);
       // update weight position based on updated wedge width/height
       setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
       setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
       setDisplayChange(!displayChange);
+      updateForcesWithFriction(
+        Number(coefficientOfStaticFriction),
+        width,
+        height
+      );
     }
-    console.log("blur");
   };
 
   // Add/remove elements menu
