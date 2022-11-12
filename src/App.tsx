@@ -4,6 +4,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
+import MenuIcon from "@mui/icons-material/Menu";
 import VolumeUp from "@mui/icons-material/VolumeUp";
 import {
   Checkbox,
@@ -450,6 +451,7 @@ function App() {
                             setSimulationElements([]);
                             setUpdatedForces([forceOfGravity]);
                             setStartForces([forceOfGravity]);
+                            setSimulationPaused(true);
                             handleClose();
                           }}
                         >
@@ -545,7 +547,7 @@ function App() {
           </div>
         </div>
         <div className="mechanicsSimulationEquationContainer">
-          <div className="mechanicsSimulationFooter">
+          <div className="mechanicsSimulationControls">
             <Stack direction="row" spacing={1}>
               {simulationPaused && (
                 <Tooltip title="Start simulation">
@@ -581,6 +583,15 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
+            <Tooltip title="Change mode">
+              <IconButton
+                onClick={() => {
+                  //  TODO;
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Tooltip>
           </div>
 
           <div>
@@ -719,7 +730,10 @@ function App() {
             )}
             {pendulum && !simulationPaused && (
               <Typography>
-                <p>&theta;: {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°</p>
+                <p>
+                  &theta;:{" "}
+                  {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
+                </p>
               </Typography>
             )}
           </div>
