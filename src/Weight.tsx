@@ -377,7 +377,26 @@ export const Weight = (props: IWeightProps) => {
         directionInDegrees:
           180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
       };
-      setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+      // reduce magnitude of friction force if necessary such that block cannot slide up plane
+      let yForce = -forceOfGravity.magnitude;
+      yForce +=
+        normalForce.magnitude *
+        Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
+      yForce +=
+        frictionForce.magnitude *
+        Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
+      if (yForce > 0) {
+        frictionForce.magnitude =
+          (-normalForce.magnitude *
+            Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
+            forceOfGravity.magnitude) /
+          Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
+      }
+      if (coefficientOfKineticFriction != 0) {
+        setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+      } else {
+        setUpdatedForces([forceOfGravity, normalForce]);
+      }
     }
   }, [xVelocity]);
 
