@@ -7,16 +7,16 @@
     "variablesForQuestionSetup": ["theta"],
     "question": "What is the minimum coefficient of static friction? What are the forces acting on the weight?",
     "answerParts": [
+      "coefficient of static friction",
       "force of gravity",
       "normal force",
-      "force of static friction",
-      "coefficient of static friction"
+      "force of static friction"
     ],
     "answerSolutions": [
+      "((mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)) / (mass * gravity * cos(theta))",
       "mass * gravity",
       "mass * gravity * cos(theta)",
-      "(mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)",
-      "((mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)) / (mass * gravity * cos(theta))"
+      "(mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)"
     ]
   }
 ]
