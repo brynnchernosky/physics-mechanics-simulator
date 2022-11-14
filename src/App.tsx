@@ -37,6 +37,7 @@ import "./App.scss";
 import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { IForce, Weight } from "./Weight";
+import questions from "./Questions.json";
 
 export interface ISimulationElement {
   color?: string;
@@ -405,6 +406,100 @@ function App() {
     forceOfGravity,
   ]);
 
+  const [selectedQuestion, setSelectedQuestion] = useState(questions[0]);
+  const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
+    number[]
+  >([45]);
+  const [fullQuestion, setFullQuestion] = useState("");
+  const [answerInputs, setAnswerInputs] = useState(<div></div>);
+
+  useEffect(() => {
+    let q = "";
+    for (let i = 0; i < selectedQuestion.questionSetup.length; i++) {
+      q += selectedQuestion.questionSetup[i];
+      if (i != selectedQuestion.questionSetup.length - 1) {
+        q += selectedQuestionVariables[i];
+      }
+    }
+    setFullQuestion(q);
+  }, [selectedQuestion]);
+
+  useEffect(() => {
+    let answerInput = [];
+    for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
+      if (selectedQuestion.answerParts[i] == "force of gravity") {
+        answerInput.push(
+          <Input
+            value={coefficientOfStaticFriction}
+            size="medium"
+            onChange={handleCoefficientOfStaticFrictionInputChange}
+            onBlur={handleCoefficientOfStaticFrictionBlur}
+            inputProps={{
+              step: 0.1,
+              min: 0,
+              max: 1,
+              type: "number",
+              "aria-labelledby": "input-slider",
+            }}
+          />
+        );
+      } else if (selectedQuestion.answerParts[i] == "normal force") {
+        answerInput.push(
+          <Input
+            value={coefficientOfStaticFriction}
+            size="medium"
+            onChange={handleCoefficientOfStaticFrictionInputChange}
+            onBlur={handleCoefficientOfStaticFrictionBlur}
+            inputProps={{
+              step: 0.1,
+              min: 0,
+              max: 1,
+              type: "number",
+              "aria-labelledby": "input-slider",
+            }}
+          />
+        );
+      } else if (
+        selectedQuestion.answerParts[i] == "force of static friction"
+      ) {
+        answerInput.push(
+          <Input
+            value={coefficientOfStaticFriction}
+            size="medium"
+            onChange={handleCoefficientOfStaticFrictionInputChange}
+            onBlur={handleCoefficientOfStaticFrictionBlur}
+            inputProps={{
+              step: 0.1,
+              min: 0,
+              max: 1,
+              type: "number",
+              "aria-labelledby": "input-slider",
+            }}
+          />
+        );
+      } else if (
+        selectedQuestion.answerParts[i] == "coefficient of static friction"
+      ) {
+        answerInput.push(
+          <Input
+            value={coefficientOfStaticFriction}
+            size="medium"
+            onChange={handleCoefficientOfStaticFrictionInputChange}
+            onBlur={handleCoefficientOfStaticFrictionBlur}
+            inputProps={{
+              step: 0.1,
+              min: 0,
+              max: 1,
+              type: "number",
+              "aria-labelledby": "input-slider",
+            }}
+          />
+        );
+      }
+    }
+    setAnswerInputs(<div>{answerInput}</div>);
+  }, [selectedQuestion]);
+
   return (
     <div>
       <div className="mechanicsSimulationContainer">
@@ -498,12 +593,13 @@ function App() {
                     </Tooltip>
                   </div>
                   <div className="wordProblemBox">
-                    <div className="question"> This is a question </div>
+                    <div className="question">
+                      <p>{fullQuestion}</p>
+                      <p>{selectedQuestion.question}</p>
+                    </div>
                     <div className="answer">
                       {" "}
-                      <p>
-                        This is a place to answer the question if applicable
-                      </p>
+                      <p>|This is a place to answer the question|</p>
                     </div>
                   </div>
                 </div>
