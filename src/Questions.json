@@ -1,0 +1,24 @@
+{
+  "questions": [
+    {
+      "questionSetup": [
+        "There is a weight on an inclined plane. The plane is at a ",
+        " degree angle from the ground. The system is in equilibrium (the net force on the weight is 0)."
+      ],
+      "variablesForQuestionSetup": ["theta"],
+      "question": "What is the minimum coefficient of static friction? What are the forces acting on the weight?",
+      "answerParts": [
+        "force of gravity",
+        "normal force",
+        "force of static friction",
+        "coefficient of static friction"
+      ],
+      "answerSolutions": [
+        "mass * gravity",
+        "mass * gravity * cos(theta)",
+        "(mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)",
+        "((mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)) / (mass * gravity * cos(theta))"
+      ]
+    }
+  ]
+}

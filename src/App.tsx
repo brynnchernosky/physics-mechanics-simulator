@@ -4,6 +4,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import MenuIcon from "@mui/icons-material/Menu";
 import VolumeUp from "@mui/icons-material/VolumeUp";
 import {
@@ -20,7 +21,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  MenuItem,
   Popover,
+  Select,
   Stack,
   TextField,
   Tooltip,
@@ -72,6 +75,8 @@ function App() {
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
+
+  const [mode, setMode] = useState<string>("Freeform");
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -347,6 +352,32 @@ function App() {
     }
   };
 
+  const clearSimulation = () => {
+    setPendulum(false);
+    setWedge(false);
+    setSimulationElements([]);
+    setUpdatedForces([forceOfGravity]);
+    setStartForces([forceOfGravity]);
+    setSimulationPaused(true);
+    handleClose();
+  };
+
+  useEffect(() => {
+    clearSimulation();
+    if (mode == "Freeform") {
+      // TODO
+    } else if (mode == "Review") {
+      setShowAcceleration(false);
+      setShowVelocity(false);
+      setShowForces(true);
+      // TODO
+    }
+  }, [mode]);
+
+  const generateNewQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // TODO
+  };
+
   // Add/remove elements menu
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
@@ -380,91 +411,103 @@ function App() {
         <div className="mechanicsSimulationContentContainer">
           <div className="mechanicsSimulationButtonsAndElements">
             <div className="mechanicsSimulationButtons">
-              <div>
+              {mode == "Freeform" && (
                 <div style={{ zIndex: 10000 }}>
                   <Tooltip title="Add/remove elements">
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
                     </IconButton>
                   </Tooltip>
+                  <Popover
+                    open={open}
+                    id={id}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                  >
+                    <nav aria-label="add simulation element options">
+                      <List>
+                        <ListItem disablePadding>
+                          <ListItemButton
+                            onClick={() => addWeight()}
+                            disabled={simulationElements.length > 0}
+                          >
+                            <ListItemIcon>
+                              <AddCircleIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Add free weight" />
+                          </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <ListItemButton
+                            onClick={() => {
+                              addPendulum();
+                            }}
+                            disabled={simulationElements.length > 0}
+                          >
+                            <ListItemIcon>
+                              <AddCircleIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Add pendulum" />
+                          </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <ListItemButton
+                            onClick={() => {
+                              addWedge();
+                            }}
+                            disabled={simulationElements.length > 0}
+                          >
+                            <ListItemIcon>
+                              <AddCircleIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Add wedge" />
+                          </ListItemButton>
+                        </ListItem>
+                      </List>
+                    </nav>
+                    <Divider />
+                    <nav aria-label="clear simulation elements">
+                      <List>
+                        <ListItem disablePadding>
+                          <ListItemButton
+                            disabled={simulationElements.length == 0}
+                            onClick={clearSimulation}
+                          >
+                            <ListItemIcon>
+                              <ClearIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Clear simulation" />
+                          </ListItemButton>
+                        </ListItem>
+                      </List>
+                    </nav>
+                  </Popover>
                 </div>
-                <Popover
-                  open={open}
-                  id={id}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                >
-                  <nav aria-label="add simulation element options">
-                    <List>
-                      <ListItem disablePadding>
-                        <ListItemButton
-                          onClick={() => addWeight()}
-                          disabled={simulationElements.length > 0}
-                        >
-                          <ListItemIcon>
-                            <AddCircleIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Add free weight" />
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem disablePadding>
-                        <ListItemButton
-                          onClick={() => {
-                            addPendulum();
-                          }}
-                          disabled={simulationElements.length > 0}
-                        >
-                          <ListItemIcon>
-                            <AddCircleIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Add pendulum" />
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem disablePadding>
-                        <ListItemButton
-                          onClick={() => {
-                            addWedge();
-                          }}
-                          disabled={simulationElements.length > 0}
-                        >
-                          <ListItemIcon>
-                            <AddCircleIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Add wedge" />
-                        </ListItemButton>
-                      </ListItem>
-                    </List>
-                  </nav>
-                  <Divider />
-                  <nav aria-label="clear simulation elements">
-                    <List>
-                      <ListItem disablePadding>
-                        <ListItemButton
-                          disabled={simulationElements.length == 0}
-                          onClick={() => {
-                            setPendulum(false);
-                            setWedge(false);
-                            setSimulationElements([]);
-                            setUpdatedForces([forceOfGravity]);
-                            setStartForces([forceOfGravity]);
-                            setSimulationPaused(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemIcon>
-                            <ClearIcon />
-                          </ListItemIcon>
-                          <ListItemText primary="Clear simulation" />
-                        </ListItemButton>
-                      </ListItem>
-                    </List>
-                  </nav>
-                </Popover>
-              </div>
+              )}
+              {mode == "Review" && (
+                <div>
+                  <div style={{ zIndex: 10000 }}>
+                    <Tooltip title="New question">
+                      <IconButton onClick={generateNewQuestion} size="large">
+                        <QuestionMarkIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                  <div className="wordProblemBox">
+                    <div className="question"> This is a question </div>
+                    <div className="answer">
+                      {" "}
+                      <p>
+                        This is a place to answer the question if applicable
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="mechanicsSimulationElements">
               {simulationElements.map((element, index) => {
@@ -583,160 +626,184 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
-            <Tooltip title="Change mode">
-              <IconButton
-                onClick={() => {
-                  //  TODO;
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            </Tooltip>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={mode}
+              label="Mode"
+              onChange={(e) => {
+                setMode(e.target.value as string);
+              }}
+            >
+              <MenuItem value="Freeform">Freeform</MenuItem>
+              <MenuItem value="Review">Review</MenuItem>
+            </Select>
           </div>
 
-          <div>
-            <FormControl component="fieldset">
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      defaultChecked
-                      disabled={wedge}
-                      onChange={() => setElasticCollisions(!elasticCollisions)}
-                    />
-                  }
-                  label="Make collisions inelastic"
-                  labelPlacement="start"
-                />
-                <Divider />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={() => setShowForces(!showForces)}
-                      defaultChecked
-                    />
-                  }
-                  label="Show force vectors"
-                  labelPlacement="start"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={() => setShowAcceleration(!showAcceleration)}
-                    />
-                  }
-                  label="Show acceleration vector"
-                  labelPlacement="start"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox onChange={() => setShowVelocity(!showVelocity)} />
-                  }
-                  label="Show velocity vector"
-                  labelPlacement="start"
-                />
-              </FormGroup>
-            </FormControl>
-            {wedge && simulationPaused && (
-              <Box>
-                <FormControl>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs>
-                      <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                        <p>&theta;</p>
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Input
-                        value={wedgeAngle}
-                        size="medium"
-                        onChange={handleWedgeAngleChange}
-                        onBlur={handleWedgeAngleBlur}
-                        inputProps={{
-                          step: 1,
-                          min: 0,
-                          max: 79,
-                          type: "number",
-                          "aria-labelledby": "input-slider",
-                        }}
+          {mode == "Freeform" && (
+            <div>
+              <FormControl component="fieldset">
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        disabled={wedge}
+                        value={elasticCollisions}
+                        onChange={() =>
+                          setElasticCollisions(!elasticCollisions)
+                        }
                       />
-                    </Grid>
-                  </Grid>
-                </FormControl>
-                <FormControl>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs>
-                      <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                        <p>
-                          &mu; <sub>s</sub>
-                        </p>
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Input
-                        value={coefficientOfStaticFriction}
-                        size="medium"
-                        onChange={handleCoefficientOfStaticFrictionInputChange}
-                        onBlur={handleCoefficientOfStaticFrictionBlur}
-                        inputProps={{
-                          step: 0.1,
-                          min: 0,
-                          max: 1,
-                          type: "number",
-                          "aria-labelledby": "input-slider",
-                        }}
+                    }
+                    label="Make collisions inelastic"
+                    labelPlacement="start"
+                  />
+                  <Divider />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={showForces}
+                        onChange={() => setShowForces(!showForces)}
                       />
-                    </Grid>
-                  </Grid>
-                </FormControl>
-                <FormControl>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs>
-                      <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                        <p>
-                          &mu; <sub>k</sub>
-                        </p>
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Input
-                        value={coefficientOfKineticFriction}
-                        size="medium"
-                        onChange={handleCoefficientOfKineticFrictionInputChange}
-                        onBlur={handleCoefficientOfKineticFrictionBlur}
-                        inputProps={{
-                          step: 0.1,
-                          min: 0,
-                          max: 1,
-                          type: "number",
-                          "aria-labelledby": "input-slider",
-                        }}
+                    }
+                    label="Show force vectors"
+                    labelPlacement="start"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={showAcceleration}
+                        onChange={() => setShowAcceleration(!showAcceleration)}
                       />
+                    }
+                    label="Show acceleration vector"
+                    labelPlacement="start"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={showVelocity}
+                        onChange={() => setShowVelocity(!showVelocity)}
+                      />
+                    }
+                    label="Show velocity vector"
+                    labelPlacement="start"
+                  />
+                </FormGroup>
+              </FormControl>
+              {wedge && simulationPaused && (
+                <Box>
+                  <FormControl>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs>
+                        <Typography
+                          id="input-slider"
+                          sx={{ textAlign: "right" }}
+                        >
+                          <p>&theta;</p>
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Input
+                          value={wedgeAngle}
+                          size="medium"
+                          onChange={handleWedgeAngleChange}
+                          onBlur={handleWedgeAngleBlur}
+                          inputProps={{
+                            step: 1,
+                            min: 0,
+                            max: 79,
+                            type: "number",
+                            "aria-labelledby": "input-slider",
+                          }}
+                        />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </FormControl>
-              </Box>
-            )}
-            {wedge && !simulationPaused && (
-              <Typography>
-                <p>&theta;: {Math.round(Number(wedgeAngle) * 100) / 100}°</p>
-                <p>
-                  &mu; <sub>s</sub>: {coefficientOfStaticFriction}
-                </p>
-                <p>
-                  &mu; <sub>k</sub>: {coefficientOfKineticFriction}
-                </p>
-              </Typography>
-            )}
-            {pendulum && !simulationPaused && (
-              <Typography>
-                <p>
-                  &theta;:{" "}
-                  {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
-                </p>
-              </Typography>
-            )}
-          </div>
+                  </FormControl>
+                  <FormControl>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs>
+                        <Typography
+                          id="input-slider"
+                          sx={{ textAlign: "right" }}
+                        >
+                          <p>
+                            &mu; <sub>s</sub>
+                          </p>
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Input
+                          value={coefficientOfStaticFriction}
+                          size="medium"
+                          onChange={
+                            handleCoefficientOfStaticFrictionInputChange
+                          }
+                          onBlur={handleCoefficientOfStaticFrictionBlur}
+                          inputProps={{
+                            step: 0.1,
+                            min: 0,
+                            max: 1,
+                            type: "number",
+                            "aria-labelledby": "input-slider",
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </FormControl>
+                  <FormControl>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs>
+                        <Typography
+                          id="input-slider"
+                          sx={{ textAlign: "right" }}
+                        >
+                          <p>
+                            &mu; <sub>k</sub>
+                          </p>
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Input
+                          value={coefficientOfKineticFriction}
+                          size="medium"
+                          onChange={
+                            handleCoefficientOfKineticFrictionInputChange
+                          }
+                          onBlur={handleCoefficientOfKineticFrictionBlur}
+                          inputProps={{
+                            step: 0.1,
+                            min: 0,
+                            max: 1,
+                            type: "number",
+                            "aria-labelledby": "input-slider",
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </FormControl>
+                </Box>
+              )}
+              {wedge && !simulationPaused && (
+                <Typography>
+                  <p>&theta;: {Math.round(Number(wedgeAngle) * 100) / 100}°</p>
+                  <p>
+                    &mu; <sub>s</sub>: {coefficientOfStaticFriction}
+                  </p>
+                  <p>
+                    &mu; <sub>k</sub>: {coefficientOfKineticFriction}
+                  </p>
+                </Typography>
+              )}
+              {pendulum && !simulationPaused && (
+                <Typography>
+                  <p>
+                    &theta;:{" "}
+                    {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
+                  </p>
+                </Typography>
+              )}
+            </div>
+          )}
           <div className="mechanicsSimulationEquation">
             <table>
               <tr>
