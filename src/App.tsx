@@ -78,6 +78,7 @@ function App() {
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
 
   const [mode, setMode] = useState<string>("Freeform");
+  const [topic, setTopic] = useState<string>("Incline Plane");
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -366,6 +367,11 @@ function App() {
   useEffect(() => {
     clearSimulation();
     if (mode == "Freeform") {
+      if (topic == "Incline Plane") {
+        setQuestionNumber(0);
+        setSelectedQuestion(questions.inclinePlane[0]);
+      }
+      generateNewQuestion();
       // TODO
     } else if (mode == "Review") {
       setShowAcceleration(false);
@@ -373,9 +379,18 @@ function App() {
       setShowForces(true);
       // TODO
     }
-  }, [mode]);
+  }, [mode, topic]);
 
-  const generateNewQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const generateNewQuestion = () => {
+    if (topic == "Incline Plane") {
+      if (questionNumber == questions.inclinePlane.length) {
+        setQuestionNumber(0);
+      } else {
+        setQuestionNumber(questionNumber + 1);
+      }
+      setSelectedQuestion(questions.inclinePlane[questionNumber]);
+      addWedge();
+    }
     // TODO
   };
 
@@ -406,7 +421,10 @@ function App() {
     forceOfGravity,
   ]);
 
-  const [selectedQuestion, setSelectedQuestion] = useState(questions[0]);
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const [selectedQuestion, setSelectedQuestion] = useState(
+    questions.inclinePlane[0]
+  );
   const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
     number[]
   >([45]);
@@ -634,7 +652,10 @@ function App() {
                 <div>
                   <div style={{ zIndex: 10000 }}>
                     <Tooltip title="New question">
-                      <IconButton onClick={generateNewQuestion} size="large">
+                      <IconButton
+                        onClick={() => generateNewQuestion()}
+                        size="large"
+                      >
                         <QuestionMarkIcon />
                       </IconButton>
                     </Tooltip>
@@ -766,6 +787,19 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
+            {mode == "Review" && (
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={topic}
+                label="Topic"
+                onChange={(e) => {
+                  setTopic(e.target.value as string);
+                }}
+              >
+                <MenuItem value="Incline Plane">Incline Plane</MenuItem>
+              </Select>
+            )}
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
