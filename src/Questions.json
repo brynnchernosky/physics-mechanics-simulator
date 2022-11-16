@@ -6,18 +6,24 @@
         " degree angle from the ground. The system is in equilibrium (the net force on the weight is 0)."
       ],
       "variablesForQuestionSetup": ["theta"],
-      "question": "What is the minimum coefficient of static friction? What are the forces acting on the weight?",
+      "question": "What are the magnitudes and directions of the forces acting on the weight? What is the minimum coefficient of static friction?",
       "answerParts": [
-        "coefficient of static friction",
         "force of gravity",
+        "angle of gravity",
         "normal force",
-        "force of static friction"
+        "angle of normal force",
+        "force of static friction",
+        "angle of static friction",
+        "coefficient of static friction"
       ],
       "answerSolutions": [
-        "((mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)) / (mass * gravity * cos(theta))",
         "mass * gravity",
+        "270",
         "mass * gravity * cos(theta)",
-        "(mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)"
+        "tbd",
+        "(mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)",
+        "tbd",
+        "((mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)) / (mass * gravity * cos(theta))"
       ]
     }
   ]

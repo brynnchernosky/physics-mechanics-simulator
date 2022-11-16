@@ -491,6 +491,7 @@ export const Weight = (props: IWeightProps) => {
   const [clickPositionY, setClickPositionY] = useState(0);
 
   const [weightMenuVisible, setWeightMenuVisible] = useState(false);
+  const epsilon = 0.0001;
 
   return (
     <div style={{ zIndex: -1000 }}>
@@ -715,6 +716,9 @@ export const Weight = (props: IWeightProps) => {
       {!dragging &&
         showForces &&
         updatedForces.map((force, index) => {
+          if (force.magnitude < epsilon) {
+            return;
+          }
           let arrowStartY: number = yPosition + radius;
           const arrowStartX: number = xPosition + radius;
           let arrowEndY: number =

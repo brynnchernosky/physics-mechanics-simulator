@@ -175,17 +175,27 @@ function App() {
     setCoefficientOfStaticFriction(
       event.target.value === "" ? "" : Number(event.target.value)
     );
-    updateForcesWithFriction(
-      event.target.value === "" ? 0 : Number(event.target.value)
-    );
+
+    if (mode == "Freeform") {
+      updateForcesWithFriction(
+        event.target.value === "" ? 0 : Number(event.target.value)
+      );
+    }
   };
+
   const handleCoefficientOfStaticFrictionBlur = () => {
     if (coefficientOfStaticFriction < 0) {
+      alert("Coefficient of static friction cannot be below zero");
       setCoefficientOfStaticFriction(0);
-      updateForcesWithFriction(0);
+      if (mode == "Freeform") {
+        updateForcesWithFriction(0);
+      }
     } else if (coefficientOfStaticFriction > 1) {
+      alert("Coefficient of static friction cannot be above 1");
       setCoefficientOfStaticFriction(1);
-      updateForcesWithFriction(1);
+      if (mode == "Freeform") {
+        updateForcesWithFriction(1);
+      }
     }
   };
 
@@ -403,6 +413,32 @@ function App() {
         //selectedQuestionVariables
         changeWedgeAngle(selectedQuestionVariables[index]);
       }
+
+      const forceOfGravityReview: IForce = {
+        description: "Gravity",
+        magnitude: 0,
+        directionInDegrees: 0,
+      };
+      const normalForceReview: IForce = {
+        description: "Normal Force",
+        magnitude: 0,
+        directionInDegrees: 0,
+      };
+      const staticFrictionForceReview: IForce = {
+        description: "Static Friction Force",
+        magnitude: 0,
+        directionInDegrees: 0,
+      };
+      setStartForces([
+        forceOfGravityReview,
+        normalForceReview,
+        staticFrictionForceReview,
+      ]);
+      setUpdatedForces([
+        forceOfGravityReview,
+        normalForceReview,
+        staticFrictionForceReview,
+      ]);
     }
     // TODO
   };
@@ -493,12 +529,62 @@ function App() {
               </Grid>
             </Grid>
           );
+        } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center" key={i}>
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  &theta;<sub>G</sub>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
+            </Grid>
+          );
         } else if (selectedQuestion.answerParts[i] == "normal force") {
           answerInput.push(
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
                   F<sub>N</sub>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
+            </Grid>
+          );
+        } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center" key={i}>
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  &theta;<sub>N</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -529,6 +615,34 @@ function App() {
                   <sub>
                     &mu;
                     <sub>s</sub>
+                  </sub>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
+            </Grid>
+          );
+        } else if (selectedQuestion.answerParts[i] == "angle of friction") {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center" key={i}>
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  &theta;
+                  <sub>
+                    F<sub>s</sub>
                   </sub>
                 </Typography>
               </Grid>
@@ -581,7 +695,9 @@ function App() {
       }
     }
     setAnswerInputs(
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", alignItems: "left" }}
+      >
         {answerInput}
       </div>
     );
