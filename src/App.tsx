@@ -120,8 +120,13 @@ function App() {
     setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
     setPositionYDisplay(200 + 50 + 25 - 2 * 50 + 5);
     setSimulationElements([wedge, weight]);
-    setStartForces([forceOfGravity]);
-    updateForcesWithFriction(Number(coefficientOfStaticFriction));
+    if (mode == "Freeform") {
+      setStartForces([forceOfGravity]);
+      updateForcesWithFriction(Number(coefficientOfStaticFriction));
+    } else {
+      setStartForces([]);
+      setUpdatedForces([]);
+    }
     changeWedgeAngle(26);
     handleClose();
   };
@@ -370,6 +375,7 @@ function App() {
       clearSimulation();
       // TODO
     } else if (mode == "Review") {
+      addWedge();
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
@@ -390,7 +396,8 @@ function App() {
         setQuestionNumber(questionNumber + 1);
       }
       setSelectedQuestion(questions.inclinePlane[questionNumber]);
-      addWedge();
+      //TODO generate values for variables
+      //TODO set values for variables
     }
     // TODO
   };
@@ -457,8 +464,7 @@ function App() {
             <Grid container spacing={2} alignItems="center" key={i}>
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  {"F"}
-                  <sub>{"G"}</sub>
+                  F<sub>G</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -483,8 +489,7 @@ function App() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  {"F"}
-                  <sub>{"N"}</sub>
+                  F<sub>N</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -511,10 +516,10 @@ function App() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  {"F"}
+                  F
                   <sub>
-                    {"&mu;"}
-                    <sub>{"s"}</sub>
+                    &mu;
+                    <sub>s</sub>
                   </sub>
                 </Typography>
               </Grid>
@@ -542,8 +547,8 @@ function App() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  {"&mu;"}
-                  <sub>{"s"}</sub>
+                  &mu;
+                  <sub>s</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -904,7 +909,7 @@ function App() {
                           id="input-slider"
                           sx={{ textAlign: "right" }}
                         >
-                          <p>&theta;</p>
+                          &theta;
                         </Typography>
                       </Grid>
                       <Grid item>
@@ -931,10 +936,8 @@ function App() {
                           id="input-slider"
                           sx={{ textAlign: "right" }}
                         >
-                          <p>
-                            &mu;
-                            <sub>{"s"}</sub>
-                          </p>
+                          &mu;
+                          <sub>s</sub>
                         </Typography>
                       </Grid>
                       <Grid item>
@@ -964,7 +967,7 @@ function App() {
                           sx={{ textAlign: "right" }}
                         >
                           &mu;
-                          <sub>{"k"}</sub>
+                          <sub>k</sub>
                         </Typography>
                       </Grid>
                       <Grid item>
@@ -990,22 +993,17 @@ function App() {
               )}
               {wedge && !simulationPaused && (
                 <Typography>
-                  {"&theta;:"} {Math.round(Number(wedgeAngle) * 100) / 100}{" "}
-                  {"°"}
-                  <p>
-                    &mu; <sub>s</sub>: {coefficientOfStaticFriction}
-                  </p>
-                  <p>
-                    &mu; <sub>k</sub>: {coefficientOfKineticFriction}
-                  </p>
+                  &theta;: {Math.round(Number(wedgeAngle) * 100) / 100}
+                  °<br />
+                  &mu; <sub>s</sub>: {coefficientOfStaticFriction}
+                  <br />
+                  &mu; <sub>k</sub>: {coefficientOfKineticFriction}
                 </Typography>
               )}
               {pendulum && !simulationPaused && (
                 <Typography>
-                  <p>
-                    &theta;:{" "}
-                    {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
-                  </p>
+                  &theta;:{" "}
+                  {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
                 </Typography>
               )}
             </div>
@@ -1024,16 +1022,15 @@ function App() {
                       title={
                         <React.Fragment>
                           <Typography color="inherit">Position</Typography>
-                          {"Equation: x"}
-                          <sub>{"1"}</sub>
-                          {"=x"}
-                          <sub>{"0"}</sub>
-                          {"+v"}
-                          <sub>{"0"}</sub>
-                          {"t+0.5at"}
-                          <sup>{"2"}</sup>
+                          Equation: x<sub>1</sub>
+                          =x
+                          <sub>0</sub>
+                          +v
+                          <sub>0</sub>
+                          t+0.5at
+                          <sup>2</sup>
                           <br />
-                          {"Units: m"}
+                          Units: m
                         </React.Fragment>
                       }
                       placement="top"
@@ -1094,13 +1091,12 @@ function App() {
                       title={
                         <React.Fragment>
                           <Typography color="inherit">Velocity</Typography>
-                          {"Equation: v"}
-                          <sub>{"1"}</sub>
-                          {"=v"}
-                          <sub>{"0"}</sub>
-                          {"+at"}
+                          Equation: v<sub>1</sub>
+                          =v
+                          <sub>0</sub>
+                          +at
                           <br />
-                          {"Units: m/s"}
+                          Units: m/s
                         </React.Fragment>
                       }
                       placement="top"
@@ -1167,11 +1163,10 @@ function App() {
                       title={
                         <React.Fragment>
                           <Typography color="inherit">Acceleration</Typography>
-                          {"Equation: a=F/m"}
-
+                          Equation: a=F/m
                           <br />
-                          {"Units: m/s"}
-                          <sup>{"2"}</sup>
+                          Units: m/s
+                          <sup>2</sup>
                         </React.Fragment>
                       }
                       placement="top"
