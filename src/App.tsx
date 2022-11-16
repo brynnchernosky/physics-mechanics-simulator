@@ -8,6 +8,7 @@ import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { styled } from "@mui/material/styles";
 import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import {
+  Button,
   Checkbox,
   Divider,
   FormControl,
@@ -453,12 +454,11 @@ function App() {
       for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
         if (selectedQuestion.answerParts[i] == "force of gravity") {
           answerInput.push(
-            <Grid container spacing={2} alignItems="center">
+            <Grid container spacing={2} alignItems="center" key={i}>
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  <p>
-                    F<sub>G</sub>
-                  </p>
+                  {"F"}
+                  <sub>{"G"}</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -483,9 +483,8 @@ function App() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  <p>
-                    F<sub>N</sub>
-                  </p>
+                  {"F"}
+                  <sub>{"N"}</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -512,12 +511,11 @@ function App() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  <p>
-                    F
-                    <sub>
-                      &mu;<sub>s</sub>
-                    </sub>
-                  </p>
+                  {"F"}
+                  <sub>
+                    {"&mu;"}
+                    <sub>{"s"}</sub>
+                  </sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -544,9 +542,8 @@ function App() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs>
                 <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  <p>
-                    &mu;<sub>s</sub>
-                  </p>
+                  {"&mu;"}
+                  <sub>{"s"}</sub>
                 </Typography>
               </Grid>
               <Grid item>
@@ -569,7 +566,11 @@ function App() {
         }
       }
     }
-    setAnswerInputs(<div style={{ display: "flex" }}>{answerInput}</div>);
+    setAnswerInputs(
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {answerInput}
+      </div>
+    );
   }, [selectedQuestion]);
 
   const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -665,27 +666,6 @@ function App() {
                       </List>
                     </nav>
                   </Popover>
-                </div>
-              )}
-              {mode == "Review" && (
-                <div>
-                  <div style={{ zIndex: 10000 }}>
-                    <Tooltip title="New question">
-                      <IconButton
-                        onClick={() => generateNewQuestion()}
-                        size="large"
-                      >
-                        <QuestionMarkIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                  <div className="wordProblemBox">
-                    <div className="question">
-                      <p>{fullQuestionSetup}</p>
-                      <p>{selectedQuestionQuestion}</p>
-                    </div>
-                    <div className="answer"> {answerInputs}</div>
-                  </div>
                 </div>
               )}
             </div>
@@ -832,6 +812,38 @@ function App() {
               <MenuItem value="Review">Review</MenuItem>
             </Select>
           </div>
+          {mode == "Review" && (
+            <div className="wordProblemBox">
+              <div className="question">
+                <p>{fullQuestionSetup}</p>
+                <p>{selectedQuestionQuestion}</p>
+              </div>
+              <div className="answer"> {answerInputs}</div>
+            </div>
+          )}
+
+          {mode == "Review" && (
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ zIndex: 10000 }}>
+                <Button
+                  onClick={() => generateNewQuestion()}
+                  variant="outlined"
+                >
+                  <Typography>New question</Typography>
+                </Button>
+              </div>
+              <div style={{ zIndex: 10000 }}>
+                <Button
+                  onClick={() => {
+                    /*TODO */
+                  }}
+                  variant="outlined"
+                >
+                  <Typography>Submit</Typography>
+                </Button>
+              </div>
+            </div>
+          )}
 
           {mode == "Freeform" && (
             <div>
@@ -920,7 +932,8 @@ function App() {
                           sx={{ textAlign: "right" }}
                         >
                           <p>
-                            &mu; <sub>s</sub>
+                            &mu;
+                            <sub>{"s"}</sub>
                           </p>
                         </Typography>
                       </Grid>
@@ -950,9 +963,8 @@ function App() {
                           id="input-slider"
                           sx={{ textAlign: "right" }}
                         >
-                          <p>
-                            &mu; <sub>k</sub>
-                          </p>
+                          &mu;
+                          <sub>{"k"}</sub>
                         </Typography>
                       </Grid>
                       <Grid item>
@@ -978,7 +990,8 @@ function App() {
               )}
               {wedge && !simulationPaused && (
                 <Typography>
-                  <p>&theta;: {Math.round(Number(wedgeAngle) * 100) / 100}°</p>
+                  {"&theta;:"} {Math.round(Number(wedgeAngle) * 100) / 100}{" "}
+                  {"°"}
                   <p>
                     &mu; <sub>s</sub>: {coefficientOfStaticFriction}
                   </p>
@@ -998,194 +1011,247 @@ function App() {
             </div>
           )}
           <div className="mechanicsSimulationEquation">
-            <table>
-              <tr>
-                <td>&nbsp;</td>
-                <td>X</td>
-                <td>Y</td>
-              </tr>
-              <tr>
-                <HtmlTooltip
-                  title={
-                    <React.Fragment>
-                      <Typography color="inherit">Position</Typography>
-                      <p>
-                        x<sub>1</sub>=x<sub>0</sub>+v<sub>0</sub>t+0.5at
-                        <sup>2</sup>
-                      </p>
-                    </React.Fragment>
-                  }
-                >
-                  <td>Position</td>
-                </HtmlTooltip>
-                <td>
-                  {(!simulationPaused || wedge) && positionXDisplay}{" "}
-                  {(!simulationPaused || wedge) && <p>m</p>}{" "}
-                  {simulationPaused && !wedge && (
-                    <TextField
-                      type="number"
-                      variant="standard"
-                      value={positionXDisplay}
-                      style={{ width: "7em" }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">m</InputAdornment>
-                        ),
-                      }}
-                      onChange={(e) => {
-                        const regex = /^[0-9\b]+$/;
-                        if (regex.test(e.target.value)) {
-                          setPositionXDisplay(parseFloat(e.target.value));
-                          setDisplayChange(!displayChange);
-                        }
-                      }}
-                    />
-                  )}{" "}
-                </td>
-                <td>
-                  {(!simulationPaused || wedge) && positionYDisplay}{" "}
-                  {(!simulationPaused || wedge) && <p>m</p>}{" "}
-                  {simulationPaused && !wedge && (
-                    <TextField
-                      type="number"
-                      variant="standard"
-                      value={positionYDisplay}
-                      style={{ width: "7em" }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">m</InputAdornment>
-                        ),
-                      }}
-                      onChange={(e) => {
-                        const regex = /^[0-9\b]+$/;
-                        if (regex.test(e.target.value)) {
-                          setPositionYDisplay(parseFloat(e.target.value));
-                          setDisplayChange(!displayChange);
-                        }
-                      }}
-                    />
-                  )}{" "}
-                </td>
-              </tr>
-              <tr>
-                <td>Velocity</td>
-                <td>
-                  {(!simulationPaused || pendulum || wedge) && velocityXDisplay}{" "}
-                  {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
-                  {simulationPaused && !pendulum && !wedge && (
-                    <TextField
-                      type="number"
-                      variant="standard"
-                      value={velocityXDisplay}
-                      style={{ width: "7em" }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">m/s</InputAdornment>
-                        ),
-                      }}
-                      onChange={(e) => {
-                        const regex = /^[0-9\b]+$/;
-                        if (regex.test(e.target.value)) {
-                          setVelocityXDisplay(parseFloat(e.target.value));
-                          setDisplayChange(!displayChange);
-                        }
-                      }}
-                    />
-                  )}{" "}
-                </td>
-                <td>
-                  {(!simulationPaused || pendulum || wedge) && velocityYDisplay}{" "}
-                  {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
-                  {simulationPaused && !pendulum && !wedge && (
-                    <TextField
-                      type="number"
-                      variant="standard"
-                      value={velocityYDisplay}
-                      style={{ width: "7em" }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">m/s</InputAdornment>
-                        ),
-                      }}
-                      onChange={(e) => {
-                        const regex = /^[0-9\b]+$/;
-                        if (regex.test(e.target.value)) {
-                          setVelocityYDisplay(parseFloat(e.target.value));
-                          setDisplayChange(!displayChange);
-                        }
-                      }}
-                    />
-                  )}{" "}
-                </td>
-              </tr>
-              <tr>
-                <td>Acceleration</td>
-                {/* <td>a=f/m</td> */}
-                <td>
-                  {accelerationXDisplay} m/s<sup>2</sup>
-                </td>
-                <td>
-                  {accelerationYDisplay} m/s<sup>2</sup>
-                </td>
-              </tr>
-            </table>
-          </div>
-          {simulationElements.length > 0 && simulationElements[0].pendulum && (
-            <div className="mechanicsSimulationEquation">
+            {mode == "Freeform" && (
               <table>
-                <tr>
-                  <td>&nbsp;</td>
-                  <td>Value</td>
-                </tr>
-                <tr>
-                  <td>Potential Energy</td>
-                  <td>
-                    {Math.round(
-                      pendulumLength * (1 - Math.cos(pendulumAngle)) * 9.81 * 10
-                    ) / 10}{" "}
-                    J
-                  </td>
-                </tr>
-                <tr>
-                  <td>Kinetic Energy</td>
-                  <td>
-                    {Math.round(
-                      (Math.round(
-                        pendulumLength *
-                          (1 - Math.cos(startPendulumAngle)) *
-                          9.81 *
-                          10
-                      ) /
-                        10 -
-                        Math.round(
+                <tbody>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>X</td>
+                    <td>Y</td>
+                  </tr>
+                  <tr>
+                    <Tooltip
+                      title={
+                        <React.Fragment>
+                          <Typography color="inherit">Position</Typography>
+                          {"Equation: x"}
+                          <sub>{"1"}</sub>
+                          {"=x"}
+                          <sub>{"0"}</sub>
+                          {"+v"}
+                          <sub>{"0"}</sub>
+                          {"t+0.5at"}
+                          <sup>{"2"}</sup>
+                          <br />
+                          {"Units: m"}
+                        </React.Fragment>
+                      }
+                      placement="top"
+                    >
+                      <td>Position</td>
+                    </Tooltip>
+                    <td>
+                      {(!simulationPaused || wedge) && positionXDisplay}{" "}
+                      {(!simulationPaused || wedge) && <p>m</p>}{" "}
+                      {simulationPaused && !wedge && (
+                        <TextField
+                          type="number"
+                          variant="standard"
+                          value={positionXDisplay}
+                          style={{ width: "7em" }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">m</InputAdornment>
+                            ),
+                          }}
+                          onChange={(e) => {
+                            const regex = /^[0-9\b]+$/;
+                            if (regex.test(e.target.value)) {
+                              setPositionXDisplay(parseFloat(e.target.value));
+                              setDisplayChange(!displayChange);
+                            }
+                          }}
+                        />
+                      )}{" "}
+                    </td>
+                    <td>
+                      {(!simulationPaused || wedge) && positionYDisplay}{" "}
+                      {(!simulationPaused || wedge) && <p>m</p>}{" "}
+                      {simulationPaused && !wedge && (
+                        <TextField
+                          type="number"
+                          variant="standard"
+                          value={positionYDisplay}
+                          style={{ width: "7em" }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">m</InputAdornment>
+                            ),
+                          }}
+                          onChange={(e) => {
+                            const regex = /^[0-9\b]+$/;
+                            if (regex.test(e.target.value)) {
+                              setPositionYDisplay(parseFloat(e.target.value));
+                              setDisplayChange(!displayChange);
+                            }
+                          }}
+                        />
+                      )}{" "}
+                    </td>
+                  </tr>
+                  <tr>
+                    <Tooltip
+                      title={
+                        <React.Fragment>
+                          <Typography color="inherit">Velocity</Typography>
+                          {"Equation: v"}
+                          <sub>{"1"}</sub>
+                          {"=v"}
+                          <sub>{"0"}</sub>
+                          {"+at"}
+                          <br />
+                          {"Units: m/s"}
+                        </React.Fragment>
+                      }
+                      placement="top"
+                    >
+                      <td>Velocity</td>
+                    </Tooltip>
+                    <td>
+                      {(!simulationPaused || pendulum || wedge) &&
+                        velocityXDisplay}{" "}
+                      {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
+                      {simulationPaused && !pendulum && !wedge && (
+                        <TextField
+                          type="number"
+                          variant="standard"
+                          value={velocityXDisplay}
+                          style={{ width: "7em" }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                m/s
+                              </InputAdornment>
+                            ),
+                          }}
+                          onChange={(e) => {
+                            const regex = /^[0-9\b]+$/;
+                            if (regex.test(e.target.value)) {
+                              setVelocityXDisplay(parseFloat(e.target.value));
+                              setDisplayChange(!displayChange);
+                            }
+                          }}
+                        />
+                      )}{" "}
+                    </td>
+                    <td>
+                      {(!simulationPaused || pendulum || wedge) &&
+                        velocityYDisplay}{" "}
+                      {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
+                      {simulationPaused && !pendulum && !wedge && (
+                        <TextField
+                          type="number"
+                          variant="standard"
+                          value={velocityYDisplay}
+                          style={{ width: "7em" }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                m/s
+                              </InputAdornment>
+                            ),
+                          }}
+                          onChange={(e) => {
+                            const regex = /^[0-9\b]+$/;
+                            if (regex.test(e.target.value)) {
+                              setVelocityYDisplay(parseFloat(e.target.value));
+                              setDisplayChange(!displayChange);
+                            }
+                          }}
+                        />
+                      )}{" "}
+                    </td>
+                  </tr>
+                  <tr>
+                    <Tooltip
+                      title={
+                        <React.Fragment>
+                          <Typography color="inherit">Acceleration</Typography>
+                          {"Equation: a=F/m"}
+
+                          <br />
+                          {"Units: m/s"}
+                          <sup>{"2"}</sup>
+                        </React.Fragment>
+                      }
+                      placement="top"
+                    >
+                      <td>Acceleration</td>
+                    </Tooltip>
+                    <td>
+                      {accelerationXDisplay} m/s<sup>2</sup>
+                    </td>
+                    <td>
+                      {accelerationYDisplay} m/s<sup>2</sup>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+          </div>
+          {mode == "Freeform" &&
+            simulationElements.length > 0 &&
+            simulationElements[0].pendulum && (
+              <div className="mechanicsSimulationEquation">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td>Value</td>
+                    </tr>
+                    <tr>
+                      <td>Potential Energy</td>
+                      <td>
+                        {Math.round(
                           pendulumLength *
                             (1 - Math.cos(pendulumAngle)) *
                             9.81 *
                             10
-                        ) /
-                          10) *
-                        10
-                    ) / 10}{" "}
-                    J
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>Total Energy</b>
-                  </td>
-                  <td>
-                    {Math.round(
-                      pendulumLength *
-                        (1 - Math.cos(startPendulumAngle)) *
-                        9.81 *
-                        10
-                    ) / 10}{" "}
-                    J
-                  </td>
-                </tr>
-              </table>
-            </div>
-          )}
+                        ) / 10}{" "}
+                        J
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Kinetic Energy</td>
+                      <td>
+                        {Math.round(
+                          (Math.round(
+                            pendulumLength *
+                              (1 - Math.cos(startPendulumAngle)) *
+                              9.81 *
+                              10
+                          ) /
+                            10 -
+                            Math.round(
+                              pendulumLength *
+                                (1 - Math.cos(pendulumAngle)) *
+                                9.81 *
+                                10
+                            ) /
+                              10) *
+                            10
+                        ) / 10}{" "}
+                        J
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <b>Total Energy</b>
+                      </td>
+                      <td>
+                        {Math.round(
+                          pendulumLength *
+                            (1 - Math.cos(startPendulumAngle)) *
+                            9.81 *
+                            10
+                        ) / 10}{" "}
+                        J
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
         </div>
       </div>
       <div className="coordinateSystem">
