@@ -5,8 +5,8 @@ import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import MenuIcon from "@mui/icons-material/Menu";
-import VolumeUp from "@mui/icons-material/VolumeUp";
+import { styled } from "@mui/material/styles";
+import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import {
   Checkbox,
   Divider,
@@ -365,25 +365,25 @@ function App() {
   };
 
   useEffect(() => {
-    clearSimulation();
     if (mode == "Freeform") {
+      clearSimulation();
+      // TODO
+    } else if (mode == "Review") {
+      setShowAcceleration(false);
+      setShowVelocity(false);
+      setShowForces(true);
       if (topic == "Incline Plane") {
         setQuestionNumber(0);
         setSelectedQuestion(questions.inclinePlane[0]);
       }
       generateNewQuestion();
       // TODO
-    } else if (mode == "Review") {
-      setShowAcceleration(false);
-      setShowVelocity(false);
-      setShowForces(true);
-      // TODO
     }
   }, [mode, topic]);
 
   const generateNewQuestion = () => {
     if (topic == "Incline Plane") {
-      if (questionNumber == questions.inclinePlane.length) {
+      if (questionNumber == questions.inclinePlane.length - 1) {
         setQuestionNumber(0);
       } else {
         setQuestionNumber(questionNumber + 1);
@@ -428,142 +428,161 @@ function App() {
   const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
     number[]
   >([45]);
-  const [fullQuestion, setFullQuestion] = useState("");
+  const [fullQuestionSetup, setfullQuestionSetup] = useState<string>("");
+  const [selectedQuestionQuestion, setSelectedQuestionQuestion] =
+    useState<string>("");
   const [answerInputs, setAnswerInputs] = useState(<div></div>);
 
   useEffect(() => {
     let q = "";
-    for (let i = 0; i < selectedQuestion.questionSetup.length; i++) {
-      q += selectedQuestion.questionSetup[i];
-      if (i != selectedQuestion.questionSetup.length - 1) {
-        q += selectedQuestionVariables[i];
+    if (selectedQuestion) {
+      for (let i = 0; i < selectedQuestion.questionSetup.length; i++) {
+        q += selectedQuestion.questionSetup[i];
+        if (i != selectedQuestion.questionSetup.length - 1) {
+          q += selectedQuestionVariables[i];
+        }
       }
+      setSelectedQuestionQuestion(selectedQuestion.question);
     }
-    setFullQuestion(q);
+    setfullQuestionSetup(q);
   }, [selectedQuestion]);
 
   useEffect(() => {
     let answerInput = [];
-    for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
-      if (selectedQuestion.answerParts[i] == "force of gravity") {
-        answerInput.push(
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs>
-              <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                <p>
-                  F<sub>G</sub>
-                </p>
-              </Typography>
+    if (selectedQuestion) {
+      for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
+        if (selectedQuestion.answerParts[i] == "force of gravity") {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  <p>
+                    F<sub>G</sub>
+                  </p>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item>
-              <Input
-                value={coefficientOfStaticFriction}
-                size="medium"
-                onChange={handleCoefficientOfStaticFrictionInputChange}
-                onBlur={handleCoefficientOfStaticFrictionBlur}
-                inputProps={{
-                  step: 0.1,
-                  min: 0,
-                  max: 1,
-                  type: "number",
-                  "aria-labelledby": "input-slider",
-                }}
-              />
+          );
+        } else if (selectedQuestion.answerParts[i] == "normal force") {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  <p>
+                    F<sub>N</sub>
+                  </p>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        );
-      } else if (selectedQuestion.answerParts[i] == "normal force") {
-        answerInput.push(
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs>
-              <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                <p>
-                  F<sub>N</sub>
-                </p>
-              </Typography>
+          );
+        } else if (
+          selectedQuestion.answerParts[i] == "force of static friction"
+        ) {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  <p>
+                    F
+                    <sub>
+                      &mu;<sub>s</sub>
+                    </sub>
+                  </p>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item>
-              <Input
-                value={coefficientOfStaticFriction}
-                size="medium"
-                onChange={handleCoefficientOfStaticFrictionInputChange}
-                onBlur={handleCoefficientOfStaticFrictionBlur}
-                inputProps={{
-                  step: 0.1,
-                  min: 0,
-                  max: 1,
-                  type: "number",
-                  "aria-labelledby": "input-slider",
-                }}
-              />
-            </Grid>
-          </Grid>
-        );
-      } else if (
-        selectedQuestion.answerParts[i] == "force of static friction"
-      ) {
-        answerInput.push(
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs>
-              <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                <p>
-                  F
-                  <sub>
+          );
+        } else if (
+          selectedQuestion.answerParts[i] == "coefficient of static friction"
+        ) {
+          answerInput.push(
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs>
+                <Typography id="input-slider" sx={{ textAlign: "right" }}>
+                  <p>
                     &mu;<sub>s</sub>
-                  </sub>
-                </p>
-              </Typography>
+                  </p>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Input
+                  value={coefficientOfStaticFriction}
+                  size="medium"
+                  onChange={handleCoefficientOfStaticFrictionInputChange}
+                  onBlur={handleCoefficientOfStaticFrictionBlur}
+                  inputProps={{
+                    step: 0.1,
+                    min: 0,
+                    max: 1,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item>
-              <Input
-                value={coefficientOfStaticFriction}
-                size="medium"
-                onChange={handleCoefficientOfStaticFrictionInputChange}
-                onBlur={handleCoefficientOfStaticFrictionBlur}
-                inputProps={{
-                  step: 0.1,
-                  min: 0,
-                  max: 1,
-                  type: "number",
-                  "aria-labelledby": "input-slider",
-                }}
-              />
-            </Grid>
-          </Grid>
-        );
-      } else if (
-        selectedQuestion.answerParts[i] == "coefficient of static friction"
-      ) {
-        answerInput.push(
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs>
-              <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                <p>
-                  &mu;<sub>s</sub>
-                </p>
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Input
-                value={coefficientOfStaticFriction}
-                size="medium"
-                onChange={handleCoefficientOfStaticFrictionInputChange}
-                onBlur={handleCoefficientOfStaticFrictionBlur}
-                inputProps={{
-                  step: 0.1,
-                  min: 0,
-                  max: 1,
-                  type: "number",
-                  "aria-labelledby": "input-slider",
-                }}
-              />
-            </Grid>
-          </Grid>
-        );
+          );
+        }
       }
     }
     setAnswerInputs(<div style={{ display: "flex" }}>{answerInput}</div>);
   }, [selectedQuestion]);
+
+  const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: "#f5f5f9",
+      color: "rgba(0, 0, 0, 0.87)",
+      maxWidth: 220,
+      fontSize: theme.typography.pxToRem(12),
+      border: "1px solid #dadde9",
+    },
+  }));
 
   return (
     <div>
@@ -662,8 +681,8 @@ function App() {
                   </div>
                   <div className="wordProblemBox">
                     <div className="question">
-                      <p>{fullQuestion}</p>
-                      <p>{selectedQuestion.question}</p>
+                      <p>{fullQuestionSetup}</p>
+                      <p>{selectedQuestionQuestion}</p>
                     </div>
                     <div className="answer"> {answerInputs}</div>
                   </div>
@@ -986,7 +1005,19 @@ function App() {
                 <td>Y</td>
               </tr>
               <tr>
-                <td>Position</td>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">Position</Typography>
+                      <p>
+                        x<sub>1</sub>=x<sub>0</sub>+v<sub>0</sub>t+0.5at
+                        <sup>2</sup>
+                      </p>
+                    </React.Fragment>
+                  }
+                >
+                  <td>Position</td>
+                </HtmlTooltip>
                 <td>
                   {(!simulationPaused || wedge) && positionXDisplay}{" "}
                   {(!simulationPaused || wedge) && <p>m</p>}{" "}
