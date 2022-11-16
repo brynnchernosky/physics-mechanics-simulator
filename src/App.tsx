@@ -314,11 +314,14 @@ function App() {
     setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
     setPositionYDisplay(yPos);
     setDisplayChange(!displayChange);
-    updateForcesWithFriction(
-      Number(coefficientOfStaticFriction),
-      width,
-      height
-    );
+
+    if (mode == "Freeform") {
+      updateForcesWithFriction(
+        Number(coefficientOfStaticFriction),
+        width,
+        height
+      );
+    }
   };
 
   const handleWedgeAngleBlur = () => {
@@ -379,10 +382,6 @@ function App() {
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
-      if (topic == "Incline Plane") {
-        setQuestionNumber(0);
-        setSelectedQuestion(questions.inclinePlane[0]);
-      }
       generateNewQuestion();
       // TODO
     }
@@ -398,6 +397,11 @@ function App() {
       setSelectedQuestion(questions.inclinePlane[questionNumber]);
       //TODO generate values for variables
       //TODO set values for variables
+      let index = selectedQuestion.variablesForQuestionSetup.indexOf("theta");
+      if (index != -1) {
+        //selectedQuestionVariables
+        changeWedgeAngle(selectedQuestionVariables[index]);
+      }
     }
     // TODO
   };
@@ -430,9 +434,13 @@ function App() {
   ]);
 
   const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const [selectedQuestion, setSelectedQuestion] = useState(
-    questions.inclinePlane[0]
-  );
+  const [selectedQuestion, setSelectedQuestion] = useState<{
+    questionSetup: string[];
+    variablesForQuestionSetup: string[];
+    question: string;
+    answerParts: string[];
+    answerSolutions: string[];
+  }>(questions.inclinePlane[0]);
   const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
     number[]
   >([45]);
@@ -828,7 +836,13 @@ function App() {
           )}
 
           {mode == "Review" && (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: "10px",
+              }}
+            >
               <div style={{ zIndex: 10000 }}>
                 <Button
                   onClick={() => generateNewQuestion()}
