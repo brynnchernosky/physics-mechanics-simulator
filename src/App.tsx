@@ -117,17 +117,17 @@ function App() {
       pendulum: false,
       wedge: true,
     };
-    setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
-    setPositionYDisplay(200 + 50 + 25 - 2 * 50 + 5);
     setSimulationElements([wedge, weight]);
     if (mode == "Freeform") {
+      setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
+      setPositionYDisplay(200 + 50 + 25 - 2 * 50 + 5);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
+      changeWedgeAngle(26);
     } else {
       setStartForces([]);
       setUpdatedForces([]);
     }
-    changeWedgeAngle(26);
     handleClose();
   };
 
@@ -376,14 +376,15 @@ function App() {
   useEffect(() => {
     if (mode == "Freeform") {
       clearSimulation();
-      // TODO
     } else if (mode == "Review") {
       addWedge();
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
-      generateNewQuestion();
-      // TODO
+      // hack to make sure weight positioned correctly
+      setTimeout(() => {
+        generateNewQuestion();
+      }, 5);
     }
   }, [mode, topic]);
 
@@ -918,7 +919,7 @@ function App() {
                 <Box>
                   <FormControl>
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs>
+                      <Grid item xs key={0}>
                         <Typography
                           id="input-slider"
                           sx={{ textAlign: "right" }}
@@ -926,7 +927,7 @@ function App() {
                           &theta;
                         </Typography>
                       </Grid>
-                      <Grid item>
+                      <Grid item key={1}>
                         <Input
                           value={wedgeAngle}
                           size="medium"
@@ -945,7 +946,7 @@ function App() {
                   </FormControl>
                   <FormControl>
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs>
+                      <Grid item xs key={0}>
                         <Typography
                           id="input-slider"
                           sx={{ textAlign: "right" }}
@@ -954,7 +955,7 @@ function App() {
                           <sub>s</sub>
                         </Typography>
                       </Grid>
-                      <Grid item>
+                      <Grid item key={1}>
                         <Input
                           value={coefficientOfStaticFriction}
                           size="medium"
@@ -975,7 +976,7 @@ function App() {
                   </FormControl>
                   <FormControl>
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs>
+                      <Grid item xs key={0}>
                         <Typography
                           id="input-slider"
                           sx={{ textAlign: "right" }}
@@ -984,7 +985,7 @@ function App() {
                           <sub>k</sub>
                         </Typography>
                       </Grid>
-                      <Grid item>
+                      <Grid item key={1}>
                         <Input
                           value={coefficientOfKineticFriction}
                           size="medium"
