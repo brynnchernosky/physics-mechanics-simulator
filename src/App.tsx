@@ -94,7 +94,9 @@ function App() {
       wedge: false,
     };
     setPositionXDisplay(30);
-    setPositionYDisplay(Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5)*10)/10);
+    setPositionYDisplay(
+      Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5) * 10) / 10
+    );
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
@@ -120,8 +122,10 @@ function App() {
     };
     setSimulationElements([wedge, weight]);
     if (mode == "Freeform") {
-      setPositionXDisplay(Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10)/10);
-      setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5)*10)/10);
+      setPositionXDisplay(
+        Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10
+      );
+      setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
       changeWedgeAngle(26);
@@ -145,7 +149,9 @@ function App() {
       wedge: false,
     };
     setPositionXDisplay(30);
-    setPositionYDisplay(Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5)*10)/10);
+    setPositionYDisplay(
+      Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5) * 10) / 10
+    );
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     handleClose();
@@ -285,8 +291,10 @@ function App() {
     } else {
       yPos += angle * 3;
     }
-    setPositionXDisplay(Math.round((window.innerWidth * 0.7 * 0.5 - 200)*10)/10);
-    setPositionYDisplay(Math.round(yPos*10)/10);
+    setPositionXDisplay(
+      Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10
+    );
+    setPositionYDisplay(Math.round(yPos * 10) / 10);
     setDisplayChange(!displayChange);
 
     if (mode == "Freeform") {
@@ -330,14 +338,22 @@ function App() {
       } else {
         setQuestionNumber(questionNumber + 1);
       }
-      setSelectedQuestion(questions.inclinePlane[questionNumber]);
       //TODO generate values for variables
-      //TODO set values for variables
-      let index = selectedQuestion.variablesForQuestionSetup.indexOf("theta");
-      if (index != -1) {
-        //selectedQuestionVariables
-        changeWedgeAngle(selectedQuestionVariables[index]);
+
+      const vars: number[] = [];
+      for (
+        let i = 0;
+        i < selectedQuestion.variablesForQuestionSetup.length;
+        i++
+      ) {
+        if (selectedQuestion.variablesForQuestionSetup[i] == "theta") {
+          let randValue = Math.floor(Math.random() * 79 + 1);
+          vars.push(randValue);
+          changeWedgeAngle(randValue);
+        }
       }
+      setSelectedQuestionVariables(vars);
+      setSelectedQuestion(questions.inclinePlane[questionNumber]);
     }
     // TODO
   };
@@ -397,7 +413,7 @@ function App() {
       setSelectedQuestionQuestion(selectedQuestion.question);
     }
     setfullQuestionSetup(q);
-  }, [selectedQuestion]);
+  }, [selectedQuestion, selectedQuestionVariables]);
 
   const [reviewGravityMagnitude, setReviewGravityMagnitude] =
     useState<number>(0);
@@ -450,91 +466,111 @@ function App() {
     if (selectedQuestion) {
       for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
         if (selectedQuestion.answerParts[i] == "force of gravity") {
-          answerInput.push(<InputField
-            label={
-              <p>
-                F<sub>G</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewGravityMagnitude}
-            step={0.1}
-            unit={"N"}
-            upperBound={50}
-            value={reviewGravityMagnitude}
-          />);
+          answerInput.push(
+            <InputField
+              label={
+                <p>
+                  F<sub>G</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewGravityMagnitude}
+              step={0.1}
+              unit={"N"}
+              upperBound={50}
+              value={reviewGravityMagnitude}
+            />
+          );
         } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
-          answerInput.push(<InputField
-            label={
-              <p>
-                &theta;<sub>G</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewGravityAngle}
-            step={1}
-            unit={"°"}
-            upperBound={360}
-            value={reviewGravityAngle}
-          />);
+          answerInput.push(
+            <InputField
+              label={
+                <p>
+                  &theta;<sub>G</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewGravityAngle}
+              step={1}
+              unit={"°"}
+              upperBound={360}
+              value={reviewGravityAngle}
+            />
+          );
         } else if (selectedQuestion.answerParts[i] == "normal force") {
-          answerInput.push(<InputField
-            label={
-              <p>
-                F<sub>N</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewNormalMagnitude}
-            step={0.1}
-            unit={"N"}
-            upperBound={50}
-            value={reviewNormalMagnitude}
-          />);
+          answerInput.push(
+            <InputField
+              label={
+                <p>
+                  F<sub>N</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewNormalMagnitude}
+              step={0.1}
+              unit={"N"}
+              upperBound={50}
+              value={reviewNormalMagnitude}
+            />
+          );
         } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
-          answerInput.push(<InputField
-            label={
-              <p>
-                &theta;<sub>N</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewNormalAngle}
-            step={1}
-            unit={"°"}
-            upperBound={360}
-            value={reviewNormalAngle}
-          />);
+          answerInput.push(
+            <InputField
+              label={
+                <p>
+                  &theta;<sub>N</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewNormalAngle}
+              step={1}
+              unit={"°"}
+              upperBound={360}
+              value={reviewNormalAngle}
+            />
+          );
         } else if (
           selectedQuestion.answerParts[i] == "force of static friction"
         ) {
-          answerInput.push(<InputField
-            label={
-              <p>
-                F<sub>F<sub>s</sub></sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewStaticMagnitude}
-            step={0.1}
-            unit={"N"}
-            upperBound={50}
-            value={reviewStaticMagnitude}
-          />);
-        } else if (selectedQuestion.answerParts[i] == "angle of static friction") {
-          answerInput.push(<InputField
-            label={
-              <p>
-                &theta;<sub>F<sub>s</sub></sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewStaticAngle}
-            step={1}
-            unit={"°"}
-            upperBound={360}
-            value={reviewStaticAngle}
-          />);
+          answerInput.push(
+            <InputField
+              label={
+                <p>
+                  F
+                  <sub>
+                    F<sub>s</sub>
+                  </sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewStaticMagnitude}
+              step={0.1}
+              unit={"N"}
+              upperBound={50}
+              value={reviewStaticMagnitude}
+            />
+          );
+        } else if (
+          selectedQuestion.answerParts[i] == "angle of static friction"
+        ) {
+          answerInput.push(
+            <InputField
+              label={
+                <p>
+                  &theta;
+                  <sub>
+                    F<sub>s</sub>
+                  </sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewStaticAngle}
+              step={1}
+              unit={"°"}
+              upperBound={360}
+              value={reviewStaticAngle}
+            />
+          );
         } else if (
           selectedQuestion.answerParts[i] == "coefficient of static friction"
         ) {

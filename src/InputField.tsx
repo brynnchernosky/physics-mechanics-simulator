@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TextField } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 export interface IInputProps {
   label: JSX.Element;
   lowerBound: number;
@@ -53,19 +53,22 @@ export const InputField = (props: IInputProps) => {
   };
 
   return (
-    <div style={{ display: "flex", lineHeight: "1" }}>
+    <div style={{ display: "flex", lineHeight: "1", textAlign: "right" }}>
       <div style={{ marginTop: "-10px" }}>{label}</div>
       <TextField
         type="number"
         variant="standard"
         value={tempValue}
         onChange={onChange}
-        sx={{ height: "1em", marginLeft: "10px" }}
+        sx={{ height: "1em", width: "5em", marginLeft: "15px" }}
         inputProps={{
           step: step,
           min: lowerBound,
           max: upperBound,
           type: "number",
+        }}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
         }}
       />
     </div>
