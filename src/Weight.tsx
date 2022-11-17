@@ -36,6 +36,7 @@ export interface IWeightProps {
   setPendulumLength: (val: number) => any;
   setStartPendulumAngle: (val: number) => any;
   showAcceleration: boolean;
+  mode: string;
   pendulumAngle: number;
   showForces: boolean;
   showVelocity: boolean;
@@ -70,6 +71,7 @@ export const Weight = (props: IWeightProps) => {
     pendulum,
     wedge,
     radius,
+    mode,
     pendulumAngle,
     reset,
     setDisplayXAcceleration,
@@ -359,7 +361,7 @@ export const Weight = (props: IWeightProps) => {
   };
 
   useEffect(() => {
-    if (wedge && xVelocity != 0 && !kineticFriction) {
+    if (wedge && xVelocity != 0 && mode != "Review" && !kineticFriction) {
       setKineticFriction(true);
       //switch from static to kinetic friction
       const normalForce: IForce = {

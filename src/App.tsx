@@ -412,18 +412,18 @@ function App() {
     if (mode == "Review") {
       const forceOfGravityReview: IForce = {
         description: "Gravity",
-        magnitude: 0,
-        directionInDegrees: 0,
+        magnitude: reviewGravityMagnitude,
+        directionInDegrees: reviewGravityAngle,
       };
       const normalForceReview: IForce = {
         description: "Normal Force",
-        magnitude: 0,
-        directionInDegrees: 0,
+        magnitude: reviewNormalMagnitude,
+        directionInDegrees: reviewNormalAngle,
       };
       const staticFrictionForceReview: IForce = {
         description: "Static Friction Force",
-        magnitude: 0,
-        directionInDegrees: 0,
+        magnitude: reviewStaticMagnitude,
+        directionInDegrees: reviewStaticAngle,
       };
       setStartForces([
         forceOfGravityReview,
@@ -442,7 +442,7 @@ function App() {
     reviewNormalMagnitude,
     reviewNormalAngle,
     reviewStaticMagnitude,
-    reviewGravityAngle,
+    reviewStaticAngle,
   ]);
 
   useEffect(() => {
@@ -460,9 +460,33 @@ function App() {
         } else if (
           selectedQuestion.answerParts[i] == "force of static friction"
         ) {
-          answerInput.push(<div></div>);
-        } else if (selectedQuestion.answerParts[i] == "angle of friction") {
-          answerInput.push(<div></div>);
+          answerInput.push(<InputField
+            label={
+              <p>
+                F<sub>F<sub>s</sub></sub>
+              </p>
+            }
+            lowerBound={0}
+            changeValue={setReviewStaticMagnitude}
+            step={0.1}
+            unit={"N"}
+            upperBound={50}
+            value={reviewStaticMagnitude}
+          />);
+        } else if (selectedQuestion.answerParts[i] == "angle of static friction") {
+          answerInput.push(<InputField
+            label={
+              <p>
+                &theta;<sub>F<sub>s</sub></sub>
+              </p>
+            }
+            lowerBound={0}
+            changeValue={setReviewStaticAngle}
+            step={1}
+            unit={"°"}
+            upperBound={360}
+            value={reviewStaticAngle}
+          />);
         } else if (
           selectedQuestion.answerParts[i] == "coefficient of static friction"
         ) {
@@ -476,7 +500,7 @@ function App() {
               lowerBound={0}
               changeValue={setCoefficientOfStaticFriction}
               step={0.1}
-              unit={"°"}
+              unit={""}
               upperBound={1}
               value={coefficientOfStaticFriction}
             />
@@ -604,6 +628,7 @@ function App() {
                         startForces={startForces}
                         incrementTime={timer}
                         mass={element.mass ?? 1}
+                        mode={mode}
                         paused={simulationPaused}
                         pendulumAngle={pendulumAngle}
                         pendulum={element.pendulum ?? false}
@@ -842,7 +867,7 @@ function App() {
                     lowerBound={0}
                     changeValue={setCoefficientOfStaticFriction}
                     step={0.1}
-                    unit={"°"}
+                    unit={""}
                     upperBound={1}
                     value={coefficientOfStaticFriction}
                     effect={updateForcesWithFriction}
@@ -856,7 +881,7 @@ function App() {
                     lowerBound={0}
                     changeValue={setCoefficientOfKineticFriction}
                     step={0.1}
-                    unit={"°"}
+                    unit={""}
                     upperBound={Number(coefficientOfStaticFriction)}
                     value={coefficientOfKineticFriction}
                   />
