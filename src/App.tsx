@@ -94,7 +94,7 @@ function App() {
       wedge: false,
     };
     setPositionXDisplay(30);
-    setPositionYDisplay(window.innerHeight * 0.8 - 30 - 2 * 50 + 5);
+    setPositionYDisplay(Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5)*10)/10);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
@@ -120,8 +120,8 @@ function App() {
     };
     setSimulationElements([wedge, weight]);
     if (mode == "Freeform") {
-      setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
-      setPositionYDisplay(200 + 50 + 25 - 2 * 50 + 5);
+      setPositionXDisplay(Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10)/10);
+      setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5)*10)/10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
       changeWedgeAngle(26);
@@ -145,7 +145,7 @@ function App() {
       wedge: false,
     };
     setPositionXDisplay(30);
-    setPositionYDisplay(window.innerHeight * 0.8 - 30 - 2 * 50 + 5);
+    setPositionYDisplay(Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5)*10)/10);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     handleClose();
@@ -285,8 +285,8 @@ function App() {
     } else {
       yPos += angle * 3;
     }
-    setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
-    setPositionYDisplay(yPos);
+    setPositionXDisplay(Math.round((window.innerWidth * 0.7 * 0.5 - 200)*10)/10);
+    setPositionYDisplay(Math.round(yPos*10)/10);
     setDisplayChange(!displayChange);
 
     if (mode == "Freeform") {
