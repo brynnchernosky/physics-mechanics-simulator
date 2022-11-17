@@ -450,13 +450,61 @@ function App() {
     if (selectedQuestion) {
       for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
         if (selectedQuestion.answerParts[i] == "force of gravity") {
-          answerInput.push(<div></div>);
+          answerInput.push(<InputField
+            label={
+              <p>
+                F<sub>G</sub>
+              </p>
+            }
+            lowerBound={0}
+            changeValue={setReviewGravityMagnitude}
+            step={0.1}
+            unit={"N"}
+            upperBound={50}
+            value={reviewGravityMagnitude}
+          />);
         } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
-          answerInput.push(<div></div>);
+          answerInput.push(<InputField
+            label={
+              <p>
+                &theta;<sub>G</sub>
+              </p>
+            }
+            lowerBound={0}
+            changeValue={setReviewGravityAngle}
+            step={1}
+            unit={"°"}
+            upperBound={360}
+            value={reviewGravityAngle}
+          />);
         } else if (selectedQuestion.answerParts[i] == "normal force") {
-          answerInput.push(<div></div>);
+          answerInput.push(<InputField
+            label={
+              <p>
+                F<sub>N</sub>
+              </p>
+            }
+            lowerBound={0}
+            changeValue={setReviewNormalMagnitude}
+            step={0.1}
+            unit={"N"}
+            upperBound={50}
+            value={reviewNormalMagnitude}
+          />);
         } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
-          answerInput.push(<div></div>);
+          answerInput.push(<InputField
+            label={
+              <p>
+                &theta;<sub>N</sub>
+              </p>
+            }
+            lowerBound={0}
+            changeValue={setReviewNormalAngle}
+            step={1}
+            unit={"°"}
+            upperBound={360}
+            value={reviewNormalAngle}
+          />);
         } else if (
           selectedQuestion.answerParts[i] == "force of static friction"
         ) {
