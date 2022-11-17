@@ -558,10 +558,7 @@ export const Weight = (props: IWeightProps) => {
             zIndex: -2,
           }}
         >
-          <svg
-            width={window.innerWidth + "px"}
-            height={window.innerHeight + "px"}
-          >
+          <svg width={xMax + "px"} height={yMax + "px"}>
             <line
               x1={xPosition + radius}
               y1={yPosition + radius}
@@ -594,10 +591,7 @@ export const Weight = (props: IWeightProps) => {
               top: 0,
             }}
           >
-            <svg
-              width={window.innerWidth + "px"}
-              height={window.innerHeight + "px"}
-            >
+            <svg width={xMax + "px"} height={yMax + "px"}>
               <defs>
                 <marker
                   id="accArrow"
@@ -666,10 +660,7 @@ export const Weight = (props: IWeightProps) => {
               top: 0,
             }}
           >
-            <svg
-              width={window.innerWidth + "px"}
-              height={window.innerHeight + "px"}
-            >
+            <svg width={xMax + "px"} height={yMax + "px"}>
               <defs>
                 <marker
                   id="velArrow"
@@ -767,10 +758,7 @@ export const Weight = (props: IWeightProps) => {
                   top: 0,
                 }}
               >
-                <svg
-                  width={window.innerWidth + "px"}
-                  height={window.innerHeight + "px"}
-                >
+                <svg width={xMax + "px"} height={yMax + "px"}>
                   <defs>
                     <marker
                       id="forceArrow"

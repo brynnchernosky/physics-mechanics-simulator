@@ -6,6 +6,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { styled } from "@mui/material/styles";
+import { InputField } from "./InputField";
 import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import {
   Button,
@@ -170,23 +171,6 @@ function App() {
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
     React.useState<number | string | Array<number | string>>(0);
 
-  const handleCoefficientOfStaticFrictionInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    console.log("hello");
-    setCoefficientOfStaticFriction(
-      event.target.value === "" ? "" : Number(event.target.value)
-    );
-    console.log("mode: ", mode);
-
-    if (mode == "Freeform") {
-      console.log("i'm the problem");
-      updateForcesWithFriction(
-        event.target.value === "" ? 0 : Number(event.target.value)
-      );
-    }
-  };
-
   const handleCoefficientOfStaticFrictionBlur = () => {
     if (coefficientOfStaticFriction < 0) {
       alert("Coefficient of static friction cannot be below zero");
@@ -208,7 +192,6 @@ function App() {
     width: number = wedgeWidth,
     height: number = wedgeHeight
   ) => {
-    console.log("it's me");
     const normalForce: IForce = {
       description: "Normal Force",
       magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
@@ -250,23 +233,6 @@ function App() {
   // Coefficient of kinetic friction
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
-  const handleCoefficientOfKineticFrictionInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setCoefficientOfKineticFriction(
-      event.target.value === "" ? "" : Number(event.target.value)
-    );
-  };
-  const handleCoefficientOfKineticFrictionBlur = () => {
-    if (coefficientOfKineticFriction < 0) {
-      setCoefficientOfKineticFriction(0);
-    } else if (coefficientOfKineticFriction > coefficientOfStaticFriction) {
-      setCoefficientOfKineticFriction(coefficientOfStaticFriction);
-      alert(
-        "Coefficient of kinetic friction must be less than coefficient of static friction!"
-      );
-    }
-  };
 
   // Wedge angle
   const [wedge, setWedge] = useState(false);
@@ -277,13 +243,6 @@ function App() {
   const [wedgeAngle, setWedgeAngle] = React.useState<
     number | string | Array<number | string>
   >(26);
-
-  const handleWedgeAngleChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setWedgeAngle(event.target.value === "" ? "" : Number(event.target.value));
-    changeWedgeAngle(Number(event.target.value));
-  };
 
   const changeWedgeAngle = (angle: number) => {
     let width = 0;
@@ -336,49 +295,6 @@ function App() {
         width,
         height
       );
-    }
-  };
-
-  const handleWedgeAngleBlur = () => {
-    let width = 0;
-    let angle = 0;
-    let height = 0;
-    if (wedgeAngle < 0) {
-      angle = 0;
-      width = 400;
-      height = 0;
-      setWedgeAngle(angle);
-      setWedgeWidth(width);
-      setWedgeHeight(height);
-      // update weight position based on updated wedge width/height
-      setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
-      setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
-      setDisplayChange(!displayChange);
-      if (mode == "Freeform") {
-        updateForcesWithFriction(
-          Number(coefficientOfStaticFriction),
-          width,
-          height
-        );
-      }
-    } else if (wedgeAngle > 80) {
-      angle = 79;
-      width = 50;
-      height = Math.tan((89 * Math.PI) / 180) * 50;
-      setWedgeAngle(angle);
-      setWedgeWidth(width);
-      setWedgeHeight(height);
-      // update weight position based on updated wedge width/height
-      setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
-      setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
-      setDisplayChange(!displayChange);
-      if (mode == "Freeform") {
-        updateForcesWithFriction(
-          Number(coefficientOfStaticFriction),
-          width,
-          height
-        );
-      }
     }
   };
 
@@ -514,179 +430,36 @@ function App() {
     if (selectedQuestion) {
       for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
         if (selectedQuestion.answerParts[i] == "force of gravity") {
-          answerInput.push(
-            <Grid container spacing={2} alignItems="center" key={i}>
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  F<sub>G</sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={0}
-                  size="medium"
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          );
+          answerInput.push(<div></div>);
         } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
-          answerInput.push(
-            <Grid container spacing={2} alignItems="center" key={i}>
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  &theta;<sub>G</sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={0}
-                  size="medium"
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          );
+          answerInput.push(<div></div>);
         } else if (selectedQuestion.answerParts[i] == "normal force") {
-          answerInput.push(
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  F<sub>N</sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={0}
-                  size="medium"
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          );
+          answerInput.push(<div></div>);
         } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
-          answerInput.push(
-            <Grid container spacing={2} alignItems="center" key={i}>
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  &theta;<sub>N</sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={0}
-                  size="medium"
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          );
+          answerInput.push(<div></div>);
         } else if (
           selectedQuestion.answerParts[i] == "force of static friction"
         ) {
-          answerInput.push(
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  F
-                  <sub>
-                    &mu;
-                    <sub>s</sub>
-                  </sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={0}
-                  size="medium"
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          );
+          answerInput.push(<div></div>);
         } else if (selectedQuestion.answerParts[i] == "angle of friction") {
-          answerInput.push(
-            <Grid container spacing={2} alignItems="center" key={i}>
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  &theta;
-                  <sub>
-                    F<sub>s</sub>
-                  </sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={0}
-                  size="medium"
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
-          );
+          answerInput.push(<div></div>);
         } else if (
           selectedQuestion.answerParts[i] == "coefficient of static friction"
         ) {
           answerInput.push(
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
-                <Typography id="input-slider" sx={{ textAlign: "right" }}>
-                  &mu;
-                  <sub>s</sub>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Input
-                  value={coefficientOfStaticFriction}
-                  size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
-                  inputProps={{
-                    step: 0.1,
-                    min: 0,
-                    max: 1,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-            </Grid>
+            <InputField
+              label={
+                <p>
+                  &mu;<sub>s</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setCoefficientOfStaticFriction}
+              step={0.1}
+              unit={"°"}
+              upperBound={1}
+              value={coefficientOfStaticFriction}
+            />
           );
         }
       }
@@ -1029,95 +802,45 @@ function App() {
                 </FormGroup>
               </FormControl>
               {wedge && simulationPaused && (
-                <Box>
-                  <FormControl>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs key={0}>
-                        <Typography
-                          id="input-slider"
-                          sx={{ textAlign: "right" }}
-                        >
-                          &theta;
-                        </Typography>
-                      </Grid>
-                      <Grid item key={1}>
-                        <Input
-                          value={wedgeAngle}
-                          size="medium"
-                          onChange={handleWedgeAngleChange}
-                          onBlur={handleWedgeAngleBlur}
-                          inputProps={{
-                            step: 1,
-                            min: 0,
-                            max: 79,
-                            type: "number",
-                            "aria-labelledby": "input-slider",
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </FormControl>
-                  <FormControl>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs key={0}>
-                        <Typography
-                          id="input-slider"
-                          sx={{ textAlign: "right" }}
-                        >
-                          &mu;
-                          <sub>s</sub>
-                        </Typography>
-                      </Grid>
-                      <Grid item key={1}>
-                        <Input
-                          value={coefficientOfStaticFriction}
-                          size="medium"
-                          onChange={
-                            handleCoefficientOfStaticFrictionInputChange
-                          }
-                          onBlur={handleCoefficientOfStaticFrictionBlur}
-                          inputProps={{
-                            step: 0.1,
-                            min: 0,
-                            max: 1,
-                            type: "number",
-                            "aria-labelledby": "input-slider",
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </FormControl>
-                  <FormControl>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs key={0}>
-                        <Typography
-                          id="input-slider"
-                          sx={{ textAlign: "right" }}
-                        >
-                          &mu;
-                          <sub>k</sub>
-                        </Typography>
-                      </Grid>
-                      <Grid item key={1}>
-                        <Input
-                          value={coefficientOfKineticFriction}
-                          size="medium"
-                          onChange={
-                            handleCoefficientOfKineticFrictionInputChange
-                          }
-                          onBlur={handleCoefficientOfKineticFrictionBlur}
-                          inputProps={{
-                            step: 0.1,
-                            min: 0,
-                            max: 1,
-                            type: "number",
-                            "aria-labelledby": "input-slider",
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </FormControl>
-                </Box>
+                <div>
+                  <InputField
+                    label={<p>&theta;</p>}
+                    lowerBound={0}
+                    changeValue={setWedgeAngle}
+                    step={1}
+                    unit={"°"}
+                    upperBound={79}
+                    value={wedgeAngle}
+                    effect={changeWedgeAngle}
+                  />
+                  <InputField
+                    label={
+                      <p>
+                        &mu;<sub>s</sub>
+                      </p>
+                    }
+                    lowerBound={0}
+                    changeValue={setCoefficientOfStaticFriction}
+                    step={0.1}
+                    unit={"°"}
+                    upperBound={1}
+                    value={coefficientOfStaticFriction}
+                    effect={updateForcesWithFriction}
+                  />
+                  <InputField
+                    label={
+                      <p>
+                        &mu;<sub>k</sub>
+                      </p>
+                    }
+                    lowerBound={0}
+                    changeValue={setCoefficientOfKineticFriction}
+                    step={0.1}
+                    unit={"°"}
+                    upperBound={Number(coefficientOfStaticFriction)}
+                    value={coefficientOfKineticFriction}
+                  />
+                </div>
               )}
               {wedge && !simulationPaused && (
                 <Typography>
