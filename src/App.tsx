@@ -169,14 +169,18 @@ function App() {
   // Coefficient of static friction
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
     React.useState<number | string | Array<number | string>>(0);
+
   const handleCoefficientOfStaticFrictionInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    console.log("hello");
     setCoefficientOfStaticFriction(
       event.target.value === "" ? "" : Number(event.target.value)
     );
+    console.log("mode: ", mode);
 
     if (mode == "Freeform") {
+      console.log("i'm the problem");
       updateForcesWithFriction(
         event.target.value === "" ? 0 : Number(event.target.value)
       );
@@ -204,6 +208,7 @@ function App() {
     width: number = wedgeWidth,
     height: number = wedgeHeight
   ) => {
+    console.log("it's me");
     const normalForce: IForce = {
       description: "Normal Force",
       magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
@@ -349,11 +354,13 @@ function App() {
       setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
       setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
       setDisplayChange(!displayChange);
-      updateForcesWithFriction(
-        Number(coefficientOfStaticFriction),
-        width,
-        height
-      );
+      if (mode == "Freeform") {
+        updateForcesWithFriction(
+          Number(coefficientOfStaticFriction),
+          width,
+          height
+        );
+      }
     } else if (wedgeAngle > 80) {
       angle = 79;
       width = 50;
@@ -365,11 +372,13 @@ function App() {
       setPositionXDisplay(window.innerWidth * 0.7 * 0.5 - 200);
       setPositionYDisplay((width - 50) * Math.tan((angle * Math.PI) / 180));
       setDisplayChange(!displayChange);
-      updateForcesWithFriction(
-        Number(coefficientOfStaticFriction),
-        width,
-        height
-      );
+      if (mode == "Freeform") {
+        updateForcesWithFriction(
+          Number(coefficientOfStaticFriction),
+          width,
+          height
+        );
+      }
     }
   };
 
@@ -514,10 +523,8 @@ function App() {
               </Grid>
               <Grid item>
                 <Input
-                  value={coefficientOfStaticFriction}
+                  value={0}
                   size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
                   inputProps={{
                     step: 0.1,
                     min: 0,
@@ -539,10 +546,8 @@ function App() {
               </Grid>
               <Grid item>
                 <Input
-                  value={coefficientOfStaticFriction}
+                  value={0}
                   size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
                   inputProps={{
                     step: 0.1,
                     min: 0,
@@ -564,10 +569,8 @@ function App() {
               </Grid>
               <Grid item>
                 <Input
-                  value={coefficientOfStaticFriction}
+                  value={0}
                   size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
                   inputProps={{
                     step: 0.1,
                     min: 0,
@@ -589,10 +592,8 @@ function App() {
               </Grid>
               <Grid item>
                 <Input
-                  value={coefficientOfStaticFriction}
+                  value={0}
                   size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
                   inputProps={{
                     step: 0.1,
                     min: 0,
@@ -620,10 +621,8 @@ function App() {
               </Grid>
               <Grid item>
                 <Input
-                  value={coefficientOfStaticFriction}
+                  value={0}
                   size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
                   inputProps={{
                     step: 0.1,
                     min: 0,
@@ -648,10 +647,8 @@ function App() {
               </Grid>
               <Grid item>
                 <Input
-                  value={coefficientOfStaticFriction}
+                  value={0}
                   size="medium"
-                  onChange={handleCoefficientOfStaticFrictionInputChange}
-                  onBlur={handleCoefficientOfStaticFrictionBlur}
                   inputProps={{
                     step: 0.1,
                     min: 0,
