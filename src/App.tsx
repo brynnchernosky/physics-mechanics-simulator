@@ -338,32 +338,6 @@ function App() {
         //selectedQuestionVariables
         changeWedgeAngle(selectedQuestionVariables[index]);
       }
-
-      const forceOfGravityReview: IForce = {
-        description: "Gravity",
-        magnitude: 0,
-        directionInDegrees: 0,
-      };
-      const normalForceReview: IForce = {
-        description: "Normal Force",
-        magnitude: 0,
-        directionInDegrees: 0,
-      };
-      const staticFrictionForceReview: IForce = {
-        description: "Static Friction Force",
-        magnitude: 0,
-        directionInDegrees: 0,
-      };
-      setStartForces([
-        forceOfGravityReview,
-        normalForceReview,
-        staticFrictionForceReview,
-      ]);
-      setUpdatedForces([
-        forceOfGravityReview,
-        normalForceReview,
-        staticFrictionForceReview,
-      ]);
     }
     // TODO
   };
@@ -424,6 +398,52 @@ function App() {
     }
     setfullQuestionSetup(q);
   }, [selectedQuestion]);
+
+  const [reviewGravityMagnitude, setReviewGravityMagnitude] =
+    useState<number>(0);
+  const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
+  const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
+  const [reviewNormalAngle, setReviewNormalAngle] = useState<number>(0);
+  const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
+  const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
+
+  //TODO update review forces
+  useEffect(() => {
+    if (mode == "Review") {
+      const forceOfGravityReview: IForce = {
+        description: "Gravity",
+        magnitude: 0,
+        directionInDegrees: 0,
+      };
+      const normalForceReview: IForce = {
+        description: "Normal Force",
+        magnitude: 0,
+        directionInDegrees: 0,
+      };
+      const staticFrictionForceReview: IForce = {
+        description: "Static Friction Force",
+        magnitude: 0,
+        directionInDegrees: 0,
+      };
+      setStartForces([
+        forceOfGravityReview,
+        normalForceReview,
+        staticFrictionForceReview,
+      ]);
+      setUpdatedForces([
+        forceOfGravityReview,
+        normalForceReview,
+        staticFrictionForceReview,
+      ]);
+    }
+  }, [
+    reviewGravityMagnitude,
+    reviewGravityAngle,
+    reviewNormalMagnitude,
+    reviewNormalAngle,
+    reviewStaticMagnitude,
+    reviewGravityAngle,
+  ]);
 
   useEffect(() => {
     let answerInput = [];
