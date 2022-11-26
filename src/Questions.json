@@ -5,26 +5,44 @@
         "There is a 1kg weight on an inclined plane. The plane is at a ",
         " degree angle from the ground. The system is in equilibrium (the net force on the weight is 0)."
       ],
-      "variablesForQuestionSetup": ["theta"],
-      "question": "What are the magnitudes and directions of the forces acting on the weight? What is the minimum coefficient of static friction?",
+      "variablesForQuestionSetup": ["theta - max 45"],
+      "question": "What are the magnitudes and directions of the forces acting on the weight?",
       "answerParts": [
         "force of gravity",
         "angle of gravity",
         "normal force",
         "angle of normal force",
         "force of static friction",
-        "angle of static friction",
-        "coefficient of static friction"
+        "angle of static friction"
       ],
-      "answerSolutions": [
-        "mass * gravity",
+      "answerSolutionDescriptions": [
+        "9.81",
         "270",
-        "mass * gravity * cos(theta)",
-        "tbd",
-        "(mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)",
-        "tbd",
-        "((mass * gravity - mass * gravity * cos(theta) * sin(theta) )/math.sin(pi - theta)) / (mass * gravity * cos(theta))"
+        "solve normal force magnitude from wedge angle",
+        "solve normal force angle from wedge angle",
+        "solve static force magnitude from wedge angle given equilibrium",
+        "solve static force angle from wedge angle given equilibrium"
       ]
+    },
+    {
+      "questionSetup": [
+        "There is a 1kg weight on an inclined plane. The angle of the plane is ",
+        " degrees. The system is in equilibrium (the net force on the weight is 0)."
+      ],
+      "variablesForQuestionSetup": ["angle of plane"],
+      "question": "What is the minimum coefficient of static friction?",
+      "answerParts": ["coefficient of static friction"],
+      "answerSolutionDescriptions": ["tbd"]
+    },
+    {
+      "questionSetup": [
+        "There is a 1kg weight on an inclined plane. The coefficient of static friction is ",
+        ". The system is in equilibrium (the net force on the weight is 0)."
+      ],
+      "variablesForQuestionSetup": ["coefficient of static friction"],
+      "question": "What is the maximum angle of the plane?",
+      "answerParts": ["angle of plane"],
+      "answerSolutionDescriptions": ["tbd"]
     }
   ]
 }

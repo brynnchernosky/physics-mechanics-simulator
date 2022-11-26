@@ -82,6 +82,50 @@ function App() {
   const [mode, setMode] = useState<string>("Freeform");
   const [topic, setTopic] = useState<string>("Incline Plane");
 
+  let gravityMagnitude = 9.81;
+  const forceOfGravity: IForce = {
+    description: "Gravity",
+    magnitude: gravityMagnitude,
+    directionInDegrees: 270,
+  };
+
+  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
+  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
+    forceOfGravity,
+  ]);
+
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const [selectedQuestion, setSelectedQuestion] = useState<{
+    questionSetup: string[];
+    variablesForQuestionSetup: string[];
+    question: string;
+    answerParts: string[];
+    answerSolutionDescriptions: string[];
+  }>(questions.inclinePlane[0]);
+  const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
+    number[]
+  >([45]);
+  const [fullQuestionSetup, setfullQuestionSetup] = useState<string>("");
+  const [selectedQuestionQuestion, setSelectedQuestionQuestion] =
+    useState<string>("");
+  const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
+  const [answerInputs, setAnswerInputs] = useState(<div></div>);
+
+  // Add/remove elements menu
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const [displayChange, setDisplayChange] = useState(false);
+
   const addWeight = () => {
     const weight: ISimulationElement = {
       type: "weight",
@@ -176,22 +220,6 @@ function App() {
   // Coefficient of static friction
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
     React.useState<number | string | Array<number | string>>(0);
-
-  const handleCoefficientOfStaticFrictionBlur = () => {
-    if (coefficientOfStaticFriction < 0) {
-      alert("Coefficient of static friction cannot be below zero");
-      setCoefficientOfStaticFriction(0);
-      if (mode == "Freeform") {
-        updateForcesWithFriction(0);
-      }
-    } else if (coefficientOfStaticFriction > 1) {
-      alert("Coefficient of static friction cannot be above 1");
-      setCoefficientOfStaticFriction(1);
-      if (mode == "Freeform") {
-        updateForcesWithFriction(1);
-      }
-    }
-  };
 
   const updateForcesWithFriction = (
     coefficient: number,
@@ -331,75 +359,141 @@ function App() {
     }
   }, [mode, topic]);
 
+  const getAnswers = (questionVars: number[]) => {
+    const solutions: number[] = [];
+    let theta: number = Number(wedgeAngle);
+    const index =
+      selectedQuestion.variablesForQuestionSetup.indexOf("theta - max 45");
+    if (index >= 0) {
+      theta = questionVars[index];
+    }
+    if (selectedQuestion) {
+      for (
+        let i = 0;
+        i < selectedQuestion.answerSolutionDescriptions.length;
+        i++
+      ) {
+        const description = selectedQuestion.answerSolutionDescriptions[i];
+        if (!isNaN(Number(description))) {
+          solutions.push(Number(description));
+        } else if (description == "solve normal force angle from wedge angle") {
+          solutions.push(180 - 90 - theta);
+        } else if (
+          description == "solve normal force magnitude from wedge angle"
+        ) {
+          solutions.push(
+            forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI)
+          );
+        } else if (
+          description ==
+          "solve static force magnitude from wedge angle given equilibrium"
+        ) {
+          let normalForceMagnitude =
+            forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
+          let normalForceAngle = 180 - 90 - theta;
+          let frictionForceAngle = 180 - theta;
+          let frictionForceMagnitude =
+            (-normalForceMagnitude *
+              Math.sin((normalForceAngle * Math.PI) / 180) +
+              9.81) /
+            Math.sin((frictionForceAngle * Math.PI) / 180);
+          solutions.push(frictionForceMagnitude);
+        } else if (
+          description ==
+          "solve static force angle from wedge angle given equilibrium"
+        ) {
+          solutions.push(180 - theta);
+        }
+        // refer to updateForcesWithFriction
+      }
+    }
+    setSelectedSolutions(solutions);
+  };
+
+  const checkAnswers = () => {
+    if (selectedQuestion) {
+      for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
+        if (selectedQuestion.answerParts[i] == "force of gravity") {
+          if (reviewGravityMagnitude != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
+          if (reviewGravityAngle != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        } else if (selectedQuestion.answerParts[i] == "normal force") {
+          if (reviewNormalMagnitude != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
+          if (reviewNormalAngle != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        } else if (
+          selectedQuestion.answerParts[i] == "force of static friction"
+        ) {
+          if (reviewStaticMagnitude != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        } else if (
+          selectedQuestion.answerParts[i] == "angle of static friction"
+        ) {
+          if (reviewStaticAngle != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        } else if (
+          selectedQuestion.answerParts[i] == "coefficient of static friction"
+        ) {
+          if (coefficientOfStaticFriction != selectedSolutions[i]) {
+            //to do - add error message
+          }
+        }
+      }
+    }
+  };
+
   const generateNewQuestion = () => {
+    setReviewGravityMagnitude(0);
+    setReviewGravityAngle(0);
+    setReviewNormalMagnitude(0);
+    setReviewNormalAngle(0);
+    setReviewStaticMagnitude(0);
+    setReviewStaticAngle(0);
+
+    const vars: number[] = [];
+
     if (topic == "Incline Plane") {
       if (questionNumber == questions.inclinePlane.length - 1) {
         setQuestionNumber(0);
       } else {
         setQuestionNumber(questionNumber + 1);
       }
-      //TODO generate values for variables
+      setSelectedQuestion(questions.inclinePlane[questionNumber]);
 
-      const vars: number[] = [];
       for (
         let i = 0;
-        i < selectedQuestion.variablesForQuestionSetup.length;
+        i <
+        questions.inclinePlane[questionNumber].variablesForQuestionSetup.length;
         i++
       ) {
-        if (selectedQuestion.variablesForQuestionSetup[i] == "theta") {
-          let randValue = Math.floor(Math.random() * 79 + 1);
+        if (
+          questions.inclinePlane[questionNumber].variablesForQuestionSetup[i] ==
+          "theta - max 45"
+        ) {
+          let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
           changeWedgeAngle(randValue);
         }
+        //TODO add other vars
       }
       setSelectedQuestionVariables(vars);
-      setSelectedQuestion(questions.inclinePlane[questionNumber]);
     }
-    // TODO
+
+    // hack to make sure question value correct
+    setTimeout(() => {
+      getAnswers(vars);
+    }, 20);
   };
-
-  // Add/remove elements menu
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
-
-  const [displayChange, setDisplayChange] = useState(false);
-
-  let gravityMagnitude = 9.81;
-  const forceOfGravity: IForce = {
-    description: "Gravity",
-    magnitude: gravityMagnitude,
-    directionInDegrees: 270,
-  };
-
-  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
-  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
-    forceOfGravity,
-  ]);
-
-  const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const [selectedQuestion, setSelectedQuestion] = useState<{
-    questionSetup: string[];
-    variablesForQuestionSetup: string[];
-    question: string;
-    answerParts: string[];
-    answerSolutions: string[];
-  }>(questions.inclinePlane[0]);
-  const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
-    number[]
-  >([45]);
-  const [fullQuestionSetup, setfullQuestionSetup] = useState<string>("");
-  const [selectedQuestionQuestion, setSelectedQuestionQuestion] =
-    useState<string>("");
-  const [answerInputs, setAnswerInputs] = useState(<div></div>);
 
   useEffect(() => {
     let q = "";
@@ -592,6 +686,7 @@ function App() {
         }
       }
     }
+    //TODO add other vars
     setAnswerInputs(
       <div
         style={{ display: "flex", flexDirection: "column", alignItems: "left" }}
@@ -870,7 +965,7 @@ function App() {
               <div style={{ zIndex: 10000 }}>
                 <Button
                   onClick={() => {
-                    /*TODO */
+                    checkAnswers();
                   }}
                   variant="outlined"
                 >
