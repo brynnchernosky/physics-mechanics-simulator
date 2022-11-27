@@ -549,6 +549,15 @@ function App() {
         q += selectedQuestion.questionSetup[i];
         if (i != selectedQuestion.questionSetup.length - 1) {
           q += selectedQuestionVariables[i];
+          if (selectedQuestion.variablesForQuestionSetup[i].includes("theta")) {
+            q +=
+              " degree (≈" +
+              Math.round(
+                (1000 * (selectedQuestionVariables[i] * Math.PI)) / 180
+              ) /
+                1000 +
+              " rad)";
+          }
         }
       }
       setSelectedQuestionQuestion(selectedQuestion.question);
@@ -1448,7 +1457,7 @@ function App() {
         <p
           style={{
             position: "absolute",
-            top: window.innerHeight * 0.92 + "px",
+            top: window.innerHeight * 0.95 + "px",
             left: window.innerHeight * 0.1 + "px",
             zIndex: -10000,
           }}

@@ -3,7 +3,7 @@
     {
       "questionSetup": [
         "There is a 1kg weight on an inclined plane. The plane is at a ",
-        " degree angle from the ground. The system is in equilibrium (the net force on the weight is 0)."
+        " angle from the ground. The system is in equilibrium (the net force on the weight is 0)."
       ],
       "variablesForQuestionSetup": ["theta - max 45"],
       "question": "What are the magnitudes and directions of the forces acting on the weight?",
