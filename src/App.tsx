@@ -59,48 +59,53 @@ export interface ISimulationElement {
 }
 
 function App() {
-  const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
-  const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
-  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
-  const [pendulum, setPendulum] = useState(false);
-  const [pendulumAngle, setPendulumAngle] = useState(0);
-  const [pendulumLength, setPendulumLength] = useState(0);
-  const [positionXDisplay, setPositionXDisplay] = useState(0);
-  const [positionYDisplay, setPositionYDisplay] = useState(0);
-  const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
-  const [showForces, setShowForces] = useState<boolean>(true);
-  const [showVelocity, setShowVelocity] = useState<boolean>(false);
-  const [simulationElements, setSimulationElements] = useState<
-    ISimulationElement[]
-  >([]);
-  const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
-  const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [startPendulumAngle, setStartPendulumAngle] = useState(0);
-  const [timer, setTimer] = useState<number>(0);
-  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
-  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
-  const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
-  const [noMovement, setNoMovement] = useState(false);
-
-  const [mode, setMode] = useState<string>("Freeform");
-  const [topic, setTopic] = useState<string>("Incline Plane");
-
-  const [correctMessageVisible, setCorrectMessageVisible] = useState(false);
-  const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
-
-  let gravityMagnitude = 9.81;
+  // Constants
+  const gravityMagnitude = 9.81;
   const forceOfGravity: IForce = {
     description: "Gravity",
     magnitude: gravityMagnitude,
     directionInDegrees: 270,
   };
+  const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: "#f5f5f9",
+      color: "rgba(0, 0, 0, 0.87)",
+      maxWidth: 220,
+      fontSize: theme.typography.pxToRem(12),
+      border: "1px solid #dadde9",
+    },
+  }));
 
-  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
-  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
-    forceOfGravity,
-  ]);
-
+  // State variables
+  const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
+  const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
+  const [answerInputs, setAnswerInputs] = useState(<div></div>);
+  const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
+    React.useState<number | string | Array<number | string>>(0);
+  const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
+    React.useState<number | string | Array<number | string>>(0);
+  const [correctMessageVisible, setCorrectMessageVisible] = useState(false);
+  const [displayChange, setDisplayChange] = useState<any>(false);
+  const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
+  const [fullQuestionSetup, setfullQuestionSetup] = useState<string>("");
+  const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
+  const [mode, setMode] = useState<string>("Freeform");
+  const [noMovement, setNoMovement] = useState(false);
+  const [pendulum, setPendulum] = useState(false);
+  const [pendulumAngle, setPendulumAngle] = useState(0);
+  const [pendulumLength, setPendulumLength] = useState(0);
+  const [positionXDisplay, setPositionXDisplay] = useState(0);
+  const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
+  const [reviewGravityMagnitude, setReviewGravityMagnitude] =
+    useState<number>(0);
+  const [reviewNormalAngle, setReviewNormalAngle] = useState<number>(0);
+  const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
+  const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
+  const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
   const [selectedQuestion, setSelectedQuestion] = useState<{
     questionSetup: string[];
     variablesForQuestionSetup: string[];
@@ -109,16 +114,40 @@ function App() {
     answerSolutionDescriptions: string[];
     goal: string;
   }>(questions.inclinePlane[0]);
+  const [selectedQuestionQuestion, setSelectedQuestionQuestion] =
+    useState<string>("");
   const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
     number[]
   >([45]);
-  const [fullQuestionSetup, setfullQuestionSetup] = useState<string>("");
-  const [selectedQuestionQuestion, setSelectedQuestionQuestion] =
-    useState<string>("");
   const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
-  const [answerInputs, setAnswerInputs] = useState(<div></div>);
+  const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
+  const [showForces, setShowForces] = useState<boolean>(true);
+  const [showVelocity, setShowVelocity] = useState<boolean>(false);
+  const [simulationElements, setSimulationElements] = useState<
+    ISimulationElement[]
+  >([]);
+  const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
+  const [simulationReset, setSimulationReset] = useState<boolean>(false);
+  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
+  const [startPendulumAngle, setStartPendulumAngle] = useState(0);
+  const [timer, setTimer] = useState<number>(0);
+  const [topic, setTopic] = useState<string>("Incline Plane");
+  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
+    forceOfGravity,
+  ]);
+  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
+  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
+  const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
+  const [wedge, setWedge] = useState(false);
+  const [wedgeAngle, setWedgeAngle] = React.useState<
+    number | string | Array<number | string>
+  >(26);
+  const [wedgeHeight, setWedgeHeight] = useState(
+    Math.tan((26 * Math.PI) / 180) * 400
+  );
+  const [wedgeWidth, setWedgeWidth] = useState(400);
 
-  // Add/remove elements menu
+  // Handle opening and closing the add/remove elements menu
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
@@ -131,8 +160,7 @@ function App() {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  const [displayChange, setDisplayChange] = useState<any>(false);
-
+  // Add a free weight to the simulation
   const addWeight = () => {
     const weight: ISimulationElement = {
       type: "weight",
@@ -154,6 +182,7 @@ function App() {
     handleClose();
   };
 
+  // Add a wedge with a free weight to the simulation
   const addWedge = () => {
     setWedge(true);
     const wedge: ISimulationElement = {
@@ -187,6 +216,7 @@ function App() {
     handleClose();
   };
 
+  // Add a simple pendulum to the simulation
   const addPendulum = () => {
     setPendulum(true);
     const weight: ISimulationElement = {
@@ -208,6 +238,7 @@ function App() {
     handleClose();
   };
 
+  // Remove walls for the pendulum simulation to get rid of collision issues
   useEffect(() => {
     if (!pendulum) {
       const walls: IWallProps[] = [];
@@ -219,14 +250,6 @@ function App() {
       setWallPositions([]);
     }
   }, [pendulum]);
-
-  setInterval(() => {
-    setTimer(timer + 1);
-  }, 60);
-
-  // Coefficient of static friction
-  const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
-    React.useState<number | string | Array<number | string>>(0);
 
   const updateForcesWithFriction = (
     coefficient: number,
@@ -271,20 +294,7 @@ function App() {
     }
   };
 
-  // Coefficient of kinetic friction
-  const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
-    React.useState<number | string | Array<number | string>>(0);
-
-  // Wedge angle
-  const [wedge, setWedge] = useState(false);
-  const [wedgeHeight, setWedgeHeight] = useState(
-    Math.tan((26 * Math.PI) / 180) * 400
-  );
-  const [wedgeWidth, setWedgeWidth] = useState(400);
-  const [wedgeAngle, setWedgeAngle] = React.useState<
-    number | string | Array<number | string>
-  >(26);
-
+  // Change wedge height and width and weight position to match new wedge angle
   const changeWedgeBasedOnNewAngle = (angle: number) => {
     let width = 0;
     let height = 0;
@@ -345,6 +355,7 @@ function App() {
     }
   };
 
+  // Remove everything from simulation
   const clearSimulation = () => {
     setPendulum(false);
     setWedge(false);
@@ -355,22 +366,7 @@ function App() {
     handleClose();
   };
 
-  useEffect(() => {
-    if (mode == "Freeform") {
-      clearSimulation();
-    } else if (mode == "Review") {
-      setPendulum(false);
-      addWedge();
-      setShowAcceleration(false);
-      setShowVelocity(false);
-      setShowForces(true);
-      // hack to make sure weight positioned correctly
-      setTimeout(() => {
-        generateNewQuestion();
-      }, 5);
-    }
-  }, [mode, topic]);
-
+  // In review mode, update forces when coefficient of static friction changed
   const updateReviewForcesBasedOnCoefficient = (coefficient: number) => {
     setReviewGravityMagnitude(forceOfGravity.magnitude);
     setReviewGravityAngle(270);
@@ -404,6 +400,7 @@ function App() {
     setReviewStaticAngle(180 - Number(wedgeAngle));
   };
 
+  // In review mode, update forces when wedge angle changed
   const updateReviewForcesBasedOnAngle = (angle: number) => {
     setReviewGravityMagnitude(9.81);
     setReviewGravityAngle(270);
@@ -434,6 +431,7 @@ function App() {
     setReviewStaticAngle(180 - angle);
   };
 
+  // Solve for the correct answers to the generated problem
   const getAnswers = (
     question: {
       questionSetup: string[];
@@ -517,6 +515,7 @@ function App() {
     setSelectedSolutions(solutions);
   };
 
+  // In review mode, check if input answers match correct answers and optionally generate alert
   const checkAnswers = (showAlert: boolean = true) => {
     let error: boolean = false;
     let epsilon: number = 0.01;
@@ -592,6 +591,7 @@ function App() {
       }
   };
 
+  // In review mode, reset problem variables and generate a new question
   const generateNewQuestion = () => {
     setReviewGravityMagnitude(0);
     setReviewGravityAngle(0);
@@ -601,7 +601,6 @@ function App() {
     setReviewStaticAngle(0);
     setCoefficientOfKineticFriction(0);
     setCoefficientOfStaticFriction(0);
-    setWedgeAngle(0);
 
     const vars: number[] = [];
 
@@ -641,6 +640,7 @@ function App() {
     }
   };
 
+  // Use effect hook for generating question from JSON element in review mode
   useEffect(() => {
     let q = "";
     if (selectedQuestion) {
@@ -664,15 +664,24 @@ function App() {
     setfullQuestionSetup(q);
   }, [selectedQuestion, selectedQuestionVariables]);
 
-  const [reviewGravityMagnitude, setReviewGravityMagnitude] =
-    useState<number>(0);
-  const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
-  const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
-  const [reviewNormalAngle, setReviewNormalAngle] = useState<number>(0);
-  const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
-  const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
+  // Use effect hook to handle mode/topic change
+  useEffect(() => {
+    if (mode == "Freeform") {
+      clearSimulation();
+    } else if (mode == "Review") {
+      setPendulum(false);
+      addWedge();
+      setShowAcceleration(false);
+      setShowVelocity(false);
+      setShowForces(true);
+      // hack to make sure weight positioned correctly
+      setTimeout(() => {
+        generateNewQuestion();
+      }, 5);
+    }
+  }, [mode, topic]);
 
-  //TODO update review forces
+  // Use effect hook to handle force change in review mode
   useEffect(() => {
     if (mode == "Review") {
       const forceOfGravityReview: IForce = {
@@ -710,6 +719,7 @@ function App() {
     reviewStaticAngle,
   ]);
 
+  // Use effect hook to generate input fields for new review question
   useEffect(() => {
     let answerInput = [];
     if (selectedQuestion) {
@@ -875,17 +885,10 @@ function App() {
     );
   }, [selectedQuestion]);
 
-  const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: "#f5f5f9",
-      color: "rgba(0, 0, 0, 0.87)",
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: "1px solid #dadde9",
-    },
-  }));
+  // Timer for animating the simulation
+  setInterval(() => {
+    setTimer(timer + 1);
+  }, 60);
 
   return (
     <div>
