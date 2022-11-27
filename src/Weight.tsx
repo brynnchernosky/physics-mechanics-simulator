@@ -37,6 +37,7 @@ export interface IWeightProps {
   setStartPendulumAngle: (val: number) => any;
   showAcceleration: boolean;
   mode: string;
+  noMovement: boolean;
   pendulumAngle: number;
   showForces: boolean;
   showVelocity: boolean;
@@ -72,6 +73,7 @@ export const Weight = (props: IWeightProps) => {
     wedge,
     radius,
     mode,
+    noMovement,
     pendulumAngle,
     reset,
     setDisplayXAcceleration,
@@ -175,7 +177,7 @@ export const Weight = (props: IWeightProps) => {
   }, [updateDisplay]);
 
   useEffect(() => {
-    if (!paused) {
+    if (!paused && !noMovement) {
       let collisions = false;
       if (!pendulum) {
         const collisionsWithGround = checkForCollisionsWithGround();

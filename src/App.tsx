@@ -79,6 +79,7 @@ function App() {
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
+  const [noMovement, setNoMovement] = useState(false);
 
   const [mode, setMode] = useState<string>("Freeform");
   const [topic, setTopic] = useState<string>("Incline Plane");
@@ -105,6 +106,7 @@ function App() {
     question: string;
     answerParts: string[];
     answerSolutionDescriptions: string[];
+    goal: string;
   }>(questions.inclinePlane[0]);
   const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
     number[]
@@ -415,7 +417,7 @@ function App() {
     setSelectedSolutions(solutions);
   };
 
-  const checkAnswers = () => {
+  const checkAnswers = (showAlert: boolean = true) => {
     let error: boolean = false;
     let epsilon: number = 0.01;
     if (selectedQuestion) {
@@ -474,20 +476,27 @@ function App() {
         }
       }
     }
-    let message = "";
-    if (!error) {
-      setSimulationPaused(false);
-      setTimeout(() => {
-        setSimulationPaused(true);
-      }, 3000);
-      setCorrectMessageVisible(true);
-    } else {
-      setSimulationPaused(false);
-      setTimeout(() => {
-        setSimulationPaused(true);
-      }, 3000);
-      setIncorrectMessageVisible(true);
+    if (showAlert) {
+      if (!error) {
+        setSimulationPaused(false);
+        setTimeout(() => {
+          setSimulationPaused(true);
+        }, 3000);
+        setCorrectMessageVisible(true);
+      } else {
+        setSimulationPaused(false);
+        setTimeout(() => {
+          setSimulationPaused(true);
+        }, 3000);
+        setIncorrectMessageVisible(true);
+      }
     }
+    if (selectedQuestion.goal == "noMovement")
+      if (!error) {
+        setNoMovement(true);
+      } else {
+        setNoMovement(false);
+      }
   };
 
   const generateNewQuestion = () => {
@@ -872,6 +881,7 @@ function App() {
                         startForces={startForces}
                         incrementTime={timer}
                         mass={element.mass ?? 1}
+                        noMovement={noMovement}
                         mode={mode}
                         paused={simulationPaused}
                         pendulumAngle={pendulumAngle}

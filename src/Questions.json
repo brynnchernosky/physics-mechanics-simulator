@@ -22,7 +22,8 @@
         "solve normal force angle from wedge angle",
         "solve static force magnitude from wedge angle given equilibrium",
         "solve static force angle from wedge angle given equilibrium"
-      ]
+      ],
+      "goal": "noMovement"
     }
   ]
 }
