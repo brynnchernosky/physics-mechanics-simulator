@@ -365,74 +365,85 @@ function App() {
     }
   }, [mode, topic]);
 
-  const getAnswers = (question: {
-    questionSetup: string[];
-    variablesForQuestionSetup: string[];
-    question: string;
-    answerParts: string[];
-    answerSolutionDescriptions: string[];
-    goal: string;
-  }, questionVars: number[]) => {
+  const getAnswers = (
+    question: {
+      questionSetup: string[];
+      variablesForQuestionSetup: string[];
+      question: string;
+      answerParts: string[];
+      answerSolutionDescriptions: string[];
+      goal: string;
+    },
+    questionVars: number[]
+  ) => {
     const solutions: number[] = [];
+
     let theta: number = Number(wedgeAngle);
-    const index =
-    question.variablesForQuestionSetup.indexOf("theta - max 45");
+    let index = question.variablesForQuestionSetup.indexOf("theta - max 45");
     if (index >= 0) {
       theta = questionVars[index];
     }
-      for (
-        let i = 0;
-        i < question.answerSolutionDescriptions.length;
-        i++
+    let muS: number = Number(coefficientOfStaticFriction);
+    index = question.variablesForQuestionSetup.indexOf(
+      "coefficient of static friction"
+    );
+    if (index >= 0) {
+      muS = questionVars[index];
+    }
+
+    for (let i = 0; i < question.answerSolutionDescriptions.length; i++) {
+      const description = question.answerSolutionDescriptions[i];
+      if (!isNaN(Number(description))) {
+        solutions.push(Number(description));
+      } else if (description == "solve normal force angle from wedge angle") {
+        solutions.push(180 - 90 - theta);
+      } else if (
+        description == "solve normal force magnitude from wedge angle"
       ) {
-        const description = question.answerSolutionDescriptions[i];
-        if (!isNaN(Number(description))) {
-          solutions.push(Number(description));
-        } else if (description == "solve normal force angle from wedge angle") {
-          solutions.push(180 - 90 - theta);
-        } else if (
-          description == "solve normal force magnitude from wedge angle"
-        ) {
-          solutions.push(
-            forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI)
-          );
-        } else if (
-          description ==
-          "solve static force magnitude from wedge angle given equilibrium"
-        ) {
-          let normalForceMagnitude =
-            forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
-          let normalForceAngle = 180 - 90 - theta;
-          let frictionForceAngle = 180 - theta;
-          let frictionForceMagnitude =
-            (-normalForceMagnitude *
-              Math.sin((normalForceAngle * Math.PI) / 180) +
-              9.81) /
-            Math.sin((frictionForceAngle * Math.PI) / 180);
-          solutions.push(frictionForceMagnitude);
-        } else if (
-          description ==
-          "solve static force angle from wedge angle given equilibrium"
-        ) {
-          solutions.push(180 - theta);
-        } else if (
-          description ==
-          "solve minimum static coefficient from wedge angle given equilibrium"
-        ) {
-          let normalForceMagnitude =
-            forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
-          let normalForceAngle = 180 - 90 - theta;
-          let frictionForceAngle = 180 - theta;
-          let frictionForceMagnitude =
-            (-normalForceMagnitude *
-              Math.sin((normalForceAngle * Math.PI) / 180) +
-              9.81) /
-            Math.sin((frictionForceAngle * Math.PI) / 180);
-          let frictionCoefficient =
-            frictionForceMagnitude / normalForceMagnitude;
-          solutions.push(frictionCoefficient);
-        }
+        solutions.push(
+          forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI)
+        );
+      } else if (
+        description ==
+        "solve static force magnitude from wedge angle given equilibrium"
+      ) {
+        let normalForceMagnitude =
+          forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
+        let normalForceAngle = 180 - 90 - theta;
+        let frictionForceAngle = 180 - theta;
+        let frictionForceMagnitude =
+          (-normalForceMagnitude *
+            Math.sin((normalForceAngle * Math.PI) / 180) +
+            9.81) /
+          Math.sin((frictionForceAngle * Math.PI) / 180);
+        solutions.push(frictionForceMagnitude);
+      } else if (
+        description ==
+        "solve static force angle from wedge angle given equilibrium"
+      ) {
+        solutions.push(180 - theta);
+      } else if (
+        description ==
+        "solve minimum static coefficient from wedge angle given equilibrium"
+      ) {
+        let normalForceMagnitude =
+          forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
+        let normalForceAngle = 180 - 90 - theta;
+        let frictionForceAngle = 180 - theta;
+        let frictionForceMagnitude =
+          (-normalForceMagnitude *
+            Math.sin((normalForceAngle * Math.PI) / 180) +
+            9.81) /
+          Math.sin((frictionForceAngle * Math.PI) / 180);
+        let frictionCoefficient = frictionForceMagnitude / normalForceMagnitude;
+        solutions.push(frictionCoefficient);
+      } else if (
+        description ==
+        "solve maximum wedge angle from coefficient of static friction given equilibrium"
+      ) {
+        // to do solve
       }
+    }
     console.log(solutions); // used for debugging/testing
     setSelectedSolutions(solutions);
   };
@@ -543,11 +554,18 @@ function App() {
           let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
           changeWedgeAngle(randValue);
+        } else if (
+          questions.inclinePlane[questionNumber].variablesForQuestionSetup[i] ==
+          "coefficient of static friction"
+        ) {
+          let randValue = Math.round(Math.random() * 1000) / 1000;
+          vars.push(randValue);
+          setCoefficientOfStaticFriction(randValue);
         }
         //TODO add other vars
       }
       setSelectedQuestionVariables(vars);
-      getAnswers(questions.inclinePlane[questionNumber], vars)
+      getAnswers(questions.inclinePlane[questionNumber], vars);
     }
   };
 
