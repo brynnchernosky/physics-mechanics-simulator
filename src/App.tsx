@@ -7,6 +7,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { styled } from "@mui/material/styles";
 import { InputField } from "./InputField";
+import { InputValue } from "./InputValue";
 import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import {
   Alert,
@@ -285,6 +286,7 @@ function App() {
   >(26);
 
   const changeWedgeAngle = (angle: number) => {
+    setWedgeAngle(angle);
     let width = 0;
     let height = 0;
     if (angle < 50) {
@@ -354,6 +356,7 @@ function App() {
     if (mode == "Freeform") {
       clearSimulation();
     } else if (mode == "Review") {
+      setPendulum(false);
       addWedge();
       setShowAcceleration(false);
       setShowVelocity(false);
@@ -364,6 +367,69 @@ function App() {
       }, 5);
     }
   }, [mode, topic]);
+
+  const updateReviewForcesBasedOnCoefficient = (coefficient: number) => {
+    setReviewGravityMagnitude(forceOfGravity.magnitude);
+    setReviewGravityAngle(270);
+    setReviewNormalMagnitude(
+      forceOfGravity.magnitude * Math.cos((Number(wedgeAngle) * Math.PI) / 180)
+    );
+    setReviewNormalAngle(180 - 90 - Number(wedgeAngle));
+    let yForce = -forceOfGravity.magnitude;
+    yForce +=
+      9.81 *
+      Math.cos((Number(wedgeAngle) * Math.PI) / 180) *
+      Math.sin(((180 - 90 - Number(wedgeAngle)) * Math.PI) / 180);
+    yForce +=
+      coefficient *
+      9.81 *
+      Math.cos((Number(wedgeAngle) * Math.PI) / 180) *
+      Math.sin(((180 - Number(wedgeAngle)) * Math.PI) / 180);
+    let friction =
+      coefficient * 9.81 * Math.cos((Number(wedgeAngle) * Math.PI) / 180);
+    if (yForce > 0) {
+      friction =
+        (-(
+          forceOfGravity.magnitude *
+          Math.cos((Number(wedgeAngle) * Math.PI) / 180)
+        ) *
+          Math.sin(((180 - 90 - Number(wedgeAngle)) * Math.PI) / 180) +
+          forceOfGravity.magnitude) /
+        Math.sin(((180 - Number(wedgeAngle)) * Math.PI) / 180);
+    }
+    setReviewStaticMagnitude(friction);
+    setReviewStaticAngle(180 - Number(wedgeAngle));
+  };
+
+  const updateReviewForcesBasedOnAngle = (angle: number) => {
+    setReviewGravityMagnitude(9.81);
+    setReviewGravityAngle(270);
+    setReviewNormalMagnitude(9.81 * Math.cos((Number(angle) * Math.PI) / 180));
+    setReviewNormalAngle(180 - 90 - angle);
+    let yForce = -forceOfGravity.magnitude;
+    yForce +=
+      9.81 *
+      Math.cos((Number(angle) * Math.PI) / 180) *
+      Math.sin(((180 - 90 - Number(angle)) * Math.PI) / 180);
+    yForce +=
+      Number(coefficientOfStaticFriction) *
+      9.81 *
+      Math.cos((Number(angle) * Math.PI) / 180) *
+      Math.sin(((180 - Number(angle)) * Math.PI) / 180);
+    let friction =
+      Number(coefficientOfStaticFriction) *
+      9.81 *
+      Math.cos((Number(angle) * Math.PI) / 180);
+    if (yForce > 0) {
+      friction =
+        (-(9.81 * Math.cos((Number(angle) * Math.PI) / 180)) *
+          Math.sin(((180 - 90 - Number(angle)) * Math.PI) / 180) +
+          forceOfGravity.magnitude) /
+        Math.sin(((180 - Number(angle)) * Math.PI) / 180);
+    }
+    setReviewStaticMagnitude(friction);
+    setReviewStaticAngle(180 - angle);
+  };
 
   const getAnswers = (
     question: {
@@ -530,6 +596,8 @@ function App() {
     setReviewNormalAngle(0);
     setReviewStaticMagnitude(0);
     setReviewStaticAngle(0);
+    setCoefficientOfKineticFriction(0);
+    setCoefficientOfStaticFriction(0);
 
     const vars: number[] = [];
 
@@ -754,6 +822,7 @@ function App() {
         } else if (
           selectedQuestion.answerParts[i] == "coefficient of static friction"
         ) {
+          updateReviewForcesBasedOnCoefficient(0);
           answerInput.push(
             <InputField
               label={
@@ -767,12 +836,32 @@ function App() {
               unit={""}
               upperBound={1}
               value={coefficientOfStaticFriction}
+              effect={updateReviewForcesBasedOnCoefficient}
+            />
+          );
+        } else if (selectedQuestion.answerParts[i] == "wedge angle") {
+          changeWedgeAngle(0);
+          updateReviewForcesBasedOnAngle(0);
+          answerInput.push(
+            <InputField
+              label={<p>&theta;</p>}
+              lowerBound={0}
+              changeValue={setWedgeAngle}
+              step={1}
+              unit={"°"}
+              radianEquivalent={true}
+              upperBound={49}
+              value={wedgeAngle}
+              effect={(val: number) => {
+                changeWedgeAngle(val);
+                updateReviewForcesBasedOnAngle(val);
+              }}
             />
           );
         }
       }
     }
-    //TODO add other vars
+
     setAnswerInputs(
       <div
         style={{ display: "flex", flexDirection: "column", alignItems: "left" }}
@@ -1021,6 +1110,20 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={mode}
+              label="Mode"
+              onChange={(e) => {
+                setMode(e.target.value as string);
+              }}
+            >
+              <MenuItem value="Freeform">Freeform</MenuItem>
+              <MenuItem value="Review">Review</MenuItem>
+            </Select>
+          </div>
+          <div>
             {mode == "Review" && (
               <Select
                 labelId="demo-simple-select-label"
@@ -1034,18 +1137,6 @@ function App() {
                 <MenuItem value="Incline Plane">Incline Plane</MenuItem>
               </Select>
             )}
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={mode}
-              label="Mode"
-              onChange={(e) => {
-                setMode(e.target.value as string);
-              }}
-            >
-              <MenuItem value="Freeform">Freeform</MenuItem>
-              <MenuItem value="Review">Review</MenuItem>
-            </Select>
           </div>
           {mode == "Review" && (
             <div className="wordProblemBox">
