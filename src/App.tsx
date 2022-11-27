@@ -365,21 +365,27 @@ function App() {
     }
   }, [mode, topic]);
 
-  const getAnswers = (questionVars: number[]) => {
+  const getAnswers = (question: {
+    questionSetup: string[];
+    variablesForQuestionSetup: string[];
+    question: string;
+    answerParts: string[];
+    answerSolutionDescriptions: string[];
+    goal: string;
+  }, questionVars: number[]) => {
     const solutions: number[] = [];
     let theta: number = Number(wedgeAngle);
     const index =
-      selectedQuestion.variablesForQuestionSetup.indexOf("theta - max 45");
+    question.variablesForQuestionSetup.indexOf("theta - max 45");
     if (index >= 0) {
       theta = questionVars[index];
     }
-    if (selectedQuestion) {
       for (
         let i = 0;
-        i < selectedQuestion.answerSolutionDescriptions.length;
+        i < question.answerSolutionDescriptions.length;
         i++
       ) {
-        const description = selectedQuestion.answerSolutionDescriptions[i];
+        const description = question.answerSolutionDescriptions[i];
         if (!isNaN(Number(description))) {
           solutions.push(Number(description));
         } else if (description == "solve normal force angle from wedge angle") {
@@ -409,10 +415,24 @@ function App() {
           "solve static force angle from wedge angle given equilibrium"
         ) {
           solutions.push(180 - theta);
+        } else if (
+          description ==
+          "solve minimum static coefficient from wedge angle given equilibrium"
+        ) {
+          let normalForceMagnitude =
+            forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
+          let normalForceAngle = 180 - 90 - theta;
+          let frictionForceAngle = 180 - theta;
+          let frictionForceMagnitude =
+            (-normalForceMagnitude *
+              Math.sin((normalForceAngle * Math.PI) / 180) +
+              9.81) /
+            Math.sin((frictionForceAngle * Math.PI) / 180);
+          let frictionCoefficient =
+            frictionForceMagnitude / normalForceMagnitude;
+          solutions.push(frictionCoefficient);
         }
-        // refer to updateForcesWithFriction
       }
-    }
     console.log(solutions); // used for debugging/testing
     setSelectedSolutions(solutions);
   };
@@ -427,24 +447,20 @@ function App() {
             Math.abs(reviewGravityMagnitude - selectedSolutions[i]) > epsilon
           ) {
             error = true;
-            console.log("error with gravity");
           }
         } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
           if (Math.abs(reviewGravityAngle - selectedSolutions[i]) > epsilon) {
             error = true;
-            console.log("error with gravity angle");
           }
         } else if (selectedQuestion.answerParts[i] == "normal force") {
           if (
             Math.abs(reviewNormalMagnitude - selectedSolutions[i]) > epsilon
           ) {
             error = true;
-            console.log("error with normal");
           }
         } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
           if (Math.abs(reviewNormalAngle - selectedSolutions[i]) > epsilon) {
             error = true;
-            console.log("error with normal angle");
           }
         } else if (
           selectedQuestion.answerParts[i] == "force of static friction"
@@ -453,14 +469,12 @@ function App() {
             Math.abs(reviewStaticMagnitude - selectedSolutions[i]) > epsilon
           ) {
             error = true;
-            console.log("error with friction");
           }
         } else if (
           selectedQuestion.answerParts[i] == "angle of static friction"
         ) {
           if (Math.abs(reviewStaticAngle - selectedSolutions[i]) > epsilon) {
             error = true;
-            console.log("error with friction angle");
           }
         } else if (
           selectedQuestion.answerParts[i] == "coefficient of static friction"
@@ -471,7 +485,6 @@ function App() {
             ) > epsilon
           ) {
             error = true;
-            console.log("error with coefficient");
           }
         }
       }
@@ -534,12 +547,8 @@ function App() {
         //TODO add other vars
       }
       setSelectedQuestionVariables(vars);
+      getAnswers(questions.inclinePlane[questionNumber], vars)
     }
-
-    // hack to make sure question value correct
-    setTimeout(() => {
-      getAnswers(vars);
-    }, 20);
   };
 
   useEffect(() => {

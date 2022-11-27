@@ -24,6 +24,19 @@
         "solve static force angle from wedge angle given equilibrium"
       ],
       "goal": "noMovement"
+    },
+    {
+      "questionSetup": [
+        "There is a 1kg weight on an inclined plane. The plane is at a ",
+        " angle from the ground. The system is in equilibrium (the net force on the weight is 0)."
+      ],
+      "variablesForQuestionSetup": ["theta - max 45"],
+      "question": "What is the minimum coefficient of static friction?",
+      "answerParts": ["coefficient of static friction"],
+      "answerSolutionDescriptions": [
+        "solve minimum static coefficient from wedge angle given equilibrium"
+      ],
+      "goal": "noMovement"
     }
   ]
 }
