@@ -9,6 +9,7 @@ import { styled } from "@mui/material/styles";
 import { InputField } from "./InputField";
 import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import {
+  Alert,
   Button,
   Checkbox,
   Divider,
@@ -81,6 +82,9 @@ function App() {
 
   const [mode, setMode] = useState<string>("Freeform");
   const [topic, setTopic] = useState<string>("Incline Plane");
+
+  const [correctMessageVisible, setCorrectMessageVisible] = useState(false);
+  const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
 
   let gravityMagnitude = 9.81;
   const forceOfGravity: IForce = {
@@ -407,48 +411,82 @@ function App() {
         // refer to updateForcesWithFriction
       }
     }
+    console.log(solutions); // used for debugging/testing
     setSelectedSolutions(solutions);
   };
 
   const checkAnswers = () => {
+    let error: boolean = false;
+    let epsilon: number = 0.01;
     if (selectedQuestion) {
       for (let i = 0; i < selectedQuestion.answerParts.length; i++) {
         if (selectedQuestion.answerParts[i] == "force of gravity") {
-          if (reviewGravityMagnitude != selectedSolutions[i]) {
-            //to do - add error message
+          if (
+            Math.abs(reviewGravityMagnitude - selectedSolutions[i]) > epsilon
+          ) {
+            error = true;
+            console.log("error with gravity");
           }
         } else if (selectedQuestion.answerParts[i] == "angle of gravity") {
-          if (reviewGravityAngle != selectedSolutions[i]) {
-            //to do - add error message
+          if (Math.abs(reviewGravityAngle - selectedSolutions[i]) > epsilon) {
+            error = true;
+            console.log("error with gravity angle");
           }
         } else if (selectedQuestion.answerParts[i] == "normal force") {
-          if (reviewNormalMagnitude != selectedSolutions[i]) {
-            //to do - add error message
+          if (
+            Math.abs(reviewNormalMagnitude - selectedSolutions[i]) > epsilon
+          ) {
+            error = true;
+            console.log("error with normal");
           }
         } else if (selectedQuestion.answerParts[i] == "angle of normal force") {
-          if (reviewNormalAngle != selectedSolutions[i]) {
-            //to do - add error message
+          if (Math.abs(reviewNormalAngle - selectedSolutions[i]) > epsilon) {
+            error = true;
+            console.log("error with normal angle");
           }
         } else if (
           selectedQuestion.answerParts[i] == "force of static friction"
         ) {
-          if (reviewStaticMagnitude != selectedSolutions[i]) {
-            //to do - add error message
+          if (
+            Math.abs(reviewStaticMagnitude - selectedSolutions[i]) > epsilon
+          ) {
+            error = true;
+            console.log("error with friction");
           }
         } else if (
           selectedQuestion.answerParts[i] == "angle of static friction"
         ) {
-          if (reviewStaticAngle != selectedSolutions[i]) {
-            //to do - add error message
+          if (Math.abs(reviewStaticAngle - selectedSolutions[i]) > epsilon) {
+            error = true;
+            console.log("error with friction angle");
           }
         } else if (
           selectedQuestion.answerParts[i] == "coefficient of static friction"
         ) {
-          if (coefficientOfStaticFriction != selectedSolutions[i]) {
-            //to do - add error message
+          if (
+            Math.abs(
+              Number(coefficientOfStaticFriction) - selectedSolutions[i]
+            ) > epsilon
+          ) {
+            error = true;
+            console.log("error with coefficient");
           }
         }
       }
+    }
+    let message = "";
+    if (!error) {
+      setSimulationPaused(false);
+      setTimeout(() => {
+        setSimulationPaused(true);
+      }, 3000);
+      setCorrectMessageVisible(true);
+    } else {
+      setSimulationPaused(false);
+      setTimeout(() => {
+        setSimulationPaused(true);
+      }, 3000);
+      setIncorrectMessageVisible(true);
     }
   };
 
@@ -790,6 +828,30 @@ function App() {
                     </nav>
                   </Popover>
                 </div>
+              )}
+            </div>
+            <div className="alerts">
+              {correctMessageVisible && (
+                <Alert
+                  severity="success"
+                  onClose={() => {
+                    setCorrectMessageVisible(false);
+                  }}
+                >
+                  Correct!
+                </Alert>
+              )}
+            </div>
+            <div className="alerts">
+              {incorrectMessageVisible && (
+                <Alert
+                  severity="error"
+                  onClose={() => {
+                    setIncorrectMessageVisible(false);
+                  }}
+                >
+                  Not quite!
+                </Alert>
               )}
             </div>
             <div className="mechanicsSimulationElements">

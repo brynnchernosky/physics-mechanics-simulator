@@ -23,26 +23,6 @@
         "solve static force magnitude from wedge angle given equilibrium",
         "solve static force angle from wedge angle given equilibrium"
       ]
-    },
-    {
-      "questionSetup": [
-        "There is a 1kg weight on an inclined plane. The angle of the plane is ",
-        " degrees. The system is in equilibrium (the net force on the weight is 0)."
-      ],
-      "variablesForQuestionSetup": ["angle of plane"],
-      "question": "What is the minimum coefficient of static friction?",
-      "answerParts": ["coefficient of static friction"],
-      "answerSolutionDescriptions": ["tbd"]
-    },
-    {
-      "questionSetup": [
-        "There is a 1kg weight on an inclined plane. The coefficient of static friction is ",
-        ". The system is in equilibrium (the net force on the weight is 0)."
-      ],
-      "variablesForQuestionSetup": ["coefficient of static friction"],
-      "question": "What is the maximum angle of the plane?",
-      "answerParts": ["angle of plane"],
-      "answerSolutionDescriptions": ["tbd"]
     }
   ]
 }
