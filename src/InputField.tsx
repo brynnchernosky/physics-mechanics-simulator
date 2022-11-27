@@ -9,6 +9,7 @@ export interface IInputProps {
   upperBound: number;
   value: number | string | Array<number | string>;
   effect?: (val: number) => any;
+  radianEquivalent?: boolean;
 }
 
 export const InputField = (props: IInputProps) => {
@@ -21,9 +22,13 @@ export const InputField = (props: IInputProps) => {
     upperBound,
     value,
     effect,
+    radianEquivalent,
   } = props;
 
   const [tempValue, setTempValue] = useState(value);
+  const [tempRadianValue, setTempRadianValue] = useState(
+    (Number(value) * Math.PI) / 180
+  );
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value === "" ? 0 : Number(event.target.value);
@@ -47,8 +52,24 @@ export const InputField = (props: IInputProps) => {
     }
     changeValue(value);
     setTempValue(value);
+    setTempRadianValue((value * Math.PI) / 180);
     if (effect) {
       effect(value);
+    }
+  };
+
+  const onChangeRadianValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = event.target.value === "" ? 0 : Number(event.target.value);
+    if (value > 2 * Math.PI) {
+      value = 2 * Math.PI;
+    } else if (value < 0) {
+      value = 0;
+    }
+    changeValue((value * 180) / Math.PI);
+    setTempValue((value * 180) / Math.PI);
+    setTempRadianValue(value);
+    if (effect) {
+      effect((value * 180) / Math.PI);
     }
   };
 
@@ -71,6 +92,25 @@ export const InputField = (props: IInputProps) => {
           endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
         }}
       />
+      {radianEquivalent && <p>=</p>}
+      {radianEquivalent && (
+        <TextField
+          type="number"
+          variant="standard"
+          value={tempRadianValue}
+          onChange={onChangeRadianValue}
+          sx={{ height: "1em", width: "5em", marginLeft: "15px" }}
+          inputProps={{
+            step: Math.PI / 8,
+            min: 0,
+            max: 2 * Math.PI,
+            type: "number",
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">rad</InputAdornment>,
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -627,6 +627,7 @@ function App() {
               unit={"°"}
               upperBound={360}
               value={reviewGravityAngle}
+              radianEquivalent={true}
             />
           );
         } else if (selectedQuestion.answerParts[i] == "normal force") {
@@ -659,6 +660,7 @@ function App() {
               unit={"°"}
               upperBound={360}
               value={reviewNormalAngle}
+              radianEquivalent={true}
             />
           );
         } else if (
@@ -701,6 +703,7 @@ function App() {
               unit={"°"}
               upperBound={360}
               value={reviewStaticAngle}
+              radianEquivalent={true}
             />
           );
         } else if (
@@ -1435,7 +1438,7 @@ function App() {
         <p
           style={{
             position: "absolute",
-            top: window.innerHeight * 0.95 + "px",
+            top: window.innerHeight * 0.92 + "px",
             left: window.innerHeight * 0.1 + "px",
             zIndex: -10000,
           }}
