@@ -131,7 +131,7 @@ function App() {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  const [displayChange, setDisplayChange] = useState(false);
+  const [displayChange, setDisplayChange] = useState<any>(false);
 
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -179,7 +179,7 @@ function App() {
       setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
-      changeWedgeAngle(26);
+      changeWedgeBasedOnNewAngle(26);
     } else {
       setStartForces([]);
       setUpdatedForces([]);
@@ -285,8 +285,7 @@ function App() {
     number | string | Array<number | string>
   >(26);
 
-  const changeWedgeAngle = (angle: number) => {
-    setWedgeAngle(angle);
+  const changeWedgeBasedOnNewAngle = (angle: number) => {
     let width = 0;
     let height = 0;
     if (angle < 50) {
@@ -331,7 +330,11 @@ function App() {
       Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10
     );
     setPositionYDisplay(Math.round(yPos * 10) / 10);
-    setDisplayChange(!displayChange);
+    setDisplayChange(
+      Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10 +
+        " " +
+        Math.round(yPos * 10) / 10
+    );
 
     if (mode == "Freeform") {
       updateForcesWithFriction(
@@ -598,6 +601,7 @@ function App() {
     setReviewStaticAngle(0);
     setCoefficientOfKineticFriction(0);
     setCoefficientOfStaticFriction(0);
+    setWedgeAngle(0);
 
     const vars: number[] = [];
 
@@ -621,7 +625,7 @@ function App() {
         ) {
           let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
-          changeWedgeAngle(randValue);
+          changeWedgeBasedOnNewAngle(randValue);
         } else if (
           questions.inclinePlane[questionNumber].variablesForQuestionSetup[i] ==
           "coefficient of static friction"
@@ -840,7 +844,7 @@ function App() {
             />
           );
         } else if (selectedQuestion.answerParts[i] == "wedge angle") {
-          changeWedgeAngle(0);
+          changeWedgeBasedOnNewAngle(0);
           updateReviewForcesBasedOnAngle(0);
           answerInput.push(
             <InputField
@@ -849,13 +853,13 @@ function App() {
               changeValue={setWedgeAngle}
               step={1}
               unit={"°"}
-              radianEquivalent={true}
               upperBound={49}
               value={wedgeAngle}
               effect={(val: number) => {
-                changeWedgeAngle(val);
+                changeWedgeBasedOnNewAngle(val);
                 updateReviewForcesBasedOnAngle(val);
               }}
+              radianEquivalent={true}
             />
           );
         }
@@ -1237,7 +1241,8 @@ function App() {
                     unit={"°"}
                     upperBound={79}
                     value={wedgeAngle}
-                    effect={changeWedgeAngle}
+                    effect={changeWedgeBasedOnNewAngle}
+                    radianEquivalent={true}
                   />
                   <InputField
                     label={

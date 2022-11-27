@@ -46,7 +46,7 @@ export interface IWeightProps {
   startVelX?: number;
   startVelY?: number;
   timestepSize: number;
-  updateDisplay: boolean;
+  updateDisplay: any;
   updatedForces: IForce[];
   setUpdatedForces: (val: IForce[]) => any;
   walls: IWallProps[];
@@ -144,6 +144,7 @@ export const Weight = (props: IWeightProps) => {
   };
 
   useEffect(() => {
+    console.log("update display use effect");
     if (displayXPosition != xPosition) {
       let x = displayXPosition;
       x = Math.max(0, x);
