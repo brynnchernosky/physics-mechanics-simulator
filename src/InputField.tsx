@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { TextField, InputAdornment } from "@mui/material";
+
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 export interface IInputProps {
   label: JSX.Element;
   lowerBound: number;
@@ -8,6 +11,8 @@ export interface IInputProps {
   unit: string;
   upperBound: number;
   value: number | string | Array<number | string>;
+  correctValue?: number;
+  showIcon?: boolean;
   effect?: (val: number) => any;
   radianEquivalent?: boolean;
 }
@@ -23,6 +28,8 @@ export const InputField = (props: IInputProps) => {
     value,
     effect,
     radianEquivalent,
+    correctValue,
+    showIcon,
   } = props;
 
   const [tempValue, setTempValue] = useState(value);
@@ -87,6 +94,14 @@ export const InputField = (props: IInputProps) => {
           type: "number",
         }}
         InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              {Number(value) == correctValue && showIcon && <TaskAltIcon />}
+              {Number(value) != correctValue && showIcon && (
+                <ErrorOutlineIcon />
+              )}
+            </InputAdornment>
+          ),
           endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
         }}
       />

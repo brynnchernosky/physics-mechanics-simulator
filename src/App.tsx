@@ -4,11 +4,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
-import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import { styled } from "@mui/material/styles";
-import { InputField } from "./InputField";
-import { InputValue } from "./InputValue";
-import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import {
   Alert,
   Button,
@@ -18,7 +13,6 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Input,
   InputAdornment,
   List,
   ListItem,
@@ -32,16 +26,16 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Slider from "@mui/material/Slider";
+import { styled } from "@mui/material/styles";
+import { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React, { useEffect, useState } from "react";
 import "./App.scss";
+import { InputField } from "./InputField";
+import questions from "./Questions.json";
 import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { IForce, Weight } from "./Weight";
-import questions from "./Questions.json";
 
 export interface ISimulationElement {
   color?: string;
@@ -82,6 +76,7 @@ function App() {
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
   const [answerInputs, setAnswerInputs] = useState(<div></div>);
+  const [showIcon, setShowIcon] = useState(false);
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
@@ -500,6 +495,7 @@ function App() {
     }
     console.log(solutions); // used for debugging/testing
     setSelectedSolutions(solutions);
+    return solutions;
   };
 
   // In review mode, check if input answers match correct answers and optionally generate alert
@@ -570,12 +566,14 @@ function App() {
         setIncorrectMessageVisible(true);
       }
     }
-    if (selectedQuestion.goal == "noMovement")
+    if (selectedQuestion.goal == "noMovement") {
       if (!error) {
         setNoMovement(true);
       } else {
         setNoMovement(false);
       }
+    }
+    setShowIcon(true);
   };
 
   // In review mode, reset problem variables and generate a new question
@@ -589,6 +587,7 @@ function App() {
       setReviewStaticMagnitude(0);
       setReviewStaticAngle(0);
       setCoefficientOfKineticFriction(0);
+      setShowIcon(false);
     }, 20);
 
     const vars: number[] = [];
@@ -642,162 +641,197 @@ function App() {
     setSelectedQuestion(question);
     setQuestionPartOne(q);
     setQuestionPartTwo(question.question);
-    generateInputFieldsForQuestion(question);
-    getAnswersToQuestion(question, vars);
+    const answers = getAnswersToQuestion(question, vars);
+    generateInputFieldsForQuestion(question, answers);
   };
 
   // Generate input fields for new review question
-  const generateInputFieldsForQuestion = (question: {
-    questionSetup: string[];
-    variablesForQuestionSetup: string[];
-    question: string;
-    answerParts: string[];
-    answerSolutionDescriptions: string[];
-    goal: string;
-  }) => {
+  const generateInputFieldsForQuestion = (
+    question: {
+      questionSetup: string[];
+      variablesForQuestionSetup: string[];
+      question: string;
+      answerParts: string[];
+      answerSolutionDescriptions: string[];
+      goal: string;
+    },
+    answers: number[]
+  ) => {
     let answerInput = [];
     for (let i = 0; i < question.answerParts.length; i++) {
       if (question.answerParts[i] == "force of gravity") {
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                F<sub>G</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewGravityMagnitude}
-            step={0.1}
-            unit={"N"}
-            upperBound={50}
-            value={reviewGravityMagnitude}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  F<sub>G</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewGravityMagnitude}
+              step={0.1}
+              unit={"N"}
+              upperBound={50}
+              value={reviewGravityMagnitude}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "angle of gravity") {
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                &theta;<sub>G</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewGravityAngle}
-            step={1}
-            unit={"°"}
-            upperBound={360}
-            value={reviewGravityAngle}
-            radianEquivalent={true}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  &theta;<sub>G</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewGravityAngle}
+              step={1}
+              unit={"°"}
+              upperBound={360}
+              value={reviewGravityAngle}
+              radianEquivalent={true}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "normal force") {
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                F<sub>N</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewNormalMagnitude}
-            step={0.1}
-            unit={"N"}
-            upperBound={50}
-            value={reviewNormalMagnitude}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  F<sub>N</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewNormalMagnitude}
+              step={0.1}
+              unit={"N"}
+              upperBound={50}
+              value={reviewNormalMagnitude}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "angle of normal force") {
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                &theta;<sub>N</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewNormalAngle}
-            step={1}
-            unit={"°"}
-            upperBound={360}
-            value={reviewNormalAngle}
-            radianEquivalent={true}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  &theta;<sub>N</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewNormalAngle}
+              step={1}
+              unit={"°"}
+              upperBound={360}
+              value={reviewNormalAngle}
+              radianEquivalent={true}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "force of static friction") {
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                F
-                <sub>
-                  F<sub>s</sub>
-                </sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewStaticMagnitude}
-            step={0.1}
-            unit={"N"}
-            upperBound={50}
-            value={reviewStaticMagnitude}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  F
+                  <sub>
+                    F<sub>s</sub>
+                  </sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewStaticMagnitude}
+              step={0.1}
+              unit={"N"}
+              upperBound={50}
+              value={reviewStaticMagnitude}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "angle of static friction") {
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                &theta;
-                <sub>
-                  F<sub>s</sub>
-                </sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setReviewStaticAngle}
-            step={1}
-            unit={"°"}
-            upperBound={360}
-            value={reviewStaticAngle}
-            radianEquivalent={true}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  &theta;
+                  <sub>
+                    F<sub>s</sub>
+                  </sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setReviewStaticAngle}
+              step={1}
+              unit={"°"}
+              upperBound={360}
+              value={reviewStaticAngle}
+              radianEquivalent={true}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "coefficient of static friction") {
         updateReviewForcesBasedOnCoefficient(0);
         answerInput.push(
-          <InputField
-            label={
-              <p>
-                &mu;<sub>s</sub>
-              </p>
-            }
-            lowerBound={0}
-            changeValue={setCoefficientOfStaticFriction}
-            step={0.1}
-            unit={""}
-            upperBound={1}
-            value={coefficientOfStaticFriction}
-            effect={updateReviewForcesBasedOnCoefficient}
-          />
+          <div key={i}>
+            <InputField
+              label={
+                <p>
+                  &mu;<sub>s</sub>
+                </p>
+              }
+              lowerBound={0}
+              changeValue={setCoefficientOfStaticFriction}
+              step={0.1}
+              unit={""}
+              upperBound={1}
+              value={coefficientOfStaticFriction}
+              effect={updateReviewForcesBasedOnCoefficient}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       } else if (question.answerParts[i] == "wedge angle") {
         changeWedgeBasedOnNewAngle(0);
         updateReviewForcesBasedOnAngle(0);
         answerInput.push(
-          <InputField
-            label={<p>&theta;</p>}
-            lowerBound={0}
-            changeValue={setWedgeAngle}
-            step={1}
-            unit={"°"}
-            upperBound={49}
-            value={wedgeAngle}
-            effect={(val: number) => {
-              changeWedgeBasedOnNewAngle(val);
-              updateReviewForcesBasedOnAngle(val);
-            }}
-            radianEquivalent={true}
-          />
+          <div key={i}>
+            <InputField
+              label={<p>&theta;</p>}
+              lowerBound={0}
+              changeValue={setWedgeAngle}
+              step={1}
+              unit={"°"}
+              upperBound={49}
+              value={wedgeAngle}
+              effect={(val: number) => {
+                changeWedgeBasedOnNewAngle(val);
+                updateReviewForcesBasedOnAngle(val);
+              }}
+              radianEquivalent={true}
+              showIcon={showIcon}
+              correctValue={answers[i]}
+            />
+          </div>
         );
       }
     }
