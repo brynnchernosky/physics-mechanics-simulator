@@ -82,6 +82,9 @@ function App() {
     },
   }));
 
+  // Variables
+  let questionVariables: number[] = []
+
   // State variables
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
@@ -204,6 +207,7 @@ function App() {
       setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
+      setWedgeAngle(26);
       changeWedgeBasedOnNewAngle(26);
     } else {
       setStartForces([]);
@@ -354,36 +358,38 @@ function App() {
 
   // In review mode, update forces when coefficient of static friction changed
   const updateReviewForcesBasedOnCoefficient = (coefficient: number) => {
+    let theta: number = Number(wedgeAngle);
+    let index =
+      selectedQuestion.variablesForQuestionSetup.indexOf("theta - max 45");
+    if (index >= 0) {
+      theta = questionVariables[index];
+    }
     setReviewGravityMagnitude(forceOfGravity.magnitude);
     setReviewGravityAngle(270);
     setReviewNormalMagnitude(
-      forceOfGravity.magnitude * Math.cos((Number(wedgeAngle) * Math.PI) / 180)
+      forceOfGravity.magnitude * Math.cos((theta * Math.PI) / 180)
     );
-    setReviewNormalAngle(180 - 90 - Number(wedgeAngle));
+    setReviewNormalAngle(180 - 90 - theta);
     let yForce = -forceOfGravity.magnitude;
     yForce +=
       9.81 *
-      Math.cos((Number(wedgeAngle) * Math.PI) / 180) *
-      Math.sin(((180 - 90 - Number(wedgeAngle)) * Math.PI) / 180);
+      Math.cos((theta * Math.PI) / 180) *
+      Math.sin(((180 - 90 - theta) * Math.PI) / 180);
     yForce +=
       coefficient *
       9.81 *
-      Math.cos((Number(wedgeAngle) * Math.PI) / 180) *
-      Math.sin(((180 - Number(wedgeAngle)) * Math.PI) / 180);
-    let friction =
-      coefficient * 9.81 * Math.cos((Number(wedgeAngle) * Math.PI) / 180);
+      Math.cos((theta * Math.PI) / 180) *
+      Math.sin(((180 - theta) * Math.PI) / 180);
+    let friction = coefficient * 9.81 * Math.cos((theta * Math.PI) / 180);
     if (yForce > 0) {
       friction =
-        (-(
-          forceOfGravity.magnitude *
-          Math.cos((Number(wedgeAngle) * Math.PI) / 180)
-        ) *
-          Math.sin(((180 - 90 - Number(wedgeAngle)) * Math.PI) / 180) +
+        (-(forceOfGravity.magnitude * Math.cos((theta * Math.PI) / 180)) *
+          Math.sin(((180 - 90 - theta) * Math.PI) / 180) +
           forceOfGravity.magnitude) /
-        Math.sin(((180 - Number(wedgeAngle)) * Math.PI) / 180);
+        Math.sin(((180 - theta) * Math.PI) / 180);
     }
     setReviewStaticMagnitude(friction);
-    setReviewStaticAngle(180 - Number(wedgeAngle));
+    setReviewStaticAngle(180 - theta);
   };
 
   // In review mode, update forces when wedge angle changed
@@ -580,17 +586,15 @@ function App() {
 
   // In review mode, reset problem variables and generate a new question
   const generateNewQuestion = () => {
-    // Hack to make sure values reset even if flipping between questions quickly
-    setTimeout(() => {
-      setReviewGravityMagnitude(0);
-      setReviewGravityAngle(0);
-      setReviewNormalMagnitude(0);
-      setReviewNormalAngle(0);
-      setReviewStaticMagnitude(0);
-      setReviewStaticAngle(0);
-      setCoefficientOfKineticFriction(0);
-      setSimulationPaused(true);
-    }, 20);
+    setReviewGravityMagnitude(0);
+    setReviewGravityAngle(0);
+    setReviewNormalMagnitude(0);
+    setReviewNormalAngle(0);
+    setReviewStaticMagnitude(0);
+    setReviewStaticAngle(0);
+    setCoefficientOfKineticFriction(0);
+    setSimulationPaused(true);
+    //reset coefficient of static and wedge angle
 
     const vars: number[] = [];
     let question: QuestionTemplate = questions.inclinePlane[0];
@@ -607,6 +611,7 @@ function App() {
         if (question.variablesForQuestionSetup[i] == "theta - max 45") {
           let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
+          setWedgeAngle(randValue);
           changeWedgeBasedOnNewAngle(randValue);
         } else if (
           question.variablesForQuestionSetup[i] ==
@@ -638,6 +643,7 @@ function App() {
     setQuestionPartTwo(question.question);
     const answers = getAnswersToQuestion(question, vars);
     generateInputFieldsForQuestion(false, question, answers);
+    questionVariables = vars
   };
 
   // Generate input fields for new review question
@@ -800,6 +806,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "wedge angle") {
+        setWedgeAngle(0);
         changeWedgeBasedOnNewAngle(0);
         updateReviewForcesBasedOnAngle(0);
         answerInput.push(
