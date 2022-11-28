@@ -37,6 +37,16 @@ import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { IForce, Weight } from "./Weight";
 
+interface QuestionTemplate {
+  questionSetup: string[];
+  variablesForQuestionSetup: string[];
+  question: string;
+  answerParts: string[];
+  answerSolutionDescriptions: string[];
+  goal: string;
+  hints: string[];
+}
+
 export interface ISimulationElement {
   color?: string;
   mass?: number;
@@ -101,14 +111,9 @@ function App() {
   const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
   const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
   const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
-  const [selectedQuestion, setSelectedQuestion] = useState<{
-    questionSetup: string[];
-    variablesForQuestionSetup: string[];
-    question: string;
-    answerParts: string[];
-    answerSolutionDescriptions: string[];
-    goal: string;
-  }>(questions.inclinePlane[0]);
+  const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
+    questions.inclinePlane[0]
+  );
   const [questionPartTwo, setQuestionPartTwo] = useState<string>("");
   const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
@@ -415,14 +420,7 @@ function App() {
 
   // Solve for the correct answers to the generated problem
   const getAnswersToQuestion = (
-    question: {
-      questionSetup: string[];
-      variablesForQuestionSetup: string[];
-      question: string;
-      answerParts: string[];
-      answerSolutionDescriptions: string[];
-      goal: string;
-    },
+    question: QuestionTemplate,
     questionVars: number[]
   ) => {
     const solutions: number[] = [];
@@ -591,14 +589,7 @@ function App() {
     }, 20);
 
     const vars: number[] = [];
-    let question: {
-      questionSetup: string[];
-      variablesForQuestionSetup: string[];
-      question: string;
-      answerParts: string[];
-      answerSolutionDescriptions: string[];
-      goal: string;
-    } = questions.inclinePlane[0];
+    let question: QuestionTemplate = questions.inclinePlane[0];
 
     if (topic == "Incline Plane") {
       if (questionNumber == questions.inclinePlane.length - 1) {
@@ -647,15 +638,8 @@ function App() {
 
   // Generate input fields for new review question
   const generateInputFieldsForQuestion = (
-    question: {
-      questionSetup: string[];
-      variablesForQuestionSetup: string[];
-      question: string;
-      answerParts: string[];
-      answerSolutionDescriptions: string[];
-      goal: string;
-    },
-    answers: number[]
+    question: QuestionTemplate = selectedQuestion,
+    answers: number[] = selectedSolutions
   ) => {
     let answerInput = [];
     for (let i = 0; i < question.answerParts.length; i++) {
