@@ -43,7 +43,6 @@ export const InputField = (props: IInputProps) => {
     (Number(0) * Math.PI) / 180
   );
 
-  console.log("temp value for field ", label, ": ", tempValue);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value == "" ? 0 : Number(event.target.value);
     if (value > upperBound) {

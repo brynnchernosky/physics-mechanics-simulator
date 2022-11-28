@@ -554,6 +554,10 @@ function App() {
           ) {
             error = true;
           }
+        } else if (selectedQuestion.answerParts[i] == "wedge angle") {
+          if (Math.abs(Number(wedgeAngle) - selectedSolutions[i]) > epsilon) {
+            error = true;
+          }
         }
       }
     }
@@ -566,7 +570,7 @@ function App() {
         setCorrectMessageVisible(true);
         setTimeout(() => {
           setCorrectMessageVisible(false);
-        }, 3000);
+        }, 2000);
       } else {
         setSimulationPaused(false);
         setTimeout(() => {
@@ -575,7 +579,7 @@ function App() {
         setIncorrectMessageVisible(true);
         setTimeout(() => {
           setIncorrectMessageVisible(false);
-        }, 3000);
+        }, 2000);
       }
     }
     if (selectedQuestion.goal == "noMovement") {
