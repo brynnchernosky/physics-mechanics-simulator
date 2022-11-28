@@ -207,10 +207,8 @@ function App() {
       setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
-      if (mode == "Review") {
-        setWedgeAngle(26);
-        changeWedgeBasedOnNewAngle(26);
-      }
+      setWedgeAngle(26);
+      changeWedgeBasedOnNewAngle(26);
     } else {
       setStartForces([]);
       setUpdatedForces([]);
@@ -876,7 +874,10 @@ function App() {
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
-      generateNewQuestion();
+      // hack to make sure weight positioned correctly
+      setTimeout(() => {
+        generateNewQuestion();
+      }, 20);
     }
   }, [mode, topic]);
 

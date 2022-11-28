@@ -101,8 +101,8 @@ export const Weight = (props: IWeightProps) => {
     wedgeHeight,
   } = props;
 
-  const xMax=window.innerWidth * 0.7
-  const yMax=window.innerHeight * 0.8
+  const xMax = window.innerWidth * 0.7;
+  const yMax = window.innerHeight * 0.8;
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
   const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
@@ -191,6 +191,7 @@ export const Weight = (props: IWeightProps) => {
   }, [incrementTime]);
 
   useEffect(() => {
+    console.log("reset everything");
     resetEverything();
   }, [reset]);
 
