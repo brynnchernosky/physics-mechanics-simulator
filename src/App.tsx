@@ -207,8 +207,10 @@ function App() {
       setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
-      setWedgeAngle(26);
-      changeWedgeBasedOnNewAngle(26);
+      if (mode == "Review") {
+        setWedgeAngle(26);
+        changeWedgeBasedOnNewAngle(26);
+      }
     } else {
       setStartForces([]);
       setUpdatedForces([]);
@@ -603,6 +605,7 @@ function App() {
     changeWedgeBasedOnNewAngle(0);
     updateReviewForcesBasedOnAngle(0);
     setSimulationPaused(true);
+    console.log("all reset");
 
     const vars: number[] = [];
     let question: QuestionTemplate = questions.inclinePlane[0];
@@ -873,10 +876,7 @@ function App() {
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
-      // hack to make sure weight positioned correctly
-      setTimeout(() => {
-        generateNewQuestion();
-      }, 20);
+      generateNewQuestion();
     }
   }, [mode, topic]);
 
@@ -1430,25 +1430,15 @@ function App() {
                         velocityYDisplay}{" "}
                       {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
                       {simulationPaused && !pendulum && !wedge && (
-                        <TextField
-                          type="number"
-                          variant="standard"
+                        <InputField
+                          lowerBound={-50}
+                          changeValue={setVelocityYDisplay}
+                          step={1}
+                          unit={"m/s"}
+                          upperBound={50}
                           value={velocityYDisplay}
-                          style={{ width: "7em" }}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                m/s
-                              </InputAdornment>
-                            ),
-                          }}
-                          onChange={(e) => {
-                            const regex = /^[0-9\b]+$/;
-                            if (regex.test(e.target.value)) {
-                              setVelocityYDisplay(parseFloat(e.target.value));
-                              setDisplayChange(!displayChange);
-                            }
-                          }}
+                          effect={setDisplayChange}
+                          small={true}
                         />
                       )}{" "}
                     </td>
