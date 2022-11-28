@@ -372,12 +372,12 @@ function App() {
     setReviewNormalMagnitude(
       forceOfGravity.magnitude * Math.cos((theta * Math.PI) / 180)
     );
-    setReviewNormalAngle(180 - 90 - theta);
+    setReviewNormalAngle(90 - theta);
     let yForce = -forceOfGravity.magnitude;
     yForce +=
       9.81 *
       Math.cos((theta * Math.PI) / 180) *
-      Math.sin(((180 - 90 - theta) * Math.PI) / 180);
+      Math.sin(((90 - theta) * Math.PI) / 180);
     yForce +=
       coefficient *
       9.81 *
@@ -387,7 +387,7 @@ function App() {
     if (yForce > 0) {
       friction =
         (-(forceOfGravity.magnitude * Math.cos((theta * Math.PI) / 180)) *
-          Math.sin(((180 - 90 - theta) * Math.PI) / 180) +
+          Math.sin(((90 - theta) * Math.PI) / 180) +
           forceOfGravity.magnitude) /
         Math.sin(((180 - theta) * Math.PI) / 180);
     }
@@ -400,12 +400,12 @@ function App() {
     setReviewGravityMagnitude(9.81);
     setReviewGravityAngle(270);
     setReviewNormalMagnitude(9.81 * Math.cos((Number(angle) * Math.PI) / 180));
-    setReviewNormalAngle(180 - 90 - angle);
+    setReviewNormalAngle(90 - angle);
     let yForce = -forceOfGravity.magnitude;
     yForce +=
       9.81 *
       Math.cos((Number(angle) * Math.PI) / 180) *
-      Math.sin(((180 - 90 - Number(angle)) * Math.PI) / 180);
+      Math.sin(((90 - Number(angle)) * Math.PI) / 180);
     yForce +=
       Number(coefficientOfStaticFriction) *
       9.81 *
@@ -418,7 +418,7 @@ function App() {
     if (yForce > 0) {
       friction =
         (-(9.81 * Math.cos((Number(angle) * Math.PI) / 180)) *
-          Math.sin(((180 - 90 - Number(angle)) * Math.PI) / 180) +
+          Math.sin(((90 - Number(angle)) * Math.PI) / 180) +
           forceOfGravity.magnitude) /
         Math.sin(((180 - Number(angle)) * Math.PI) / 180);
     }
@@ -451,7 +451,7 @@ function App() {
       if (!isNaN(Number(description))) {
         solutions.push(Number(description));
       } else if (description == "solve normal force angle from wedge angle") {
-        solutions.push(180 - 90 - theta);
+        solutions.push(90 - theta);
       } else if (
         description == "solve normal force magnitude from wedge angle"
       ) {
@@ -464,7 +464,7 @@ function App() {
       ) {
         let normalForceMagnitude =
           forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
-        let normalForceAngle = 180 - 90 - theta;
+        let normalForceAngle = 90 - theta;
         let frictionForceAngle = 180 - theta;
         let frictionForceMagnitude =
           (-normalForceMagnitude *
@@ -483,7 +483,7 @@ function App() {
       ) {
         let normalForceMagnitude =
           forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
-        let normalForceAngle = 180 - 90 - theta;
+        let normalForceAngle = 90 - theta;
         let frictionForceAngle = 180 - theta;
         let frictionForceMagnitude =
           (-normalForceMagnitude *
@@ -598,10 +598,8 @@ function App() {
     setReviewStaticAngle(0);
     setCoefficientOfKineticFriction(0);
     setCoefficientOfStaticFriction(0);
-    updateReviewForcesBasedOnCoefficient(0);
     setWedgeAngle(0);
     changeWedgeBasedOnNewAngle(0);
-    updateReviewForcesBasedOnAngle(0);
     setSimulationPaused(true);
     console.log("all reset");
 
