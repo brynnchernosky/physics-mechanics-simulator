@@ -83,7 +83,7 @@ function App() {
   }));
 
   // Variables
-  let questionVariables: number[] = []
+  let questionVariables: number[] = [];
 
   // State variables
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
@@ -364,6 +364,9 @@ function App() {
     if (index >= 0) {
       theta = questionVariables[index];
     }
+    if (isNaN(theta)) {
+      return;
+    }
     setReviewGravityMagnitude(forceOfGravity.magnitude);
     setReviewGravityAngle(270);
     setReviewNormalMagnitude(
@@ -643,7 +646,7 @@ function App() {
     setQuestionPartTwo(question.question);
     const answers = getAnswersToQuestion(question, vars);
     generateInputFieldsForQuestion(false, question, answers);
-    questionVariables = vars
+    questionVariables = vars;
   };
 
   // Generate input fields for new review question
