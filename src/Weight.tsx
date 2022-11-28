@@ -50,8 +50,6 @@ export interface IWeightProps {
   updatedForces: IForce[];
   setUpdatedForces: (val: IForce[]) => any;
   walls: IWallProps[];
-  xMax: number;
-  yMax: number;
   coefficientOfKineticFriction: number;
   wedgeWidth: number;
   wedgeHeight: number;
@@ -98,12 +96,13 @@ export const Weight = (props: IWeightProps) => {
     updatedForces,
     setUpdatedForces,
     walls,
-    xMax,
-    yMax,
     coefficientOfKineticFriction,
     wedgeWidth,
     wedgeHeight,
   } = props;
+
+  const xMax=window.innerWidth * 0.7
+  const yMax=window.innerHeight * 0.8
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
   const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);

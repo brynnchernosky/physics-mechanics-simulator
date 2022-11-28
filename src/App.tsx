@@ -1079,8 +1079,6 @@ function App() {
                         coefficientOfKineticFriction={Number(
                           coefficientOfKineticFriction
                         )}
-                        xMax={window.innerWidth * 0.7}
-                        yMax={window.innerHeight * 0.8}
                       />
                     </div>
                   );
@@ -1364,23 +1362,15 @@ function App() {
                       {(!simulationPaused || wedge) && positionXDisplay}{" "}
                       {(!simulationPaused || wedge) && <p>m</p>}{" "}
                       {simulationPaused && !wedge && (
-                        <TextField
-                          type="number"
-                          variant="standard"
+                        <InputField
+                          lowerBound={0}
+                          changeValue={setPositionXDisplay}
+                          step={1}
+                          unit={"m"}
+                          upperBound={window.innerWidth * 0.7}
                           value={positionXDisplay}
-                          style={{ width: "7em" }}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">m</InputAdornment>
-                            ),
-                          }}
-                          onChange={(e) => {
-                            const regex = /^[0-9\b]+$/;
-                            if (regex.test(e.target.value)) {
-                              setPositionXDisplay(parseFloat(e.target.value));
-                              setDisplayChange(!displayChange);
-                            }
-                          }}
+                          effect={setDisplayChange}
+                          small={true}
                         />
                       )}{" "}
                     </td>
@@ -1388,23 +1378,15 @@ function App() {
                       {(!simulationPaused || wedge) && positionYDisplay}{" "}
                       {(!simulationPaused || wedge) && <p>m</p>}{" "}
                       {simulationPaused && !wedge && (
-                        <TextField
-                          type="number"
-                          variant="standard"
+                        <InputField
+                          lowerBound={0}
+                          changeValue={setPositionYDisplay}
+                          step={1}
+                          unit={"m"}
+                          upperBound={window.innerHeight * 0.8}
                           value={positionYDisplay}
-                          style={{ width: "7em" }}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">m</InputAdornment>
-                            ),
-                          }}
-                          onChange={(e) => {
-                            const regex = /^[0-9\b]+$/;
-                            if (regex.test(e.target.value)) {
-                              setPositionYDisplay(parseFloat(e.target.value));
-                              setDisplayChange(!displayChange);
-                            }
-                          }}
+                          effect={setDisplayChange}
+                          small={true}
                         />
                       )}{" "}
                     </td>

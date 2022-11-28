@@ -4,7 +4,7 @@ import { TextField, InputAdornment } from "@mui/material";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 export interface IInputProps {
-  label: JSX.Element;
+  label?: JSX.Element;
   lowerBound: number;
   changeValue: (val: number) => any;
   step: number;
@@ -15,23 +15,28 @@ export interface IInputProps {
   showIcon?: boolean;
   effect?: (val: number) => any;
   radianEquivalent?: boolean;
+  small?: boolean;
 }
 
 export const InputField = (props: IInputProps) => {
   const {
+    changeValue,
+    correctValue,
+    effect,
     label,
     lowerBound,
-    changeValue,
+    radianEquivalent,
+    showIcon,
+    small,
     step,
     unit,
     upperBound,
     value,
-    effect,
-    radianEquivalent,
-    correctValue,
-    showIcon,
   } = props;
   let epsilon: number = 0.01;
+
+  let width = small ? "5em" : "8em";
+  let margin = small ? "0px" : "15px";
 
   const [tempValue, setTempValue] = useState(value);
   const [tempRadianValue, setTempRadianValue] = useState(
@@ -81,13 +86,13 @@ export const InputField = (props: IInputProps) => {
 
   return (
     <div style={{ display: "flex", lineHeight: "1", textAlign: "right" }}>
-      <div style={{ marginTop: "-10px", width: "2em" }}>{label}</div>
+      {label && <div style={{ marginTop: "-10px", width: "2em" }}>{label}</div>}
       <TextField
         type="number"
         variant="standard"
         value={tempValue}
         onChange={onChange}
-        sx={{ height: "1em", width: "8em", marginLeft: "15px" }}
+        sx={{ height: "1em", width: { width }, marginLeft: { margin } }}
         inputProps={{
           step: step,
           min: lowerBound,
@@ -113,7 +118,7 @@ export const InputField = (props: IInputProps) => {
           variant="standard"
           value={tempRadianValue}
           onChange={onChangeRadianValue}
-          sx={{ height: "1em", width: "8em", marginLeft: "15px" }}
+          sx={{ height: "1em", width: { width }, marginLeft: { margin } }}
           inputProps={{
             step: Math.PI / 8,
             min: 0,
