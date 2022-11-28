@@ -31,7 +31,7 @@ export const InputField = (props: IInputProps) => {
   );
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value === "" ? 0 : Number(event.target.value);
+    let value = event.target.value == "" ? 0 : Number(event.target.value);
     if (value > upperBound) {
       value = upperBound;
 
@@ -43,15 +43,13 @@ export const InputField = (props: IInputProps) => {
           </p>
         )
       ) {
-        alert(
-          "Coefficient of kinetic friction must be less than coefficient of static friction"
-        );
+        // add alert "Coefficient of kinetic friction must be less than coefficient of static friction"
       }
     } else if (value < lowerBound) {
       value = lowerBound;
     }
     changeValue(value);
-    setTempValue(value);
+    setTempValue(event.target.value == "" ? event.target.value : value);
     setTempRadianValue((value * Math.PI) / 180);
     if (effect) {
       effect(value);

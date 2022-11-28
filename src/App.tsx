@@ -508,7 +508,7 @@ function App() {
         description ==
         "solve maximum wedge angle from coefficient of static friction given equilibrium"
       ) {
-        // to do solve
+        solutions.push((Math.atan(muS) * 180) / Math.PI);
       }
     }
     console.log(solutions); // used for debugging/testing
@@ -600,7 +600,6 @@ function App() {
     setReviewStaticMagnitude(0);
     setReviewStaticAngle(0);
     setCoefficientOfKineticFriction(0);
-    setCoefficientOfStaticFriction(0);
 
     const vars: number[] = [];
 

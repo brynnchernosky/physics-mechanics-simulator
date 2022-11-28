@@ -144,7 +144,6 @@ export const Weight = (props: IWeightProps) => {
   };
 
   useEffect(() => {
-    console.log("update display use effect");
     if (displayXPosition != xPosition) {
       let x = displayXPosition;
       x = Math.max(0, x);
