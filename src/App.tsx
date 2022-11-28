@@ -75,7 +75,7 @@ function App() {
   // State variables
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
-  const [answerInputs, setAnswerInputs] = useState(<div></div>);
+  const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
   const [showIcon, setShowIcon] = useState(false);
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
@@ -836,7 +836,7 @@ function App() {
       }
     }
 
-    setAnswerInputs(
+    setAnswerInputFields(
       <div
         style={{ display: "flex", flexDirection: "column", alignItems: "left" }}
       >
@@ -1184,7 +1184,10 @@ function App() {
                 <p>{questionPartOne}</p>
                 <p>{questionPartTwo}</p>
               </div>
-              <div className="answer"> {answerInputs}</div>
+              <div className="answer">
+                {/* TODO debug error here */}
+                {answerInputFields}
+              </div>
             </div>
           )}
 

@@ -80,13 +80,13 @@ export const InputField = (props: IInputProps) => {
 
   return (
     <div style={{ display: "flex", lineHeight: "1", textAlign: "right" }}>
-      <div style={{ marginTop: "-10px" }}>{label}</div>
+      <div style={{ marginTop: "-10px", width: "2em" }}>{label}</div>
       <TextField
         type="number"
         variant="standard"
         value={tempValue}
         onChange={onChange}
-        sx={{ height: "1em", width: "5em", marginLeft: "15px" }}
+        sx={{ height: "1em", width: "8em", marginLeft: "15px" }}
         inputProps={{
           step: step,
           min: lowerBound,
@@ -96,9 +96,11 @@ export const InputField = (props: IInputProps) => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              {Number(value) == correctValue && showIcon && <TaskAltIcon />}
+              {Number(value) == correctValue && showIcon && (
+                <TaskAltIcon color={"success"} />
+              )}
               {Number(value) != correctValue && showIcon && (
-                <ErrorOutlineIcon />
+                <ErrorOutlineIcon color={"error"} />
               )}
             </InputAdornment>
           ),
@@ -112,7 +114,7 @@ export const InputField = (props: IInputProps) => {
           variant="standard"
           value={tempRadianValue}
           onChange={onChangeRadianValue}
-          sx={{ height: "1em", width: "5em", marginLeft: "15px" }}
+          sx={{ height: "1em", width: "8em", marginLeft: "15px" }}
           inputProps={{
             step: Math.PI / 8,
             min: 0,
