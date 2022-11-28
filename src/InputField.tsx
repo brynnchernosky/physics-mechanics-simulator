@@ -85,8 +85,14 @@ export const InputField = (props: IInputProps) => {
   };
 
   return (
-    <div style={{ display: "flex", lineHeight: "1", textAlign: "right" }}>
-      {label && <div style={{ marginTop: "-10px", width: "2em" }}>{label}</div>}
+    <div
+      style={{
+        display: "flex",
+        lineHeight: "1",
+        textAlign: "right",
+      }}
+    >
+      {label && <div style={{ marginTop: "0.3em", width: "2em" }}>{label}</div>}
       <TextField
         type="number"
         variant="standard"
