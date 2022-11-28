@@ -308,7 +308,7 @@ export const Weight = (props: IWeightProps) => {
                 setXVelocity(-xVelocity);
               } else {
                 setXVelocity(0);
-                setXPosition(wallX - 2 * radius + 5);
+                setXPosition(wallX + 5);
               }
               collision = true;
             }
