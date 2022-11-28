@@ -587,8 +587,7 @@ function App() {
     }
   };
 
-  // In review mode, reset problem variables and generate a new question
-  const generateNewQuestion = () => {
+  const resetReviewValuesToDefault = () => {
     // Reset all values to default
     setReviewGravityMagnitude(0);
     setReviewGravityAngle(0);
@@ -601,56 +600,63 @@ function App() {
     setWedgeAngle(0);
     changeWedgeBasedOnNewAngle(0);
     setSimulationPaused(true);
-    console.log("all reset");
+  };
 
-    const vars: number[] = [];
-    let question: QuestionTemplate = questions.inclinePlane[0];
+  // In review mode, reset problem variables and generate a new question
+  const generateNewQuestion = () => {
+    resetReviewValuesToDefault();
 
-    if (topic == "Incline Plane") {
-      if (questionNumber == questions.inclinePlane.length - 1) {
-        setQuestionNumber(0);
-      } else {
-        setQuestionNumber(questionNumber + 1);
-      }
-      question = questions.inclinePlane[questionNumber];
+    // hack to make sure values are reset
+    setTimeout(() => {
+      const vars: number[] = [];
+      let question: QuestionTemplate = questions.inclinePlane[0];
 
-      for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
-        if (question.variablesForQuestionSetup[i] == "theta - max 45") {
-          let randValue = Math.floor(Math.random() * 44 + 1);
-          vars.push(randValue);
-          setWedgeAngle(randValue);
-          changeWedgeBasedOnNewAngle(randValue);
-        } else if (
-          question.variablesForQuestionSetup[i] ==
-          "coefficient of static friction"
-        ) {
-          let randValue = Math.round(Math.random() * 1000) / 1000;
-          vars.push(randValue);
-          setCoefficientOfStaticFriction(randValue);
+      if (topic == "Incline Plane") {
+        if (questionNumber == questions.inclinePlane.length - 1) {
+          setQuestionNumber(0);
+        } else {
+          setQuestionNumber(questionNumber + 1);
+        }
+        question = questions.inclinePlane[questionNumber];
+
+        for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
+          if (question.variablesForQuestionSetup[i] == "theta - max 45") {
+            let randValue = Math.floor(Math.random() * 44 + 1);
+            vars.push(randValue);
+            setWedgeAngle(randValue);
+            changeWedgeBasedOnNewAngle(randValue);
+          } else if (
+            question.variablesForQuestionSetup[i] ==
+            "coefficient of static friction"
+          ) {
+            let randValue = Math.round(Math.random() * 1000) / 1000;
+            vars.push(randValue);
+            setCoefficientOfStaticFriction(randValue);
+          }
         }
       }
-    }
 
-    let q = "";
-    for (let i = 0; i < question.questionSetup.length; i++) {
-      q += question.questionSetup[i];
-      if (i != question.questionSetup.length - 1) {
-        q += vars[i];
-        if (question.variablesForQuestionSetup[i].includes("theta")) {
-          q +=
-            " degree (≈" +
-            Math.round((1000 * (vars[i] * Math.PI)) / 180) / 1000 +
-            " rad)";
+      let q = "";
+      for (let i = 0; i < question.questionSetup.length; i++) {
+        q += question.questionSetup[i];
+        if (i != question.questionSetup.length - 1) {
+          q += vars[i];
+          if (question.variablesForQuestionSetup[i].includes("theta")) {
+            q +=
+              " degree (≈" +
+              Math.round((1000 * (vars[i] * Math.PI)) / 180) / 1000 +
+              " rad)";
+          }
         }
       }
-    }
 
-    setSelectedQuestion(question);
-    setQuestionPartOne(q);
-    setQuestionPartTwo(question.question);
-    const answers = getAnswersToQuestion(question, vars);
-    generateInputFieldsForQuestion(false, question, answers);
-    questionVariables = vars;
+      setSelectedQuestion(question);
+      setQuestionPartOne(q);
+      setQuestionPartTwo(question.question);
+      const answers = getAnswersToQuestion(question, vars);
+      generateInputFieldsForQuestion(false, question, answers);
+      questionVariables = vars;
+    }, 10);
   };
 
   // Generate answerInputFields for new review question
@@ -1181,10 +1187,7 @@ function App() {
                 <p>{questionPartOne}</p>
                 <p>{questionPartTwo}</p>
               </div>
-              <div className="answer">
-                {/* TODO debug error here */}
-                {answerInputFields}
-              </div>
+              <div className="answer">{answerInputFields}</div>
             </div>
           )}
 
