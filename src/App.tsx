@@ -1476,7 +1476,7 @@ function App() {
               </table>
             )}
           </div>
-          {mode == "Freeform" &&
+          {/* {mode == "Freeform" &&
             simulationElements.length > 0 &&
             simulationElements[0].pendulum && (
               <div className="mechanicsSimulationEquation">
@@ -1538,7 +1538,7 @@ function App() {
                   </tbody>
                 </table>
               </div>
-            )}
+            )}*/}
         </div>
       </div>
       <div className="coordinateSystem">

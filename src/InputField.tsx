@@ -37,6 +37,7 @@ export const InputField = (props: IInputProps) => {
 
   let width = small ? "6em" : "8em";
   let margin = small ? "0px" : "15px";
+  console.log(width);
 
   const [tempValue, setTempValue] = useState<any>(0);
   const [tempRadianValue, setTempRadianValue] = useState(
@@ -92,7 +93,13 @@ export const InputField = (props: IInputProps) => {
         textAlign: "right",
       }}
     >
-      {label && <div style={{ marginTop: "0.3em", width: "2em" }}>{label}</div>}
+      {label && (
+        <div
+          style={{ marginTop: "0.3em", marginBottom: "-0.5em", width: "2em" }}
+        >
+          {label}
+        </div>
+      )}
       <TextField
         type="number"
         variant="standard"
@@ -117,7 +124,13 @@ export const InputField = (props: IInputProps) => {
           endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
         }}
       />
-      {radianEquivalent && <p>=</p>}
+      {radianEquivalent && (
+        <div
+          style={{ marginTop: "0.3em", marginBottom: "-0.5em", width: "1em" }}
+        >
+          <p>=</p>
+        </div>
+      )}
       {radianEquivalent && (
         <TextField
           type="number"
