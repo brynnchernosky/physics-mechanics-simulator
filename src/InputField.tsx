@@ -35,7 +35,7 @@ export const InputField = (props: IInputProps) => {
   } = props;
   let epsilon: number = 0.01;
 
-  let width = small ? "5em" : "8em";
+  let width = small ? "6em" : "8em";
   let margin = small ? "0px" : "15px";
 
   const [tempValue, setTempValue] = useState(value);

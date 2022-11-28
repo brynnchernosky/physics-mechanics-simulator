@@ -1330,7 +1330,7 @@ function App() {
             </div>
           )}
           <div className="mechanicsSimulationEquation">
-            {mode == "Freeform" && (
+            {mode == "Freeform" && simulationElements.length != 0 && (
               <table>
                 <tbody>
                   <tr>
@@ -1413,25 +1413,15 @@ function App() {
                         velocityXDisplay}{" "}
                       {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
                       {simulationPaused && !pendulum && !wedge && (
-                        <TextField
-                          type="number"
-                          variant="standard"
+                        <InputField
+                          lowerBound={-50}
+                          changeValue={setVelocityXDisplay}
+                          step={1}
+                          unit={"m/s"}
+                          upperBound={50}
                           value={velocityXDisplay}
-                          style={{ width: "7em" }}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                m/s
-                              </InputAdornment>
-                            ),
-                          }}
-                          onChange={(e) => {
-                            const regex = /^[0-9\b]+$/;
-                            if (regex.test(e.target.value)) {
-                              setVelocityXDisplay(parseFloat(e.target.value));
-                              setDisplayChange(!displayChange);
-                            }
-                          }}
+                          effect={setDisplayChange}
+                          small={true}
                         />
                       )}{" "}
                     </td>
