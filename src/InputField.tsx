@@ -38,11 +38,12 @@ export const InputField = (props: IInputProps) => {
   let width = small ? "6em" : "8em";
   let margin = small ? "0px" : "15px";
 
-  const [tempValue, setTempValue] = useState(value);
+  const [tempValue, setTempValue] = useState<any>(0);
   const [tempRadianValue, setTempRadianValue] = useState(
-    (Number(value) * Math.PI) / 180
+    (Number(0) * Math.PI) / 180
   );
 
+  console.log("temp value for field ", label, ": ", tempValue);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value == "" ? 0 : Number(event.target.value);
     if (value > upperBound) {

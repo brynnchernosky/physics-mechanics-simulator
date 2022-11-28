@@ -600,6 +600,7 @@ function App() {
     setWedgeAngle(0);
     changeWedgeBasedOnNewAngle(0);
     setSimulationPaused(true);
+    setAnswerInputFields(<div></div>);
   };
 
   // In review mode, reset problem variables and generate a new question
@@ -607,56 +608,55 @@ function App() {
     resetReviewValuesToDefault();
 
     // hack to make sure values are reset
-    setTimeout(() => {
-      const vars: number[] = [];
-      let question: QuestionTemplate = questions.inclinePlane[0];
+    const vars: number[] = [];
+    let question: QuestionTemplate = questions.inclinePlane[0];
 
-      if (topic == "Incline Plane") {
-        if (questionNumber == questions.inclinePlane.length - 1) {
-          setQuestionNumber(0);
-        } else {
-          setQuestionNumber(questionNumber + 1);
-        }
-        question = questions.inclinePlane[questionNumber];
+    if (topic == "Incline Plane") {
+      if (questionNumber == questions.inclinePlane.length - 1) {
+        setQuestionNumber(0);
+      } else {
+        setQuestionNumber(questionNumber + 1);
+      }
+      question = questions.inclinePlane[questionNumber];
 
-        for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
-          if (question.variablesForQuestionSetup[i] == "theta - max 45") {
-            let randValue = Math.floor(Math.random() * 44 + 1);
-            vars.push(randValue);
-            setWedgeAngle(randValue);
-            changeWedgeBasedOnNewAngle(randValue);
-          } else if (
-            question.variablesForQuestionSetup[i] ==
-            "coefficient of static friction"
-          ) {
-            let randValue = Math.round(Math.random() * 1000) / 1000;
-            vars.push(randValue);
-            setCoefficientOfStaticFriction(randValue);
-          }
+      for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
+        if (question.variablesForQuestionSetup[i] == "theta - max 45") {
+          let randValue = Math.floor(Math.random() * 44 + 1);
+          vars.push(randValue);
+          setWedgeAngle(randValue);
+          changeWedgeBasedOnNewAngle(randValue);
+        } else if (
+          question.variablesForQuestionSetup[i] ==
+          "coefficient of static friction"
+        ) {
+          let randValue = Math.round(Math.random() * 1000) / 1000;
+          vars.push(randValue);
+          setCoefficientOfStaticFriction(randValue);
         }
       }
+    }
 
-      let q = "";
-      for (let i = 0; i < question.questionSetup.length; i++) {
-        q += question.questionSetup[i];
-        if (i != question.questionSetup.length - 1) {
-          q += vars[i];
-          if (question.variablesForQuestionSetup[i].includes("theta")) {
-            q +=
-              " degree (≈" +
-              Math.round((1000 * (vars[i] * Math.PI)) / 180) / 1000 +
-              " rad)";
-          }
+    let q = "";
+    for (let i = 0; i < question.questionSetup.length; i++) {
+      q += question.questionSetup[i];
+      if (i != question.questionSetup.length - 1) {
+        q += vars[i];
+        if (question.variablesForQuestionSetup[i].includes("theta")) {
+          q +=
+            " degree (≈" +
+            Math.round((1000 * (vars[i] * Math.PI)) / 180) / 1000 +
+            " rad)";
         }
       }
+    }
 
-      setSelectedQuestion(question);
-      setQuestionPartOne(q);
-      setQuestionPartTwo(question.question);
-      const answers = getAnswersToQuestion(question, vars);
-      generateInputFieldsForQuestion(false, question, answers);
-      questionVariables = vars;
-    }, 10);
+    questionVariables = vars;
+    setSelectedQuestion(question);
+    setQuestionPartOne(q);
+    setQuestionPartTwo(question.question);
+    const answers = getAnswersToQuestion(question, vars);
+
+    generateInputFieldsForQuestion(false, question, answers);
   };
 
   // Generate answerInputFields for new review question
@@ -666,10 +666,11 @@ function App() {
     answers: number[] = selectedSolutions
   ) => {
     let answerInput = [];
+    const d = new Date();
     for (let i = 0; i < question.answerParts.length; i++) {
       if (question.answerParts[i] == "force of gravity") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -689,7 +690,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "angle of gravity") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -710,7 +711,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "normal force") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -730,7 +731,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "angle of normal force") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -751,7 +752,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "force of static friction") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -774,7 +775,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "angle of static friction") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -798,7 +799,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "coefficient of static friction") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={
                 <p>
@@ -819,7 +820,7 @@ function App() {
         );
       } else if (question.answerParts[i] == "wedge angle") {
         answerInput.push(
-          <div key={i}>
+          <div key={i + d.getTime()}>
             <InputField
               label={<p>&theta;</p>}
               lowerBound={0}
