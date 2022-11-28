@@ -89,7 +89,7 @@ function App() {
   const [correctMessageVisible, setCorrectMessageVisible] = useState(false);
   const [displayChange, setDisplayChange] = useState<any>(false);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
-  const [fullQuestionSetup, setfullQuestionSetup] = useState<string>("");
+  const [questionPartOne, setQuestionPartOne] = useState<string>("");
   const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
   const [mode, setMode] = useState<string>("Freeform");
   const [noMovement, setNoMovement] = useState(false);
@@ -114,11 +114,7 @@ function App() {
     answerSolutionDescriptions: string[];
     goal: string;
   }>(questions.inclinePlane[0]);
-  const [selectedQuestionQuestion, setSelectedQuestionQuestion] =
-    useState<string>("");
-  const [selectedQuestionVariables, setSelectedQuestionVariables] = useState<
-    number[]
-  >([45]);
+  const [questionPartTwo, setQuestionPartTwo] = useState<string>("");
   const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [showForces, setShowForces] = useState<boolean>(true);
@@ -238,19 +234,7 @@ function App() {
     handleClose();
   };
 
-  // Remove walls for the pendulum simulation to get rid of collision issues
-  useEffect(() => {
-    if (!pendulum) {
-      const walls: IWallProps[] = [];
-      walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
-      walls.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
-      walls.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
-      setWallPositions(walls);
-    } else {
-      setWallPositions([]);
-    }
-  }, [pendulum]);
-
+  // Update forces when coefficient of static friction changes in freeform mode
   const updateForcesWithFriction = (
     coefficient: number,
     width: number = wedgeWidth,
@@ -602,6 +586,14 @@ function App() {
     setCoefficientOfKineticFriction(0);
 
     const vars: number[] = [];
+    let question: {
+      questionSetup: string[];
+      variablesForQuestionSetup: string[];
+      question: string;
+      answerParts: string[];
+      answerSolutionDescriptions: string[];
+      goal: string;
+    } = questions.inclinePlane[0];
 
     if (topic == "Incline Plane") {
       if (questionNumber == questions.inclinePlane.length - 1) {
@@ -609,59 +601,56 @@ function App() {
       } else {
         setQuestionNumber(questionNumber + 1);
       }
-      setSelectedQuestion(questions.inclinePlane[questionNumber]);
+      question = questions.inclinePlane[questionNumber];
 
-      for (
-        let i = 0;
-        i <
-        questions.inclinePlane[questionNumber].variablesForQuestionSetup.length;
-        i++
-      ) {
-        if (
-          questions.inclinePlane[questionNumber].variablesForQuestionSetup[i] ==
-          "theta - max 45"
-        ) {
+      for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
+        if (question.variablesForQuestionSetup[i] == "theta - max 45") {
           let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
           changeWedgeBasedOnNewAngle(randValue);
         } else if (
-          questions.inclinePlane[questionNumber].variablesForQuestionSetup[i] ==
+          question.variablesForQuestionSetup[i] ==
           "coefficient of static friction"
         ) {
           let randValue = Math.round(Math.random() * 1000) / 1000;
           vars.push(randValue);
           setCoefficientOfStaticFriction(randValue);
         }
-        //TODO add other vars
       }
-      setSelectedQuestionVariables(vars);
-      getAnswers(questions.inclinePlane[questionNumber], vars);
     }
-  };
 
-  // Use effect hook for generating question from JSON element in review mode
-  useEffect(() => {
     let q = "";
-    if (selectedQuestion) {
-      for (let i = 0; i < selectedQuestion.questionSetup.length; i++) {
-        q += selectedQuestion.questionSetup[i];
-        if (i != selectedQuestion.questionSetup.length - 1) {
-          q += selectedQuestionVariables[i];
-          if (selectedQuestion.variablesForQuestionSetup[i].includes("theta")) {
-            q +=
-              " degree (≈" +
-              Math.round(
-                (1000 * (selectedQuestionVariables[i] * Math.PI)) / 180
-              ) /
-                1000 +
-              " rad)";
-          }
+    for (let i = 0; i < question.questionSetup.length; i++) {
+      q += question.questionSetup[i];
+      if (i != question.questionSetup.length - 1) {
+        q += vars[i];
+        if (question.variablesForQuestionSetup[i].includes("theta")) {
+          q +=
+            " degree (≈" +
+            Math.round((1000 * (vars[i] * Math.PI)) / 180) / 1000 +
+            " rad)";
         }
       }
-      setSelectedQuestionQuestion(selectedQuestion.question);
     }
-    setfullQuestionSetup(q);
-  }, [selectedQuestion, selectedQuestionVariables]);
+
+    setSelectedQuestion(question);
+    setQuestionPartOne(q);
+    setQuestionPartTwo(question.question);
+    getAnswers(question, vars);
+  };
+
+  // Use effect hook to add/remove walls to get rid of collision issues with pendulum
+  useEffect(() => {
+    if (!pendulum) {
+      const walls: IWallProps[] = [];
+      walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
+      walls.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
+      walls.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
+      setWallPositions(walls);
+    } else {
+      setWallPositions([]);
+    }
+  }, [pendulum]);
 
   // Use effect hook to handle mode/topic change
   useEffect(() => {
@@ -1147,8 +1136,8 @@ function App() {
           {mode == "Review" && (
             <div className="wordProblemBox">
               <div className="question">
-                <p>{fullQuestionSetup}</p>
-                <p>{selectedQuestionQuestion}</p>
+                <p>{questionPartOne}</p>
+                <p>{questionPartTwo}</p>
               </div>
               <div className="answer"> {answerInputs}</div>
             </div>
