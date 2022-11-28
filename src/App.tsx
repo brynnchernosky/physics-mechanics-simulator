@@ -566,7 +566,7 @@ function App() {
         setCorrectMessageVisible(true);
         setTimeout(() => {
           setCorrectMessageVisible(false);
-        }, 5000);
+        }, 3000);
       } else {
         setSimulationPaused(false);
         setTimeout(() => {
@@ -575,7 +575,7 @@ function App() {
         setIncorrectMessageVisible(true);
         setTimeout(() => {
           setIncorrectMessageVisible(false);
-        }, 5000);
+        }, 3000);
       }
     }
     if (selectedQuestion.goal == "noMovement") {
@@ -589,6 +589,7 @@ function App() {
 
   // In review mode, reset problem variables and generate a new question
   const generateNewQuestion = () => {
+    // Reset all values to default
     setReviewGravityMagnitude(0);
     setReviewGravityAngle(0);
     setReviewNormalMagnitude(0);
@@ -596,8 +597,12 @@ function App() {
     setReviewStaticMagnitude(0);
     setReviewStaticAngle(0);
     setCoefficientOfKineticFriction(0);
+    setCoefficientOfStaticFriction(0);
+    updateReviewForcesBasedOnCoefficient(0);
+    setWedgeAngle(0);
+    changeWedgeBasedOnNewAngle(0);
+    updateReviewForcesBasedOnAngle(0);
     setSimulationPaused(true);
-    //reset coefficient of static and wedge angle
 
     const vars: number[] = [];
     let question: QuestionTemplate = questions.inclinePlane[0];
@@ -649,7 +654,7 @@ function App() {
     questionVariables = vars;
   };
 
-  // Generate input fields for new review question
+  // Generate answerInputFields for new review question
   const generateInputFieldsForQuestion = (
     showIcon: boolean = false,
     question: QuestionTemplate = selectedQuestion,
@@ -787,7 +792,6 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "coefficient of static friction") {
-        updateReviewForcesBasedOnCoefficient(0);
         answerInput.push(
           <div key={i}>
             <InputField
@@ -809,9 +813,6 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "wedge angle") {
-        setWedgeAngle(0);
-        changeWedgeBasedOnNewAngle(0);
-        updateReviewForcesBasedOnAngle(0);
         answerInput.push(
           <div key={i}>
             <InputField

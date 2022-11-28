@@ -82,7 +82,7 @@
         "Applying the cosine subtraction formula to cos(π/2-θ)=-μ*cos(π-θ), we get cos(π/2)*cos(θ)+sin(π/2)*sin(θ)=-μ*(cos(π)cos(θ)+sin(π)sin(θ)).",
         "Simplifying cos(π/2)*cos(θ)-sin(π/2)*sin(θ)=-μ*(cos(π)cos(θ)-sin(π)sin(θ)), we get -sin(θ)=-μ*(-cos(θ)).",
         "Simplifying -sin(θ)=-μ*(-cos(θ)), we get tan(θ)=-μ.",
-        "Solving for θ, we get θ = atan(-μ)."
+        "Solving for θ, we get θ = atan(μ)."
       ]
     }
   ]
