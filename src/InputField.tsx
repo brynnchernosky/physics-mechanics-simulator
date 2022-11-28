@@ -31,6 +31,7 @@ export const InputField = (props: IInputProps) => {
     correctValue,
     showIcon,
   } = props;
+  let epsilon: number = 0.01;
 
   const [tempValue, setTempValue] = useState(value);
   const [tempRadianValue, setTempRadianValue] = useState(
@@ -96,12 +97,10 @@ export const InputField = (props: IInputProps) => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              {Number(value) == correctValue && showIcon && (
-                <TaskAltIcon color={"success"} />
-              )}
-              {Number(value) != correctValue && showIcon && (
-                <ErrorOutlineIcon color={"error"} />
-              )}
+              {Math.abs(Number(value) - (correctValue ?? 0)) < epsilon &&
+                showIcon && <TaskAltIcon color={"success"} />}
+              {Math.abs(Number(value) - (correctValue ?? 0)) >= epsilon &&
+                showIcon && <ErrorOutlineIcon color={"error"} />}
             </InputAdornment>
           ),
           endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,

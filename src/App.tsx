@@ -86,7 +86,6 @@ function App() {
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
   const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
-  const [showIcon, setShowIcon] = useState(false);
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
@@ -556,12 +555,18 @@ function App() {
           setSimulationPaused(true);
         }, 3000);
         setCorrectMessageVisible(true);
+        setTimeout(() => {
+          setCorrectMessageVisible(false);
+        }, 5000);
       } else {
         setSimulationPaused(false);
         setTimeout(() => {
           setSimulationPaused(true);
         }, 3000);
         setIncorrectMessageVisible(true);
+        setTimeout(() => {
+          setIncorrectMessageVisible(false);
+        }, 5000);
       }
     }
     if (selectedQuestion.goal == "noMovement") {
@@ -571,7 +576,6 @@ function App() {
         setNoMovement(false);
       }
     }
-    setShowIcon(true);
   };
 
   // In review mode, reset problem variables and generate a new question
@@ -585,7 +589,7 @@ function App() {
       setReviewStaticMagnitude(0);
       setReviewStaticAngle(0);
       setCoefficientOfKineticFriction(0);
-      setShowIcon(false);
+      setSimulationPaused(true);
     }, 20);
 
     const vars: number[] = [];
@@ -633,11 +637,12 @@ function App() {
     setQuestionPartOne(q);
     setQuestionPartTwo(question.question);
     const answers = getAnswersToQuestion(question, vars);
-    generateInputFieldsForQuestion(question, answers);
+    generateInputFieldsForQuestion(false, question, answers);
   };
 
   // Generate input fields for new review question
   const generateInputFieldsForQuestion = (
+    showIcon: boolean = false,
     question: QuestionTemplate = selectedQuestion,
     answers: number[] = selectedSolutions
   ) => {
@@ -1194,7 +1199,9 @@ function App() {
               <div style={{ zIndex: 10000 }}>
                 <Button
                   onClick={() => {
+                    setSimulationReset(!simulationReset);
                     checkAnswers();
+                    generateInputFieldsForQuestion(true);
                   }}
                   variant="outlined"
                 >
