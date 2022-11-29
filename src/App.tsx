@@ -945,7 +945,7 @@ function App() {
             <div className="mechanicsSimulationButtons">
               {mode == "Freeform" && (
                 <div style={{ zIndex: 10000 }}>
-                  <Tooltip title="Add/remove elements">
+                  <Tooltip title="Change simulation type">
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
                     </IconButton>
@@ -965,12 +965,11 @@ function App() {
                         <ListItem disablePadding>
                           <ListItemButton
                             onClick={() => addWeight()}
-                            disabled={simulationElements.length > 0}
                           >
                             <ListItemIcon>
                               <AddCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Add free weight" />
+                            <ListItemText primary="Free weight simulation" />
                           </ListItemButton>
                         </ListItem>
                         <ListItem disablePadding>
@@ -978,12 +977,11 @@ function App() {
                             onClick={() => {
                               addPendulum();
                             }}
-                            disabled={simulationElements.length > 0}
                           >
                             <ListItemIcon>
                               <AddCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Add pendulum" />
+                            <ListItemText primary="Pendulum simulation" />
                           </ListItemButton>
                         </ListItem>
                         <ListItem disablePadding>
@@ -991,32 +989,16 @@ function App() {
                             onClick={() => {
                               addWedge();
                             }}
-                            disabled={simulationElements.length > 0}
                           >
                             <ListItemIcon>
                               <AddCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Add wedge" />
+                            <ListItemText primary="Wedge simulation" />
                           </ListItemButton>
                         </ListItem>
                       </List>
                     </nav>
                     <Divider />
-                    <nav aria-label="clear simulation elements">
-                      <List>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            disabled={simulationElements.length == 0}
-                            onClick={clearSimulation}
-                          >
-                            <ListItemIcon>
-                              <ClearIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Clear simulation" />
-                          </ListItemButton>
-                        </ListItem>
-                      </List>
-                    </nav>
                   </Popover>
                 </div>
               )}
