@@ -179,6 +179,7 @@ function App() {
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
     addWalls();
+    setSimulationReset(!simulationReset);
     handleClose();
   };
 
@@ -215,6 +216,7 @@ function App() {
       setUpdatedForces([]);
     }
     addWalls();
+    setSimulationReset(!simulationReset);
     handleClose();
   };
 
@@ -238,6 +240,9 @@ function App() {
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     removeWalls();
+    console.log("1");
+    setSimulationReset(!simulationReset);
+    console.log("2");
     handleClose();
   };
 
