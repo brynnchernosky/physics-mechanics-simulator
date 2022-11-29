@@ -35,11 +35,10 @@ export const InputField = (props: IInputProps) => {
   } = props;
   let epsilon: number = 0.01;
 
-  let width = small ? "6em" : "8em";
-  let margin = small ? "0px" : "15px";
-  console.log(width);
+  let width = small ? "6em" : "7em";
+  let margin = small ? "0px" : "10px";
 
-  const [tempValue, setTempValue] = useState<any>(0);
+  const [tempValue, setTempValue] = useState<any>(!showIcon ? 0 : value);
   const [tempRadianValue, setTempRadianValue] = useState(
     (Number(0) * Math.PI) / 180
   );
