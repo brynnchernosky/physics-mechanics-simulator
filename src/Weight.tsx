@@ -223,10 +223,8 @@ export const Weight = (props: IWeightProps) => {
         oppositeAngle = 90 - (180 - angle);
       }
       setPendulumLength(Math.sqrt(x * x + y * y));
-      setPendulumAngle(Math.round(oppositeAngle));
-      setStartPendulumAngle(Math.round(oppositeAngle));
-      console.log("set angle from drag: ", Math.round(oppositeAngle));
-      console.log("set length from drag: ", Math.sqrt(x * x + y * y));
+      setPendulumAngle(oppositeAngle);
+      setStartPendulumAngle(oppositeAngle);
     }
     setDisplayValues();
   };
@@ -235,22 +233,9 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (paused && pendulum && pendulumLength != 0) {
       let length = pendulumLength;
-      const x = xMax / 2 - updatedStartPosX - radius;
-      const y = updatedStartPosY + radius + 5;
-      let angle = (Math.atan(y / x) * 180) / Math.PI;
-      if (angle < 0) {
-        angle += 180;
+      if (pendulumLength == 0) {
+        length = 364;
       }
-      let oppositeAngle = 90 - angle;
-      if (oppositeAngle < 0) {
-        oppositeAngle = 90 - (180 - angle);
-      }
-      setPendulumLength(Math.sqrt(x * x + y * y));
-      setPendulumAngle(Math.round(oppositeAngle));
-      setStartPendulumAngle(Math.round(oppositeAngle));
-
-      console.log("set angle from manual input: ", Math.round(oppositeAngle));
-      console.log("set length from manual input: ", Math.sqrt(x * x + y * y));
       setXPosition(
         xMax / 2 -
           length * Math.cos(((90 - pendulumAngle) * Math.PI) / 180) -
@@ -304,10 +289,8 @@ export const Weight = (props: IWeightProps) => {
     }
 
     const pendulumLength = Math.sqrt(x * x + y * y);
-    setPendulumAngle(Math.round(oppositeAngle));
-    setPendulumLength(pendulumLength);
-    console.log("set angle: ", Math.round(oppositeAngle));
-    console.log("set length: ", pendulumLength);
+    setPendulumAngle(oppositeAngle);
+    setPendulumLength(Math.sqrt(x * x + y * y));
 
     const mag =
       mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
