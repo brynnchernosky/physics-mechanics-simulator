@@ -11,6 +11,7 @@ export interface IForce {
   directionInDegrees: number;
 }
 export interface IWeightProps {
+  adjustPendulumAngle: number;
   color: string;
   displayXPosition: number;
   displayYPosition: number;
@@ -58,6 +59,7 @@ export interface IWeightProps {
 
 export const Weight = (props: IWeightProps) => {
   const {
+    adjustPendulumAngle,
     color,
     displayXPosition,
     displayYPosition,
@@ -193,7 +195,6 @@ export const Weight = (props: IWeightProps) => {
   }, [incrementTime]);
 
   useEffect(() => {
-    console.log("reset everything");
     resetEverything();
   }, [reset]);
 
@@ -222,11 +223,25 @@ export const Weight = (props: IWeightProps) => {
         oppositeAngle = 90 - (180 - angle);
       }
       setPendulumLength(Math.sqrt(x * x + y * y));
-      setPendulumAngle((oppositeAngle * Math.PI) / 180);
-      setStartPendulumAngle((oppositeAngle * Math.PI) / 180);
+      setPendulumAngle(oppositeAngle);
+      setStartPendulumAngle(oppositeAngle);
     }
     setDisplayValues();
   };
+
+  // Change pendulum angle based on input field
+  useEffect(() => {
+    if (paused) {
+      setXPosition(
+        xMax / 2 -
+          pendulumLength * Math.cos(((90 - pendulumAngle) * Math.PI) / 180) -
+          radius
+      );
+      setYPosition(
+        pendulumLength * Math.sin(((90 - pendulumAngle) * Math.PI) / 180)
+      );
+    }
+  }, [adjustPendulumAngle]);
 
   const getNewAccelerationX = (forceList: IForce[]) => {
     let newXAcc = 0;
@@ -272,8 +287,7 @@ export const Weight = (props: IWeightProps) => {
     }
 
     const pendulumLength = Math.sqrt(x * x + y * y);
-    setPendulumAngle((oppositeAngle * Math.PI) / 180);
-    // setPendulumLength(pendulumLength)
+    setPendulumAngle(oppositeAngle);
 
     const mag =
       mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
@@ -585,7 +599,7 @@ export const Weight = (props: IWeightProps) => {
                     xPosition +
                     (xPosition - radius < xMax / 2 ? 50 : -50) +
                     "px",
-                  top: yPosition - 50 + "px",
+                  top: yPosition - 70 + "px",
                 }}
               >
                 {Math.round(pendulumLength)} m
@@ -598,7 +612,7 @@ export const Weight = (props: IWeightProps) => {
                   top: 30 + "px",
                 }}
               >
-                {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
+                {Math.round(pendulumAngle * 100) / 100}°
               </p>
             </div>
           )}

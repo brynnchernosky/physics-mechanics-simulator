@@ -88,6 +88,7 @@ function App() {
   // State variables
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
+  const [adjustPendulumAngle, setAdjustPendulumAngle] = useState(0);
   const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
@@ -1047,6 +1048,7 @@ function App() {
                   return (
                     <div key={index}>
                       <Weight
+                        adjustPendulumAngle={adjustPendulumAngle}
                         color={element.color ?? "red"}
                         displayXPosition={positionXDisplay}
                         displayYPosition={positionYDisplay}
@@ -1332,9 +1334,21 @@ function App() {
               )}
               {pendulum && !simulationPaused && (
                 <Typography>
-                  &theta;:{" "}
-                  {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
+                  &theta;: {Math.round(pendulumAngle * 100) / 100}°
                 </Typography>
+              )}
+              {pendulum && simulationPaused && (
+                <InputField
+                  label={<p>&theta;</p>}
+                  lowerBound={0}
+                  changeValue={setPendulumAngle}
+                  step={1}
+                  unit={"°"}
+                  upperBound={79}
+                  value={pendulumAngle}
+                  effect={setAdjustPendulumAngle}
+                  radianEquivalent={true}
+                />
               )}
             </div>
           )}
