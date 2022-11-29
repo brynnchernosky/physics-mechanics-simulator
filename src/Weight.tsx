@@ -23,6 +23,7 @@ export interface IWeightProps {
   paused: boolean;
   pendulum: boolean;
   wedge: boolean;
+  pendulumLength: number;
   radius: number;
   reset: boolean;
   setDisplayXAcceleration: (val: number) => any;
@@ -68,6 +69,7 @@ export const Weight = (props: IWeightProps) => {
     mass,
     paused,
     pendulum,
+    pendulumLength,
     wedge,
     radius,
     mode,
@@ -220,6 +222,7 @@ export const Weight = (props: IWeightProps) => {
         oppositeAngle = 90 - (180 - angle);
       }
       setPendulumLength(Math.sqrt(x * x + y * y));
+      setPendulumAngle((oppositeAngle * Math.PI) / 180);
       setStartPendulumAngle((oppositeAngle * Math.PI) / 180);
     }
     setDisplayValues();
@@ -572,16 +575,33 @@ export const Weight = (props: IWeightProps) => {
               strokeWidth="10"
             />
           </svg>
-          <p
-            style={{
-              position: "absolute",
-              zIndex: -1,
-              left: xMax / 2 + "px",
-              top: 30 + "px",
-            }}
-          >
-            {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
-          </p>
+          {!dragging && (
+            <div>
+              <p
+                style={{
+                  position: "absolute",
+                  zIndex: -1,
+                  left:
+                    xPosition +
+                    (xPosition - radius < xMax / 2 ? 50 : -50) +
+                    "px",
+                  top: yPosition - 50 + "px",
+                }}
+              >
+                {Math.round(pendulumLength)} m
+              </p>
+              <p
+                style={{
+                  position: "absolute",
+                  zIndex: -1,
+                  left: xMax / 2 + "px",
+                  top: 30 + "px",
+                }}
+              >
+                {Math.round(((pendulumAngle * 180) / Math.PI) * 100) / 100}°
+              </p>
+            </div>
+          )}
         </div>
       )}
       {!dragging && showAcceleration && (
