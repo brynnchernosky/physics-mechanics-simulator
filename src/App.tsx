@@ -1066,7 +1066,6 @@ function App() {
                         paused={simulationPaused}
                         pendulumAngle={pendulumAngle}
                         pendulum={element.pendulum ?? false}
-                        pendulumLength={pendulumLength}
                         wedge={element.wedge ?? false}
                         radius={element.radius ?? 5}
                         reset={simulationReset}
@@ -1256,7 +1255,6 @@ function App() {
                       <Checkbox
                         value={showForces}
                         onChange={() => setShowForces(!showForces)}
-                        defaultChecked
                       />
                     }
                     label="Show force vectors"
