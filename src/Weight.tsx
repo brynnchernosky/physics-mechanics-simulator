@@ -225,6 +225,7 @@ export const Weight = (props: IWeightProps) => {
       setPendulumLength(Math.sqrt(x * x + y * y));
       setPendulumAngle(oppositeAngle);
       setStartPendulumAngle(oppositeAngle);
+      console.log("before change: ", pendulumLength, pendulumAngle);
     }
     setDisplayValues();
   };
@@ -233,15 +234,24 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (paused && pendulum && pendulumLength != 0) {
       let length = pendulumLength;
-      if (pendulumLength == 0) {
-        length = 364;
-      }
-      setXPosition(
-        xMax / 2 -
-          length * Math.cos(((90 - pendulumAngle) * Math.PI) / 180) -
-          radius
-      );
-      setYPosition(length * Math.sin(((90 - pendulumAngle) * Math.PI) / 180));
+      // const x = xMax / 2 - updatedStartPosX - radius;
+      // const y = updatedStartPosY + radius + 5;
+      // let angle = (Math.atan(y / x) * 180) / Math.PI;
+      // if (angle < 0) {
+      //   angle += 180;
+      // }
+      // let oppositeAngle = 90 - angle;
+      // if (oppositeAngle < 0) {
+      //   oppositeAngle = 90 - (180 - angle);
+      // }
+
+      // Finish debugging
+      const x = length * Math.cos(((90 - pendulumAngle) * Math.PI) / 180);
+      const y = length * Math.sin(((90 - pendulumAngle) * Math.PI) / 180);
+      const xPos = xMax / 2 - x - radius;
+      const yPos = y - radius - 5;
+      setXPosition(xPos);
+      setYPosition(yPos);
     }
   }, [adjustPendulumAngle]);
 
