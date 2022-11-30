@@ -51,7 +51,7 @@ export const InputField = (props: IInputProps) => {
   useEffect(() => {
     if (mode == "Freeform") {
       if (Math.abs(tempValue - Number(value)) > 1) {
-        console.log("set temp value to similar to value");
+        setTempValue(Number(value));
       }
     }
   }, [value]);
