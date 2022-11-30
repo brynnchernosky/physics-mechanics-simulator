@@ -956,7 +956,7 @@ function App() {
                 </div>
               )}
 
-              {mode == "Review" && (
+              {/* {mode == "Review" && (
                 <div style={{ position: "fixed", left: "15px", top: "5px" }}>
                   <Select
                     labelId="demo-simple-select-label"
@@ -973,7 +973,7 @@ function App() {
                     </MenuItem>
                   </Select>
                 </div>
-              )}
+              )} */}
               {mode == "Freeform" && (
                 <div
                   style={{
@@ -983,11 +983,11 @@ function App() {
                     left: xMin + 10 + "px",
                   }}
                 >
-                  <Tooltip title="Change simulation type">
+                  {/* <Tooltip title="Change simulation type">
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
                     </IconButton>
-                  </Tooltip>
+                  </Tooltip> */}
                   <Popover
                     open={open}
                     id={id}
