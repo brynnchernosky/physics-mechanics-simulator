@@ -1232,7 +1232,7 @@ function App() {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        disabled={wedge}
+                        disabled={wedge || pendulum}
                         value={elasticCollisions}
                         onChange={() =>
                           setElasticCollisions(!elasticCollisions)
