@@ -225,7 +225,6 @@ export const Weight = (props: IWeightProps) => {
       setPendulumLength(Math.sqrt(x * x + y * y));
       setPendulumAngle(oppositeAngle);
       setStartPendulumAngle(oppositeAngle);
-      console.log("before change: ", pendulumLength, pendulumAngle);
     }
     setDisplayValues();
   };
