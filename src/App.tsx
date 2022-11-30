@@ -8,12 +8,14 @@ import {
   Alert,
   Button,
   Checkbox,
+  CircularProgress,
   Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
   IconButton,
   InputAdornment,
+  LinearProgress,
   List,
   ListItem,
   ListItemButton,
@@ -887,7 +889,7 @@ function App() {
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
-      // hack to make sure weight positioned correctly
+      // hack to mke sure weight positioned correctly
       setTimeout(() => {
         generateNewQuestion();
       }, 20);
@@ -945,6 +947,18 @@ function App() {
             <div className="mechanicsSimulationButtons">
               {mode == "Freeform" && (
                 <div style={{ zIndex: 10000 }}>
+                  {!simulationPaused && (
+                    <div
+                      style={{
+                        position: "relative",
+                        left: "10vw",
+                        top: "95vh",
+                        width: "50vw",
+                      }}
+                    >
+                      <LinearProgress />
+                    </div>
+                  )}
                   <Tooltip title="Change simulation type">
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
@@ -963,9 +977,7 @@ function App() {
                     <nav aria-label="add simulation element options">
                       <List>
                         <ListItem disablePadding>
-                          <ListItemButton
-                            onClick={() => addWeight()}
-                          >
+                          <ListItemButton onClick={() => addWeight()}>
                             <ListItemIcon>
                               <AddCircleIcon />
                             </ListItemIcon>
@@ -1323,18 +1335,18 @@ function App() {
                 </Typography>
               )}
               {pendulum && simulationPaused && (
-                 <InputField
-                   label={<p>&theta;</p>}
-                   lowerBound={0}
-                   changeValue={setPendulumAngle}
-                   step={1}
-                   unit={"°"}
-                   upperBound={79}
-                   value={pendulumAngle}
-                   effect={setAdjustPendulumAngle}
-                   radianEquivalent={true}
-                 />
-               )}
+                <InputField
+                  label={<p>&theta;</p>}
+                  lowerBound={0}
+                  changeValue={setPendulumAngle}
+                  step={1}
+                  unit={"°"}
+                  upperBound={79}
+                  value={pendulumAngle}
+                  effect={setAdjustPendulumAngle}
+                  radianEquivalent={true}
+                />
+              )}
             </div>
           )}
           <div className="mechanicsSimulationEquation">
