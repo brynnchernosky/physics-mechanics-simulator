@@ -105,6 +105,8 @@ export const Weight = (props: IWeightProps) => {
     wedgeHeight,
   } = props;
 
+  const xMin = 0;
+  const yMin = 0;
   const xMax = window.innerWidth * 0.7;
   const yMax = window.innerHeight * 0.8;
 
@@ -523,7 +525,6 @@ export const Weight = (props: IWeightProps) => {
   const [clickPositionX, setClickPositionX] = useState(0);
   const [clickPositionY, setClickPositionY] = useState(0);
 
-  const [weightMenuVisible, setWeightMenuVisible] = useState(false);
   const epsilon = 0.0001;
 
   return (
@@ -542,13 +543,11 @@ export const Weight = (props: IWeightProps) => {
         onPointerMove={(e) => {
           e.preventDefault();
           if (dragging) {
-            const originalYPosition = yPosition;
             let newY = yPosition + e.clientY - clickPositionY;
             if (newY > yMax - 2 * radius) {
               newY = yMax - 2 * radius;
             }
 
-            const originalXPosition = xPosition;
             let newX = xPosition + e.clientX - clickPositionX;
             if (newX > xMax - 2 * radius) {
               newX = xMax - 2 * radius;

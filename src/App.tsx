@@ -37,6 +37,7 @@ import { InputField } from "./InputField";
 import questions from "./Questions.json";
 import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
+import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
 
 interface QuestionTemplate {
@@ -83,6 +84,10 @@ function App() {
       border: "1px solid #dadde9",
     },
   }));
+  const xMin = 0;
+  const yMin = 0;
+  const xMax = window.innerWidth * 0.7;
+  const yMax = window.innerHeight * 0.8;
 
   // Variables
   let questionVariables: number[] = [];
@@ -175,9 +180,7 @@ function App() {
       wedge: false,
     };
     setPositionXDisplay(30);
-    setPositionYDisplay(
-      Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5) * 10) / 10
-    );
+    setPositionYDisplay(Math.round((yMax - 30 - 2 * 50 + 5) * 10) / 10);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
@@ -190,14 +193,14 @@ function App() {
   const addWedge = () => {
     setWedge(true);
     const wedge: ISimulationElement = {
-      startPosX: window.innerWidth * 0.7 * 0.5 - 200,
-      startPosY: window.innerHeight * 0.8,
+      startPosX: xMax * 0.5 - 200,
+      startPosY: yMax,
       type: "wedge",
     };
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: window.innerWidth * 0.7 * 0.5 - 200,
-      startPosY: window.innerHeight * 0.8 - 200 - 50 - 25,
+      startPosX: xMax * 0.5 - 200,
+      startPosY: yMax - 200 - 50 - 25,
       color: "red",
       mass: 1,
       radius: 50,
@@ -206,9 +209,7 @@ function App() {
     };
     setSimulationElements([wedge, weight]);
     if (mode == "Freeform") {
-      setPositionXDisplay(
-        Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10
-      );
+      setPositionXDisplay(Math.round((xMax * 0.5 - 200) * 10) / 10);
       setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
       setStartForces([forceOfGravity]);
       updateForcesWithFriction(Number(coefficientOfStaticFriction));
@@ -237,9 +238,7 @@ function App() {
       wedge: false,
     };
     setPositionXDisplay(30);
-    setPositionYDisplay(
-      Math.round((window.innerHeight * 0.8 - 30 - 2 * 50 + 5) * 10) / 10
-    );
+    setPositionYDisplay(Math.round((yMax - 30 - 2 * 50 + 5) * 10) / 10);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     removeWalls();
@@ -333,12 +332,10 @@ function App() {
     } else {
       yPos += angle * 3;
     }
-    setPositionXDisplay(
-      Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10
-    );
+    setPositionXDisplay(Math.round((xMax * 0.5 - 200) * 10) / 10);
     setPositionYDisplay(Math.round(yPos * 10) / 10);
     setDisplayChange(
-      Math.round((window.innerWidth * 0.7 * 0.5 - 200) * 10) / 10 +
+      Math.round((xMax * 0.5 - 200) * 10) / 10 +
         " " +
         Math.round(yPos * 10) / 10
     );
@@ -643,7 +640,6 @@ function App() {
         }
       }
       setWedgeAngle(wedge);
-      console.log("wedge angle: ", wedge);
       changeWedgeBasedOnNewAngle(wedge);
       setCoefficientOfStaticFriction(coefficient);
       reviewCoefficient = coefficient;
@@ -668,10 +664,6 @@ function App() {
     const answers = getAnswersToQuestion(question, vars);
     generateInputFieldsForQuestion(false, question, answers);
   };
-
-  useEffect(() => {
-    console.log("wedge angle is now: ", wedgeAngle);
-  }, [wedgeAngle]);
 
   // Generate answerInputFields for new review question
   const generateInputFieldsForQuestion = (
@@ -963,8 +955,31 @@ function App() {
                   <LinearProgress />
                 </div>
               )}
+
+              {mode == "Review" && (
+                <div style={{ position: "relative", left: "15px", top: "5px" }}>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={topic}
+                    label="Topic"
+                    onChange={(e) => {
+                      setTopic(e.target.value as string);
+                    }}
+                  >
+                    <MenuItem value="Incline Plane">Incline Plane</MenuItem>
+                  </Select>
+                </div>
+              )}
               {mode == "Freeform" && (
-                <div style={{ zIndex: 10000 }}>
+                <div
+                  style={{
+                    zIndex: 10000,
+                    position: "fixed",
+                    top: yMin + 10 + "px",
+                    left: xMin + 10 + "px",
+                  }}
+                >
                   <Tooltip title="Change simulation type">
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
@@ -1177,21 +1192,6 @@ function App() {
               <MenuItem value="Review">Review</MenuItem>
             </Select>
           </div>
-          <div>
-            {mode == "Review" && (
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={topic}
-                label="Topic"
-                onChange={(e) => {
-                  setTopic(e.target.value as string);
-                }}
-              >
-                <MenuItem value="Incline Plane">Incline Plane</MenuItem>
-              </Select>
-            )}
-          </div>
           {mode == "Review" && (
             <div className="wordProblemBox">
               <div className="question">
@@ -1397,7 +1397,7 @@ function App() {
                           changeValue={setPositionXDisplay}
                           step={1}
                           unit={"m"}
-                          upperBound={window.innerWidth * 0.7}
+                          upperBound={xMax}
                           value={positionXDisplay}
                           effect={setDisplayChange}
                           small={true}
@@ -1414,7 +1414,7 @@ function App() {
                           changeValue={setPositionYDisplay}
                           step={1}
                           unit={"m"}
-                          upperBound={window.innerHeight * 0.8}
+                          upperBound={yMax}
                           value={positionYDisplay}
                           effect={setDisplayChange}
                           small={true}
@@ -1568,73 +1568,7 @@ function App() {
             )}*/}
         </div>
       </div>
-      <div className="coordinateSystem">
-        <div
-          style={{
-            position: "absolute",
-            top: "0px",
-            left: "0px",
-            zIndex: -10000,
-          }}
-        >
-          <svg
-            width={window.innerWidth + "px"}
-            height={window.innerHeight + "px"}
-          >
-            <defs>
-              <marker
-                id="miniArrow"
-                markerWidth="20"
-                markerHeight="20"
-                refX="0"
-                refY="3"
-                orient="auto"
-                markerUnits="strokeWidth"
-              >
-                <path d="M0,0 L0,6 L9,3 z" fill={"#000000"} />
-              </marker>
-            </defs>
-            <line
-              x1={window.innerHeight * 0.05}
-              y1={window.innerHeight * 0.95}
-              x2={window.innerHeight * 0.05}
-              y2={window.innerHeight * 0.9}
-              stroke={"#000000"}
-              strokeWidth="2"
-              markerEnd="url(#miniArrow)"
-            />
-            <line
-              x1={window.innerHeight * 0.05}
-              y1={window.innerHeight * 0.95}
-              x2={window.innerHeight * 0.1}
-              y2={window.innerHeight * 0.95}
-              stroke={"#000000"}
-              strokeWidth="2"
-              markerEnd="url(#miniArrow)"
-            />
-          </svg>
-        </div>
-        <p
-          style={{
-            position: "absolute",
-            top: window.innerHeight * 0.95 + "px",
-            left: window.innerHeight * 0.1 + "px",
-            zIndex: -10000,
-          }}
-        >
-          X
-        </p>
-        <p
-          style={{
-            position: "absolute",
-            top: window.innerHeight * 0.85 + "px",
-            left: window.innerHeight * 0.02 + "px",
-            zIndex: -10000,
-          }}
-        >
-          Y
-        </p>
-      </div>
+      <CoordinateSystem top={window.innerHeight - 120} right={xMin + 90} />
     </div>
   );
 }
