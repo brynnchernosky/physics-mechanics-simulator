@@ -878,7 +878,7 @@ function App() {
   // Use effect hook to handle mode/topic change
   useEffect(() => {
     if (mode == "Freeform") {
-      clearSimulation();
+      addPendulum();
     } else if (mode == "Review") {
       setPendulum(false);
       if (topic == "Incline Plane") {
@@ -955,25 +955,6 @@ function App() {
                   <LinearProgress />
                 </div>
               )}
-
-              {/* {mode == "Review" && (
-                <div style={{ position: "fixed", left: "15px", top: "5px" }}>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={topic}
-                    label="Topic"
-                    onChange={(e) => {
-                      setTopic(e.target.value as string);
-                    }}
-                    sx={{ zIndex: "appBar" }}
-                  >
-                    <MenuItem value="Incline Plane" sx={{ zIndex: "appBar" }}>
-                      Incline Plane
-                    </MenuItem>
-                  </Select>
-                </div>
-              )} */}
               {mode == "Freeform" && (
                 <div
                   style={{
@@ -1182,7 +1163,7 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
-            <Select
+            {/* <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={mode}
@@ -1198,7 +1179,7 @@ function App() {
               <MenuItem value="Review" sx={{ zIndex: "modal" }}>
                 Review
               </MenuItem>
-            </Select>
+            </Select> */}
           </div>
           {mode == "Review" && (
             <div className="wordProblemBox">
@@ -1258,7 +1239,7 @@ function App() {
                         }
                       />
                     }
-                    label="Make collisions inelastic"
+                    label="Make collisions elastic"
                     labelPlacement="start"
                   />
                   <Divider />
