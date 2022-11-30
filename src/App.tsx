@@ -957,7 +957,7 @@ function App() {
               )}
 
               {mode == "Review" && (
-                <div style={{ position: "relative", left: "15px", top: "5px" }}>
+                <div style={{ position: "fixed", left: "15px", top: "5px" }}>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
@@ -966,8 +966,11 @@ function App() {
                     onChange={(e) => {
                       setTopic(e.target.value as string);
                     }}
+                    sx={{ zIndex: "appBar" }}
                   >
-                    <MenuItem value="Incline Plane">Incline Plane</MenuItem>
+                    <MenuItem value="Incline Plane" sx={{ zIndex: "appBar" }}>
+                      Incline Plane
+                    </MenuItem>
                   </Select>
                 </div>
               )}
@@ -1143,7 +1146,7 @@ function App() {
           </div>
         </div>
         <div className="mechanicsSimulationEquationContainer">
-          <div className="mechanicsSimulationControls">
+          <div className="mechanicsSimulationControls" style={{ zIndex: 1000 }}>
             <Stack direction="row" spacing={1}>
               {simulationPaused && (
                 <Tooltip title="Start simulation">
@@ -1187,9 +1190,14 @@ function App() {
               onChange={(e) => {
                 setMode(e.target.value as string);
               }}
+              sx={{ zIndex: "modal" }}
             >
-              <MenuItem value="Freeform">Freeform</MenuItem>
-              <MenuItem value="Review">Review</MenuItem>
+              <MenuItem value="Freeform" sx={{ zIndex: "modal" }}>
+                Freeform
+              </MenuItem>
+              <MenuItem value="Review" sx={{ zIndex: "modal" }}>
+                Review
+              </MenuItem>
             </Select>
           </div>
           {mode == "Review" && (
@@ -1208,12 +1216,14 @@ function App() {
                 display: "flex",
                 justifyContent: "space-between",
                 marginTop: "10px",
+                zIndex: 1000,
               }}
             >
               <div style={{ zIndex: 10000 }}>
                 <Button
                   onClick={() => generateNewQuestion()}
                   variant="outlined"
+                  sx={{ zIndex: "modal" }}
                 >
                   <Typography>New question</Typography>
                 </Button>
@@ -1226,6 +1236,7 @@ function App() {
                     generateInputFieldsForQuestion(true);
                   }}
                   variant="outlined"
+                  sx={{ zIndex: "modal" }}
                 >
                   <Typography>Submit</Typography>
                 </Button>
@@ -1234,7 +1245,7 @@ function App() {
           )}
 
           {mode == "Freeform" && (
-            <div>
+            <div style={{ zIndex: 1000 }}>
               <FormControl component="fieldset">
                 <FormGroup>
                   <FormControlLabel
@@ -1359,7 +1370,7 @@ function App() {
               )}
             </div>
           )}
-          <div className="mechanicsSimulationEquation">
+          <div className="mechanicsSimulationEquation" style={{ zIndex: 1000 }}>
             {mode == "Freeform" && simulationElements.length != 0 && (
               <table>
                 <tbody>

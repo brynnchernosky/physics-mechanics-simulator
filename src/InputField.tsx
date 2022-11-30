@@ -117,7 +117,12 @@ export const InputField = (props: IInputProps) => {
         variant="standard"
         value={tempValue}
         onChange={onChange}
-        sx={{ height: "1em", width: { width }, marginLeft: { margin } }}
+        sx={{
+          height: "1em",
+          width: { width },
+          marginLeft: { margin },
+          zIndex: "modal",
+        }}
         inputProps={{
           step: step,
           min: lowerBound,
@@ -149,7 +154,12 @@ export const InputField = (props: IInputProps) => {
           variant="standard"
           value={tempRadianValue}
           onChange={onChangeRadianValue}
-          sx={{ height: "1em", width: { width }, marginLeft: { margin } }}
+          sx={{
+            height: "1em",
+            width: { width },
+            marginLeft: { margin },
+            zIndex: "modal",
+          }}
           inputProps={{
             step: Math.PI / 8,
             min: 0,
