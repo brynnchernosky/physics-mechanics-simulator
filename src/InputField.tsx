@@ -16,6 +16,7 @@ export interface IInputProps {
   effect?: (val: number) => any;
   radianEquivalent?: boolean;
   small?: boolean;
+  mode?: string;
 }
 
 export const InputField = (props: IInputProps) => {
@@ -25,6 +26,7 @@ export const InputField = (props: IInputProps) => {
     effect,
     label,
     lowerBound,
+    mode,
     radianEquivalent,
     showIcon,
     small,
@@ -41,13 +43,16 @@ export const InputField = (props: IInputProps) => {
   const [tempValue, setTempValue] = useState<any>(
     showIcon != undefined && !showIcon ? 0 : value
   );
+
   const [tempRadianValue, setTempRadianValue] = useState(
     (Number(0) * Math.PI) / 180
   );
 
   useEffect(() => {
-    if (Math.abs(tempValue - Number(value)) > 1) {
-      setTempValue(Number(value));
+    if (mode == "Freeform") {
+      if (Math.abs(tempValue - Number(value)) > 1) {
+        console.log("set temp value to similar to value");
+      }
     }
   }, [value]);
 

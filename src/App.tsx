@@ -414,14 +414,12 @@ function App() {
       Math.cos((Number(angle) * Math.PI) / 180) *
       Math.sin(((90 - Number(angle)) * Math.PI) / 180);
     yForce +=
-    reviewCoefficient *
+      reviewCoefficient *
       9.81 *
       Math.cos((Number(angle) * Math.PI) / 180) *
       Math.sin(((180 - Number(angle)) * Math.PI) / 180);
     let friction =
-    reviewCoefficient *
-      9.81 *
-      Math.cos((Number(angle) * Math.PI) / 180);
+      reviewCoefficient * 9.81 * Math.cos((Number(angle) * Math.PI) / 180);
     if (yForce > 0) {
       friction =
         (-(9.81 * Math.cos((Number(angle) * Math.PI) / 180)) *
@@ -642,10 +640,10 @@ function App() {
           let randValue = Math.round(Math.random() * 1000) / 1000;
           vars.push(randValue);
           coefficient = randValue;
-          console.log("generated coefficient: ", coefficient);
         }
       }
       setWedgeAngle(wedge);
+      console.log("wedge angle: ", wedge);
       changeWedgeBasedOnNewAngle(wedge);
       setCoefficientOfStaticFriction(coefficient);
       reviewCoefficient = coefficient;
@@ -670,6 +668,10 @@ function App() {
     const answers = getAnswersToQuestion(question, vars);
     generateInputFieldsForQuestion(false, question, answers);
   };
+
+  useEffect(() => {
+    console.log("wedge angle is now: ", wedgeAngle);
+  }, [wedgeAngle]);
 
   // Generate answerInputFields for new review question
   const generateInputFieldsForQuestion = (
@@ -1294,6 +1296,7 @@ function App() {
                     value={wedgeAngle}
                     effect={changeWedgeBasedOnNewAngle}
                     radianEquivalent={true}
+                    mode={"Freeform"}
                   />
                   <InputField
                     label={
@@ -1308,6 +1311,7 @@ function App() {
                     upperBound={1}
                     value={coefficientOfStaticFriction}
                     effect={updateForcesWithFriction}
+                    mode={"Freeform"}
                   />
                   <InputField
                     label={
@@ -1321,6 +1325,7 @@ function App() {
                     unit={""}
                     upperBound={Number(coefficientOfStaticFriction)}
                     value={coefficientOfKineticFriction}
+                    mode={"Freeform"}
                   />
                 </div>
               )}
@@ -1349,6 +1354,7 @@ function App() {
                   value={pendulumAngle}
                   effect={setAdjustPendulumAngle}
                   radianEquivalent={true}
+                  mode={"Freeform"}
                 />
               )}
             </div>
@@ -1395,6 +1401,7 @@ function App() {
                           value={positionXDisplay}
                           effect={setDisplayChange}
                           small={true}
+                          mode={"Freeform"}
                         />
                       )}{" "}
                     </td>
@@ -1411,6 +1418,7 @@ function App() {
                           value={positionYDisplay}
                           effect={setDisplayChange}
                           small={true}
+                          mode={"Freeform"}
                         />
                       )}{" "}
                     </td>
@@ -1446,6 +1454,7 @@ function App() {
                           value={velocityXDisplay}
                           effect={setDisplayChange}
                           small={true}
+                          mode={"Freeform"}
                         />
                       )}{" "}
                     </td>
@@ -1463,6 +1472,7 @@ function App() {
                           value={velocityYDisplay}
                           effect={setDisplayChange}
                           small={true}
+                          mode={"Freeform"}
                         />
                       )}{" "}
                     </td>
