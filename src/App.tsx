@@ -86,6 +86,7 @@ function App() {
 
   // Variables
   let questionVariables: number[] = [];
+  let reviewCoefficient: number = 0;
 
   // State variables
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
@@ -413,12 +414,12 @@ function App() {
       Math.cos((Number(angle) * Math.PI) / 180) *
       Math.sin(((90 - Number(angle)) * Math.PI) / 180);
     yForce +=
-      Number(coefficientOfStaticFriction) *
+    reviewCoefficient *
       9.81 *
       Math.cos((Number(angle) * Math.PI) / 180) *
       Math.sin(((180 - Number(angle)) * Math.PI) / 180);
     let friction =
-      Number(coefficientOfStaticFriction) *
+    reviewCoefficient *
       9.81 *
       Math.cos((Number(angle) * Math.PI) / 180);
     if (yForce > 0) {
@@ -606,9 +607,6 @@ function App() {
     setReviewStaticMagnitude(0);
     setReviewStaticAngle(0);
     setCoefficientOfKineticFriction(0);
-    setCoefficientOfStaticFriction(0);
-    setWedgeAngle(0);
-    changeWedgeBasedOnNewAngle(0);
     setSimulationPaused(true);
     setAnswerInputFields(<div></div>);
   };
@@ -629,23 +627,29 @@ function App() {
       }
       question = questions.inclinePlane[questionNumber];
 
+      let coefficient = 0;
+      let wedge = 0;
+
       for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
         if (question.variablesForQuestionSetup[i] == "theta - max 45") {
           let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
-          setWedgeAngle(randValue);
-          changeWedgeBasedOnNewAngle(randValue);
+          wedge = randValue;
         } else if (
           question.variablesForQuestionSetup[i] ==
           "coefficient of static friction"
         ) {
           let randValue = Math.round(Math.random() * 1000) / 1000;
           vars.push(randValue);
-          setCoefficientOfStaticFriction(randValue);
+          coefficient = randValue;
+          console.log("generated coefficient: ", coefficient);
         }
       }
+      setWedgeAngle(wedge);
+      changeWedgeBasedOnNewAngle(wedge);
+      setCoefficientOfStaticFriction(coefficient);
+      reviewCoefficient = coefficient;
     }
-
     let q = "";
     for (let i = 0; i < question.questionSetup.length; i++) {
       q += question.questionSetup[i];
@@ -659,13 +663,11 @@ function App() {
         }
       }
     }
-
     questionVariables = vars;
     setSelectedQuestion(question);
     setQuestionPartOne(q);
     setQuestionPartTwo(question.question);
     const answers = getAnswersToQuestion(question, vars);
-
     generateInputFieldsForQuestion(false, question, answers);
   };
 
@@ -808,6 +810,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "coefficient of static friction") {
+        updateReviewForcesBasedOnCoefficient(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -829,6 +832,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "wedge angle") {
+        updateReviewForcesBasedOnAngle(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -945,20 +949,20 @@ function App() {
         <div className="mechanicsSimulationContentContainer">
           <div className="mechanicsSimulationButtonsAndElements">
             <div className="mechanicsSimulationButtons">
+              {!simulationPaused && (
+                <div
+                  style={{
+                    position: "relative",
+                    left: "10vw",
+                    top: "95vh",
+                    width: "50vw",
+                  }}
+                >
+                  <LinearProgress />
+                </div>
+              )}
               {mode == "Freeform" && (
                 <div style={{ zIndex: 10000 }}>
-                  {!simulationPaused && (
-                    <div
-                      style={{
-                        position: "relative",
-                        left: "10vw",
-                        top: "95vh",
-                        width: "50vw",
-                      }}
-                    >
-                      <LinearProgress />
-                    </div>
-                  )}
                   <Tooltip title="Change simulation type">
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
