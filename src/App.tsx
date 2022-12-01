@@ -139,6 +139,7 @@ function App() {
   >([]);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
+  const [simulationType, setSimulationType] = useState<string>("Pendulum");
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [timer, setTimer] = useState<number>(0);
@@ -882,7 +883,13 @@ function App() {
   // Use effect hook to handle mode/topic change
   useEffect(() => {
     if (mode == "Freeform") {
-      addPendulum();
+      if (simulationType == "Free Weight") {
+        addWeight();
+      } else if (simulationType == "Incline Plane") {
+        addWedge();
+      } else if (simulationType == "Pendulum") {
+        addPendulum();
+      }
     } else if (mode == "Review") {
       setPendulum(false);
       if (topic == "Incline Plane") {
@@ -896,7 +903,7 @@ function App() {
         generateNewQuestion();
       }, 20);
     }
-  }, [mode, topic]);
+  }, [simulationType, mode, topic]);
 
   // Use effect hook to handle force change in review mode
   useEffect(() => {
@@ -968,7 +975,18 @@ function App() {
                     left: xMin + 10 + "px",
                   }}
                 >
-                  {/* <Tooltip title="Change simulation type">
+                  <select
+                    value={simulationType}
+                    onChange={(event) => {
+                      setSimulationType(event.target.value);
+                    }}
+                  >
+                    <option value="Free Weight">Free Weight</option>
+                    <option value="Incline Plane">Incline Plane</option>
+                    <option value="Pendulum">Pendulum</option>
+                  </select>
+
+                  {/* <Tooltip title="Change simulation type" followCursor>
                     <IconButton onClick={handleClick} size="large">
                       <AddIcon />
                     </IconButton>
