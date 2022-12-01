@@ -958,18 +958,21 @@ function App() {
                     left: xMin + 12 + "px",
                   }}
                 >
+                  <div 
+                    className="dropdownMenu">
                   <select
                     value={simulationType}
                     onChange={(event) => {
                       setSimulationType(event.target.value);
                     }}
-                    style={{ height: "3em" }}
+                    style={{height: "2em", width: "100%", fontSize: "16px"}}
                   >
                     <option value="Free Weight">Free Weight</option>
                     <option value="Incline Plane">Incline Plane</option>
                     <option value="Pendulum">Pendulum</option>
                   </select>
-                </div>
+                  </div>
+                 </div>
               )}
             </div>
             <div className="alerts">
@@ -1115,15 +1118,19 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
+            <div 
+                    className="dropdownMenu">
             <select
               value={mode}
               onChange={(event) => {
                 setMode(event.target.value);
               }}
+              style={{height: "2em", width: "100%", fontSize: "16px"}}
             >
               <option value="Freeform">Freeform Mode</option>
               <option value="Review">Review Mode</option>
             </select>
+            </div>
           </div>
           {mode == "Review" && (
             <div className="wordProblemBox">
