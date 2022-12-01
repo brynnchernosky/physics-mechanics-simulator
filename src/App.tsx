@@ -947,53 +947,10 @@ function App() {
         <div className="mechanicsSimulationContentContainer">
           <div className="mechanicsSimulationButtonsAndElements">
             <div className="mechanicsSimulationButtons">
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{
-                  position: "relative",
-                  left: "30vw",
-                  top: "90vh",
-                }}
-              >
-                {simulationPaused && (
-                  <Tooltip title="Start simulation">
-                    <IconButton
-                      onClick={() => {
-                        setSimulationPaused(false);
-                      }}
-                    >
-                      <PlayArrowIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {!simulationPaused && (
-                  <Tooltip title="Pause simulation">
-                    <IconButton
-                      onClick={() => {
-                        setSimulationPaused(true);
-                      }}
-                    >
-                      <PauseIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {simulationPaused && (
-                  <Tooltip title="Reset simulation">
-                    <IconButton
-                      onClick={() => {
-                        setSimulationReset(!simulationReset);
-                      }}
-                    >
-                      <ReplayIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Stack>
               {!simulationPaused && (
                 <div
                   style={{
-                    position: "relative",
+                    position: "fixed",
                     left: "10vw",
                     top: "95vh",
                     width: "50vw",
@@ -1175,18 +1132,50 @@ function App() {
         </div>
         <div className="mechanicsSimulationEquationContainer">
           <div className="mechanicsSimulationControls" style={{ zIndex: 1000 }}>
-            <label>
-              Mode:
-              <select
-                value={mode}
-                onChange={(event) => {
-                  setMode(event.target.value);
-                }}
-              >
-                <option value="Freeform">Freeform</option>
-                <option value="Review">Review</option>
-              </select>
-            </label>
+            <Stack direction="row" spacing={1}>
+              {simulationPaused && (
+                <Tooltip title="Start simulation" followCursor>
+                  <IconButton
+                    onClick={() => {
+                      setSimulationPaused(false);
+                    }}
+                  >
+                    <PlayArrowIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {!simulationPaused && (
+                <Tooltip title="Pause simulation" followCursor>
+                  <IconButton
+                    onClick={() => {
+                      setSimulationPaused(true);
+                    }}
+                  >
+                    <PauseIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {simulationPaused && (
+                <Tooltip title="Reset simulation" followCursor>
+                  <IconButton
+                    onClick={() => {
+                      setSimulationReset(!simulationReset);
+                    }}
+                  >
+                    <ReplayIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Stack>
+            <select
+              value={mode}
+              onChange={(event) => {
+                setMode(event.target.value);
+              }}
+            >
+              <option value="Freeform">Freeform Mode</option>
+              <option value="Review">Review Mode</option>
+            </select>
 
             {/* <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
               <InputLabel id="demo-select-small">Mode</InputLabel>
