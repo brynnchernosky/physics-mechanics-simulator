@@ -4,6 +4,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
+
+import { SelectChangeEvent } from "@mui/material/Select";
 import {
   Alert,
   Box,
@@ -945,6 +947,49 @@ function App() {
         <div className="mechanicsSimulationContentContainer">
           <div className="mechanicsSimulationButtonsAndElements">
             <div className="mechanicsSimulationButtons">
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  position: "relative",
+                  left: "30vw",
+                  top: "90vh",
+                }}
+              >
+                {simulationPaused && (
+                  <Tooltip title="Start simulation">
+                    <IconButton
+                      onClick={() => {
+                        setSimulationPaused(false);
+                      }}
+                    >
+                      <PlayArrowIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {!simulationPaused && (
+                  <Tooltip title="Pause simulation">
+                    <IconButton
+                      onClick={() => {
+                        setSimulationPaused(true);
+                      }}
+                    >
+                      <PauseIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {simulationPaused && (
+                  <Tooltip title="Reset simulation">
+                    <IconButton
+                      onClick={() => {
+                        setSimulationReset(!simulationReset);
+                      }}
+                    >
+                      <ReplayIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Stack>
               {!simulationPaused && (
                 <div
                   style={{
@@ -1130,42 +1175,20 @@ function App() {
         </div>
         <div className="mechanicsSimulationEquationContainer">
           <div className="mechanicsSimulationControls" style={{ zIndex: 1000 }}>
-            <Stack direction="row" spacing={1}>
-              {simulationPaused && (
-                <Tooltip title="Start simulation">
-                  <IconButton
-                    onClick={() => {
-                      setSimulationPaused(false);
-                    }}
-                  >
-                    <PlayArrowIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {!simulationPaused && (
-                <Tooltip title="Pause simulation">
-                  <IconButton
-                    onClick={() => {
-                      setSimulationPaused(true);
-                    }}
-                  >
-                    <PauseIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {simulationPaused && (
-                <Tooltip title="Reset simulation">
-                  <IconButton
-                    onClick={() => {
-                      setSimulationReset(!simulationReset);
-                    }}
-                  >
-                    <ReplayIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Stack>
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <label>
+              Mode:
+              <select
+                value={mode}
+                onChange={(event) => {
+                  setMode(event.target.value);
+                }}
+              >
+                <option value="Freeform">Freeform</option>
+                <option value="Review">Review</option>
+              </select>
+            </label>
+
+            {/* <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
               <InputLabel id="demo-select-small">Mode</InputLabel>
               <Select
                 labelId="demo-select-small"
@@ -1183,24 +1206,7 @@ function App() {
                   Review
                 </MenuItem>
               </Select>
-            </FormControl>
-            {/* <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={mode}
-              label="Mode"
-              onChange={(e) => {
-                setMode(e.target.value as string);
-              }}
-              sx={{ zIndex: "modal" }}
-            >
-              <MenuItem value="Freeform" sx={{ zIndex: "modal" }}>
-                Freeform
-              </MenuItem>
-              <MenuItem value="Review" sx={{ zIndex: "modal" }}>
-                Review
-              </MenuItem>
-            </Select> */}
+            </FormControl> */}
           </div>
           {mode == "Review" && (
             <div className="wordProblemBox">
