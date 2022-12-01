@@ -41,11 +41,11 @@ export const InputField = (props: IInputProps) => {
   let margin = small ? "0px" : "10px";
 
   const [tempValue, setTempValue] = useState<any>(
-    showIcon != undefined && !showIcon ? 0 : value
+    mode != "Freeform" && !showIcon ? 0 : value
   );
 
   const [tempRadianValue, setTempRadianValue] = useState(
-    (Number(0) * Math.PI) / 180
+    mode != "Freeform" && !showIcon ? 0 : (Number(value) * Math.PI) / 180
   );
 
   useEffect(() => {

@@ -139,7 +139,7 @@ function App() {
   >([]);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] = useState<string>("Pendulum");
+  const [simulationType, setSimulationType] = useState<string>("Free Weight");
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [timer, setTimer] = useState<number>(0);
@@ -161,18 +161,20 @@ function App() {
 
   // Add a free weight to the simulation
   const addWeight = () => {
+    setWedge(false);
+    setPendulum(false);
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: 30,
-      startPosY: 30,
+      startPosX: xMin+70,
+      startPosY: yMin+70,
       color: "red",
       mass: 1,
       radius: 50,
       pendulum: false,
       wedge: false,
     };
-    setPositionXDisplay(30);
-    setPositionYDisplay(Math.round((yMax - 30 - 2 * 50 + 5) * 10) / 10);
+    setPositionXDisplay(xMin+70);
+    setPositionYDisplay(Math.round((yMax - (yMin+70) - 2 * 50 + 5) * 10) / 10);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
@@ -183,6 +185,7 @@ function App() {
   // Add a wedge with a free weight to the simulation
   const addWedge = () => {
     setWedge(true);
+    setPendulum(false);
     const wedge: ISimulationElement = {
       startPosX: xMax * 0.5 - 200,
       startPosY: yMax,
@@ -217,18 +220,30 @@ function App() {
   // Add a simple pendulum to the simulation
   const addPendulum = () => {
     setPendulum(true);
+    setWedge(false);
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: 30,
-      startPosY: 30,
+      startPosX: xMin+150,
+      startPosY: yMin+150,
       color: "red",
       mass: 1,
       radius: 50,
       pendulum: true,
       wedge: false,
     };
-    setPositionXDisplay(30);
-    setPositionYDisplay(Math.round((yMax - 30 - 2 * 50 + 5) * 10) / 10);
+    const x = xMax / 2 - xMin+150- 50;
+      const y = yMin+150 + 50 + 5;
+      let angle = (Math.atan(y / x) * 180) / Math.PI;
+      if (angle < 0) {
+        angle += 180;
+      }
+      let oppositeAngle = 90 - angle;
+      if (oppositeAngle < 0) {
+        oppositeAngle = 90 - (180 - angle);
+      }
+    setPendulumAngle(oppositeAngle)
+    setPositionXDisplay(xMin+150);
+    setPositionYDisplay(Math.round((yMax - (yMin+150) - 2 * 50 + 5) * 10) / 10);
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     removeWalls();
