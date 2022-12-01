@@ -159,19 +159,6 @@ function App() {
   );
   const [wedgeWidth, setWedgeWidth] = useState(400);
 
-  // Handle opening and closing the add/remove elements menu
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
-
   // Add a free weight to the simulation
   const addWeight = () => {
     const weight: ISimulationElement = {
@@ -191,7 +178,6 @@ function App() {
     setStartForces([forceOfGravity]);
     addWalls();
     setSimulationReset(!simulationReset);
-    handleClose();
   };
 
   // Add a wedge with a free weight to the simulation
@@ -226,7 +212,6 @@ function App() {
     }
     addWalls();
     setSimulationReset(!simulationReset);
-    handleClose();
   };
 
   // Add a simple pendulum to the simulation
@@ -248,7 +233,6 @@ function App() {
     setUpdatedForces([forceOfGravity]);
     removeWalls();
     setSimulationReset(!simulationReset);
-    handleClose();
   };
 
   // Update forces when coefficient of static friction changes in freeform mode
@@ -362,7 +346,6 @@ function App() {
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
     setSimulationPaused(true);
-    handleClose();
   };
 
   // In review mode, update forces when coefficient of static friction changed
@@ -971,8 +954,8 @@ function App() {
                   style={{
                     zIndex: 10000,
                     position: "fixed",
-                    top: yMin + 10 + "px",
-                    left: xMin + 10 + "px",
+                    top: 1 + "em",
+                    left: xMin + 12 + "px",
                   }}
                 >
                   <select
@@ -980,65 +963,12 @@ function App() {
                     onChange={(event) => {
                       setSimulationType(event.target.value);
                     }}
+                    style={{ height: "3em" }}
                   >
                     <option value="Free Weight">Free Weight</option>
                     <option value="Incline Plane">Incline Plane</option>
                     <option value="Pendulum">Pendulum</option>
                   </select>
-
-                  {/* <Tooltip title="Change simulation type" followCursor>
-                    <IconButton onClick={handleClick} size="large">
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip> */}
-                  <Popover
-                    open={open}
-                    id={id}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
-                  >
-                    <nav aria-label="add simulation element options">
-                      <List>
-                        <ListItem disablePadding>
-                          <ListItemButton onClick={() => addWeight()}>
-                            <ListItemIcon>
-                              <AddCircleIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Free weight simulation" />
-                          </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            onClick={() => {
-                              addPendulum();
-                            }}
-                          >
-                            <ListItemIcon>
-                              <AddCircleIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Pendulum simulation" />
-                          </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton
-                            onClick={() => {
-                              addWedge();
-                            }}
-                          >
-                            <ListItemIcon>
-                              <AddCircleIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Wedge simulation" />
-                          </ListItemButton>
-                        </ListItem>
-                      </List>
-                    </nav>
-                    <Divider />
-                  </Popover>
                 </div>
               )}
             </div>
@@ -1194,26 +1124,6 @@ function App() {
               <option value="Freeform">Freeform Mode</option>
               <option value="Review">Review Mode</option>
             </select>
-
-            {/* <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="demo-select-small">Mode</InputLabel>
-              <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                value={mode}
-                label="Mode"
-                onChange={(e) => {
-                  setMode(e.target.value as string);
-                }}
-              >
-                <MenuItem value="Freeform" sx={{ zIndex: "modal" }}>
-                  Freeform
-                </MenuItem>
-                <MenuItem value="Review" sx={{ zIndex: "modal" }}>
-                  Review
-                </MenuItem>
-              </Select>
-            </FormControl> */}
           </div>
           {mode == "Review" && (
             <div className="wordProblemBox">
