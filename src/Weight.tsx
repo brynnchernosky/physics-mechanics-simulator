@@ -38,6 +38,8 @@ export interface IWeightProps {
   setPendulumLength: (val: number) => any;
   setStartPendulumAngle: (val: number) => any;
   showAcceleration: boolean;
+  sketchMode: boolean;
+  setSketchMode: (val: boolean) => any;
   mode: string;
   noMovement: boolean;
   pendulumAngle: number;
@@ -72,6 +74,8 @@ export const Weight = (props: IWeightProps) => {
     paused,
     pendulum,
     pendulumLength,
+    sketchMode,
+    setSketchMode,
     wedge,
     radius,
     mode,
@@ -112,7 +116,6 @@ export const Weight = (props: IWeightProps) => {
 
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
   const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
-
   const [xPosition, setXPosition] = useState(startPosX);
   const [yPosition, setYPosition] = useState(startPosY);
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
@@ -120,6 +123,8 @@ export const Weight = (props: IWeightProps) => {
   const [kineticFriction, setKineticFriction] = useState(false);
 
   const [dragging, setDragging] = useState(false);
+  const draggable = !wedge && mode == "Freeform";
+  const [sketching, setSketching] = useState(false);
 
   const forceOfGravity: IForce = {
     description: "Gravity",
@@ -526,18 +531,22 @@ export const Weight = (props: IWeightProps) => {
   const [clickPositionY, setClickPositionY] = useState(0);
 
   const epsilon = 0.0001;
+  const [forceSketches, setForceSketches] = useState<JSX.Element[]>([]);
+  const [currentForceSketch, setCurrentForceSketch] = useState<any>();
 
   return (
     <div style={{ zIndex: -1000 }}>
       <div
         className="weightContainer"
         onPointerDown={(e) => {
-          if (!wedge) {
+          if (draggable) {
             e.preventDefault();
             setPaused(true);
             setDragging(true);
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
+          } else if (sketchMode) {
+            setSketching(!sketching);
           }
         }}
         onPointerMove={(e) => {
@@ -565,6 +574,29 @@ export const Weight = (props: IWeightProps) => {
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
             setDisplayValues();
+          }
+          if (sketching) {
+            setCurrentForceSketch(
+              <div
+                style={{
+                  position: "absolute",
+                  top: xPosition - 200 + "px",
+                  left: yPosition - 200 + "px",
+                  backgroundColor: "blue",
+                }}
+              >
+                <svg width={500 + "px"} height={500 + "px"}>
+                  <line
+                    x1={xPosition + radius / 2}
+                    y1={yPosition + radius / 2}
+                    x2={e.clientX}
+                    y2={e.clientY}
+                    stroke={"#000000"}
+                    strokeWidth="10"
+                  />
+                </svg>
+              </div>
+            );
           }
         }}
         onPointerUp={(e) => {
@@ -750,6 +782,7 @@ export const Weight = (props: IWeightProps) => {
           </div>
         </div>
       )}
+      {showForces && currentForceSketch}
       {!dragging &&
         showForces &&
         updatedForces.map((force, index) => {

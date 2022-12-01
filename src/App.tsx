@@ -126,6 +126,7 @@ function App() {
   const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
   const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
   const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
+  const [sketchMode, setSketchMode] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
     questions.inclinePlane[0]
   );
@@ -165,16 +166,18 @@ function App() {
     setPendulum(false);
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: xMin+70,
-      startPosY: yMin+70,
+      startPosX: xMin + 70,
+      startPosY: yMin + 70,
       color: "red",
       mass: 1,
       radius: 50,
       pendulum: false,
       wedge: false,
     };
-    setPositionXDisplay(xMin+70);
-    setPositionYDisplay(Math.round((yMax - (yMin+70) - 2 * 50 + 5) * 10) / 10);
+    setPositionXDisplay(xMin + 70);
+    setPositionYDisplay(
+      Math.round((yMax - (yMin + 70) - 2 * 50 + 5) * 10) / 10
+    );
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     setStartForces([forceOfGravity]);
@@ -223,27 +226,29 @@ function App() {
     setWedge(false);
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: xMin+150,
-      startPosY: yMin+150,
+      startPosX: xMin + 150,
+      startPosY: yMin + 150,
       color: "red",
       mass: 1,
       radius: 50,
       pendulum: true,
       wedge: false,
     };
-    const x = xMax / 2 - xMin+150- 50;
-      const y = yMin+150 + 50 + 5;
-      let angle = (Math.atan(y / x) * 180) / Math.PI;
-      if (angle < 0) {
-        angle += 180;
-      }
-      let oppositeAngle = 90 - angle;
-      if (oppositeAngle < 0) {
-        oppositeAngle = 90 - (180 - angle);
-      }
-    setPendulumAngle(oppositeAngle)
-    setPositionXDisplay(xMin+150);
-    setPositionYDisplay(Math.round((yMax - (yMin+150) - 2 * 50 + 5) * 10) / 10);
+    const x = xMax / 2 - xMin + 150 - 50;
+    const y = yMin + 150 + 50 + 5;
+    let angle = (Math.atan(y / x) * 180) / Math.PI;
+    if (angle < 0) {
+      angle += 180;
+    }
+    let oppositeAngle = 90 - angle;
+    if (oppositeAngle < 0) {
+      oppositeAngle = 90 - (180 - angle);
+    }
+    setPendulumAngle(oppositeAngle);
+    setPositionXDisplay(xMin + 150);
+    setPositionYDisplay(
+      Math.round((yMax - (yMin + 150) - 2 * 50 + 5) * 10) / 10
+    );
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
     removeWalls();
@@ -973,22 +978,38 @@ function App() {
                     left: xMin + 12 + "px",
                   }}
                 >
-                  <div 
-                    className="dropdownMenu">
-                  <select
-                    value={simulationType}
-                    onChange={(event) => {
-                      setSimulationType(event.target.value);
-                    }}
-                    style={{height: "2em", width: "100%", fontSize: "16px"}}
-                  >
-                    <option value="Free Weight">Free Weight</option>
-                    <option value="Incline Plane">Incline Plane</option>
-                    <option value="Pendulum">Pendulum</option>
-                  </select>
+                  <div className="dropdownMenu">
+                    <select
+                      value={simulationType}
+                      onChange={(event) => {
+                        setSimulationType(event.target.value);
+                      }}
+                      style={{ height: "2em", width: "100%", fontSize: "16px" }}
+                    >
+                      <option value="Free Weight">Free Weight</option>
+                      <option value="Incline Plane">Incline Plane</option>
+                      <option value="Pendulum">Pendulum</option>
+                    </select>
                   </div>
-                 </div>
+                </div>
               )}
+              <div
+                style={{
+                  zIndex: 10000,
+                  position: "fixed",
+                  top: 1 + "em",
+                  left: xMax - 100 + "px",
+                }}
+              >
+                {" "}
+                <Button
+                  onClick={() => {
+                    setSketchMode(true);
+                  }}
+                >
+                  {sketchMode ? <p>Exit Sketch Mode</p> : <p>Sketch Forces</p>}
+                </Button>{" "}
+              </div>
             </div>
             <div className="alerts">
               {correctMessageVisible && (
@@ -1023,20 +1044,18 @@ function App() {
                         adjustPendulumAngle={adjustPendulumAngle}
                         color={element.color ?? "red"}
                         displayXPosition={positionXDisplay}
-                        displayYPosition={positionYDisplay}
                         displayXVelocity={velocityXDisplay}
+                        displayYPosition={positionYDisplay}
                         displayYVelocity={velocityYDisplay}
                         elasticCollisions={elasticCollisions}
-                        startForces={startForces}
                         incrementTime={timer}
                         mass={element.mass ?? 1}
-                        noMovement={noMovement}
                         mode={mode}
+                        noMovement={noMovement}
                         paused={simulationPaused}
+                        pendulum={element.pendulum ?? false}
                         pendulumAngle={pendulumAngle}
                         pendulumLength={pendulumLength}
-                        pendulum={element.pendulum ?? false}
-                        wedge={element.wedge ?? false}
                         radius={element.radius ?? 5}
                         reset={simulationReset}
                         setDisplayXAcceleration={setAccelerationXDisplay}
@@ -1048,17 +1067,21 @@ function App() {
                         setPaused={setSimulationPaused}
                         setPendulumAngle={setPendulumAngle}
                         setPendulumLength={setPendulumLength}
+                        setSketchMode={setSketchMode}
                         setStartPendulumAngle={setStartPendulumAngle}
+                        setUpdatedForces={setUpdatedForces}
                         showAcceleration={showAcceleration}
                         showForces={showForces}
                         showVelocity={showVelocity}
+                        sketchMode={sketchMode}
+                        startForces={startForces}
                         startPosX={element.startPosX}
                         startPosY={element.startPosY}
                         timestepSize={0.002}
                         updateDisplay={displayChange}
                         updatedForces={updatedForces}
-                        setUpdatedForces={setUpdatedForces}
                         walls={wallPositions}
+                        wedge={element.wedge ?? false}
                         wedgeHeight={wedgeHeight}
                         wedgeWidth={wedgeWidth}
                         coefficientOfKineticFriction={Number(
@@ -1133,18 +1156,17 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
-            <div 
-                    className="dropdownMenu">
-            <select
-              value={mode}
-              onChange={(event) => {
-                setMode(event.target.value);
-              }}
-              style={{height: "2em", width: "100%", fontSize: "16px"}}
-            >
-              <option value="Freeform">Freeform Mode</option>
-              <option value="Review">Review Mode</option>
-            </select>
+            <div className="dropdownMenu">
+              <select
+                value={mode}
+                onChange={(event) => {
+                  setMode(event.target.value);
+                }}
+                style={{ height: "2em", width: "100%", fontSize: "16px" }}
+              >
+                <option value="Freeform">Freeform Mode</option>
+                <option value="Review">Review Mode</option>
+              </select>
             </div>
           </div>
           {mode == "Review" && (
