@@ -6,6 +6,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import {
   Alert,
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -15,6 +16,7 @@ import {
   FormGroup,
   IconButton,
   InputAdornment,
+  InputLabel,
   LinearProgress,
   List,
   ListItem,
@@ -1163,6 +1165,25 @@ function App() {
                 </Tooltip>
               )}
             </Stack>
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small">Mode</InputLabel>
+              <Select
+                labelId="demo-select-small"
+                id="demo-select-small"
+                value={mode}
+                label="Mode"
+                onChange={(e) => {
+                  setMode(e.target.value as string);
+                }}
+              >
+                <MenuItem value="Freeform" sx={{ zIndex: "modal" }}>
+                  Freeform
+                </MenuItem>
+                <MenuItem value="Review" sx={{ zIndex: "modal" }}>
+                  Review
+                </MenuItem>
+              </Select>
+            </FormControl>
             {/* <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -1361,25 +1382,27 @@ function App() {
                     <td>Y</td>
                   </tr>
                   <tr>
-                    <Tooltip
-                      title={
-                        <React.Fragment>
-                          <Typography color="inherit">Position</Typography>
-                          Equation: x<sub>1</sub>
-                          =x
-                          <sub>0</sub>
-                          +v
-                          <sub>0</sub>
-                          t+0.5at
-                          <sup>2</sup>
-                          <br />
-                          Units: m
-                        </React.Fragment>
-                      }
-                      placement="top"
-                    >
-                      <td>Position</td>
-                    </Tooltip>
+                    <td>
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">Position</Typography>
+                            Equation: x<sub>1</sub>
+                            =x
+                            <sub>0</sub>
+                            +v
+                            <sub>0</sub>
+                            t+0.5at
+                            <sup>2</sup>
+                            <br />
+                            Units: m
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>Position</Box>
+                      </Tooltip>
+                    </td>
                     <td>
                       {(!simulationPaused || wedge) && positionXDisplay}{" "}
                       {(!simulationPaused || wedge) && <p>m</p>}{" "}
@@ -1416,22 +1439,24 @@ function App() {
                     </td>
                   </tr>
                   <tr>
-                    <Tooltip
-                      title={
-                        <React.Fragment>
-                          <Typography color="inherit">Velocity</Typography>
-                          Equation: v<sub>1</sub>
-                          =v
-                          <sub>0</sub>
-                          +at
-                          <br />
-                          Units: m/s
-                        </React.Fragment>
-                      }
-                      placement="top"
-                    >
-                      <td>Velocity</td>
-                    </Tooltip>
+                    <td>
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">Velocity</Typography>
+                            Equation: v<sub>1</sub>
+                            =v
+                            <sub>0</sub>
+                            +at
+                            <br />
+                            Units: m/s
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>Velocity</Box>
+                      </Tooltip>
+                    </td>
                     <td>
                       {(!simulationPaused || pendulum || wedge) &&
                         velocityXDisplay}{" "}
@@ -1470,20 +1495,24 @@ function App() {
                     </td>
                   </tr>
                   <tr>
-                    <Tooltip
-                      title={
-                        <React.Fragment>
-                          <Typography color="inherit">Acceleration</Typography>
-                          Equation: a=F/m
-                          <br />
-                          Units: m/s
-                          <sup>2</sup>
-                        </React.Fragment>
-                      }
-                      placement="top"
-                    >
-                      <td>Acceleration</td>
-                    </Tooltip>
+                    <td>
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">
+                              Acceleration
+                            </Typography>
+                            Equation: a=F/m
+                            <br />
+                            Units: m/s
+                            <sup>2</sup>
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>Acceleration</Box>
+                      </Tooltip>
+                    </td>
                     <td>
                       {accelerationXDisplay} m/s<sup>2</sup>
                     </td>
