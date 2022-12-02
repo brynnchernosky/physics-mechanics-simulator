@@ -951,10 +951,64 @@ function App() {
     setTimer(timer + 1);
   }, 60);
 
+  const [sketching, setSketching] = useState(false);
+  const [forceSketches, setForceSketches] = useState<JSX.Element[]>([]);
+  const [currentForceSketch, setCurrentForceSketch] = useState<any>();
+
   return (
     <div>
       <div className="mechanicsSimulationContainer">
-        <div className="mechanicsSimulationContentContainer">
+        <div
+          className="mechanicsSimulationContentContainer"
+          onPointerMove={(e) => {
+            if (sketching) {
+              const color = `rgba(0,0,0,0.5)`;
+              setCurrentForceSketch(
+                <div
+                  style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    zIndex: -1,
+                  }}
+                >
+                  <svg
+                    width={xMax - xMin + "px"}
+                    height={window.innerHeight + "px"}
+                  >
+                    <defs>
+                      <marker
+                        id="sketchArrow"
+                        markerWidth="10"
+                        markerHeight="10"
+                        refX="0"
+                        refY="2"
+                        orient="auto"
+                        markerUnits="strokeWidth"
+                      >
+                        <path d="M0,0 L0,4 L6,2 z" fill={color} />
+                      </marker>
+                    </defs>
+                    <line
+                      x1={positionXDisplay + 50}
+                      y1={yMax - positionYDisplay - 2 * 50 + 5 + 50}
+                      x2={e.clientX}
+                      y2={e.clientY}
+                      stroke={color}
+                      strokeWidth="10"
+                      markerEnd="url(#sketchArrow)"
+                    />
+                  </svg>
+                </div>
+              );
+            }
+          }}
+          onPointerDown={(e) => {
+            if (sketching) {
+              setSketching(false);
+            }
+          }}
+        >
           <div className="mechanicsSimulationButtonsAndElements">
             <div className="mechanicsSimulationButtons">
               {!simulationPaused && (
@@ -1004,7 +1058,7 @@ function App() {
                 {" "}
                 <Button
                   onClick={() => {
-                    setSketchMode(true);
+                    setSketchMode(!sketchMode);
                   }}
                 >
                   {sketchMode ? <p>Exit Sketch Mode</p> : <p>Sketch Forces</p>}
@@ -1036,6 +1090,7 @@ function App() {
               )}
             </div>
             <div className="mechanicsSimulationElements">
+              {showForces && currentForceSketch}
               {simulationElements.map((element, index) => {
                 if (element.type === "weight") {
                   return (
@@ -1058,6 +1113,7 @@ function App() {
                         pendulumLength={pendulumLength}
                         radius={element.radius ?? 5}
                         reset={simulationReset}
+                        setSketching={setSketching}
                         setDisplayXAcceleration={setAccelerationXDisplay}
                         setDisplayXPosition={setPositionXDisplay}
                         setDisplayXVelocity={setVelocityXDisplay}
