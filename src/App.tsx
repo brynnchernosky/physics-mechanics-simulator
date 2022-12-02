@@ -953,7 +953,8 @@ function App() {
 
   const [sketching, setSketching] = useState(false);
   const [forceSketches, setForceSketches] = useState<JSX.Element[]>([]);
-  const [currentForceSketch, setCurrentForceSketch] = useState<any>();
+  const [currentForceSketch, setCurrentForceSketch] = useState<any>(null);
+  const [editing, setEditing] = useState(false);
 
   return (
     <div>
@@ -1006,6 +1007,10 @@ function App() {
           onPointerDown={(e) => {
             if (sketching) {
               setSketching(false);
+              const sketches = forceSketches;
+              sketches.push(currentForceSketch);
+              setForceSketches(sketches);
+              setCurrentForceSketch(null);
             }
           }}
         >
@@ -1091,6 +1096,25 @@ function App() {
             </div>
             <div className="mechanicsSimulationElements">
               {showForces && currentForceSketch}
+              {showForces &&
+                forceSketches.length > 0 &&
+                forceSketches.map((element, index) => {
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        const sketches = forceSketches.filter(
+                          (sketch) => sketch != element
+                        );
+                        setForceSketches(sketches);
+                        setCurrentForceSketch(element);
+                        setSketching(true);
+                      }}
+                    >
+                      {element}
+                    </div>
+                  );
+                })}
               {simulationElements.map((element, index) => {
                 if (element.type === "weight") {
                   return (
