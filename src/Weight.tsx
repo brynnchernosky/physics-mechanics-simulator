@@ -807,7 +807,7 @@ export const Weight = (props: IWeightProps) => {
                 style={{
                   pointerEvents: "none",
                   position: "absolute",
-
+                  zIndex: -1,
                   left: 0,
                   top: 0,
                 }}

@@ -157,11 +157,10 @@ function App() {
   >([]);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] = useState<string>("Free Weight");
+  const [simulationType, setSimulationType] = useState<string>("Incline Plane");
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [timer, setTimer] = useState<number>(0);
-  const [topic, setTopic] = useState<string>("Incline Plane");
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([
     forceOfGravity,
   ]);
@@ -635,11 +634,10 @@ function App() {
   const generateNewQuestion = () => {
     resetReviewValuesToDefault();
 
-    // hack to make sure values are reset
     const vars: number[] = [];
     let question: QuestionTemplate = questions.inclinePlane[0];
 
-    if (topic == "Incline Plane") {
+    if (simulationType == "Incline Plane") {
       if (questionNumber == questions.inclinePlane.length - 1) {
         setQuestionNumber(0);
       } else {
@@ -912,7 +910,7 @@ function App() {
       }
     } else if (mode == "Review") {
       setPendulum(false);
-      if (topic == "Incline Plane") {
+      if (simulationType == "Incline Plane") {
         addWedge();
       }
       setShowAcceleration(false);
@@ -923,7 +921,7 @@ function App() {
         generateNewQuestion();
       }, 20);
     }
-  }, [simulationType, mode, topic]);
+  }, [simulationType, mode, simulationType]);
 
   // Use effect hook to handle force change in review mode
   useEffect(() => {
@@ -1066,7 +1064,6 @@ function App() {
               {mode == "Freeform" && (
                 <div
                   style={{
-                    zIndex: 10000,
                     position: "fixed",
                     top: 1 + "em",
                     left: xMin + 12 + "px",
@@ -1303,7 +1300,7 @@ function App() {
           </div>
         </div>
         <div className="mechanicsSimulationEquationContainer">
-          <div className="mechanicsSimulationControls" style={{ zIndex: 1000 }}>
+          <div className="mechanicsSimulationControls">
             <Stack direction="row" spacing={1}>
               {simulationPaused && (
                 <Tooltip title="Start simulation" followCursor>
@@ -1349,6 +1346,7 @@ function App() {
               >
                 <option value="Freeform">Freeform Mode</option>
                 <option value="Review">Review Mode</option>
+                <option value="Tutorial">Tutorial Mode</option>
               </select>
             </div>
           </div>
@@ -1358,7 +1356,11 @@ function App() {
                 <IconButton
                   onClick={() => {
                     setHintDialogueOpen(true);
-                    //open hint dialogue, spoiler tag type thing to hide each hint until user clicks to uncover
+                  }}
+                  sx={{
+                    position: "fixed",
+                    left: xMax - 50 + "px",
+                    top: yMin + 14 + "px",
                   }}
                 >
                   <QuestionMarkIcon />
@@ -1376,12 +1378,14 @@ function App() {
                     return (
                       <div key={index}>
                         <DialogContentText>
-                          <div>
-                            <b>
-                              Hint {index / 2 + 1}: {hint.description}
-                            </b>
+                          <details>
+                            <summary>
+                              <b>
+                                Hint {index + 1}: {hint.description}
+                              </b>
+                            </summary>
                             {hint.content}
-                          </div>
+                          </details>
                         </DialogContentText>
                       </div>
                     );
@@ -1413,19 +1417,17 @@ function App() {
                 display: "flex",
                 justifyContent: "space-between",
                 marginTop: "10px",
-                zIndex: 1000,
               }}
             >
-              <div style={{ zIndex: 10000 }}>
+              <div>
                 <Button
                   onClick={() => generateNewQuestion()}
                   variant="outlined"
-                  sx={{ zIndex: "modal" }}
                 >
                   <Typography>New question</Typography>
                 </Button>
               </div>
-              <div style={{ zIndex: 10000 }}>
+              <div>
                 <Button
                   onClick={() => {
                     setSimulationReset(!simulationReset);
@@ -1433,7 +1435,6 @@ function App() {
                     generateInputFieldsForQuestion(true);
                   }}
                   variant="outlined"
-                  sx={{ zIndex: "modal" }}
                 >
                   <Typography>Submit</Typography>
                 </Button>
@@ -1442,7 +1443,7 @@ function App() {
           )}
 
           {mode == "Freeform" && (
-            <div style={{ zIndex: 1000 }}>
+            <div>
               <FormControl component="fieldset">
                 <FormGroup>
                   <FormControlLabel
@@ -1567,7 +1568,7 @@ function App() {
               )}
             </div>
           )}
-          <div className="mechanicsSimulationEquation" style={{ zIndex: 1000 }}>
+          <div className="mechanicsSimulationEquation">
             {mode == "Freeform" && simulationElements.length != 0 && (
               <table>
                 <tbody>
