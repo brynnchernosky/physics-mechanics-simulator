@@ -68,7 +68,7 @@ interface QuestionTemplate {
   answerParts: string[];
   answerSolutionDescriptions: string[];
   goal: string;
-  hints: string[];
+  hints: { description: string; content: string }[];
 }
 
 export interface ISimulationElement {
@@ -1354,14 +1354,16 @@ function App() {
           </div>
           {mode == "Review" && (
             <div>
-              <IconButton
-                onClick={() => {
-                  setHintDialogueOpen(true);
-                  //open hint dialogue, spoiler tag type thing to hide each hint until user clicks to uncover
-                }}
-              >
-                <QuestionMarkIcon />
-              </IconButton>
+              {!hintDialogueOpen && (
+                <IconButton
+                  onClick={() => {
+                    setHintDialogueOpen(true);
+                    //open hint dialogue, spoiler tag type thing to hide each hint until user clicks to uncover
+                  }}
+                >
+                  <QuestionMarkIcon />
+                </IconButton>
+              )}
               <Dialog
                 maxWidth={"sm"}
                 fullWidth={true}
@@ -1374,9 +1376,13 @@ function App() {
                     return (
                       <div key={index}>
                         <DialogContentText>
-                          Hint {index}: {hint}
+                          <div>
+                            <b>
+                              Hint {index / 2 + 1}: {hint.description}
+                            </b>
+                            {hint.content}
+                          </div>
                         </DialogContentText>
-                        <br />
                       </div>
                     );
                   })}

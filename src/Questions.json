@@ -25,18 +25,54 @@
       ],
       "goal": "noMovement",
       "hints": [
-        "The force of gravity acts in the -y direction: 3π/2 rad.",
-        "The normal force acts in the direction perpendicular to the incline plane: π/2-θ rad, where θ is the angle of the incline plane.",
-        "The force of friction acts in the direction along the incline plane: π-θ rad, where θ is the angle of the incline plane.",
-        "The magnitude of the force of gravity is approximately 9.81 meters per second squared.",
-        "The magnitude of the normal force is equal to m*g*cos(θ), where θ is the angle of the incline plane.",
-        "The magnitude of the force of static friction is at most equal to μ*m*g*cos(θ), where θ is the angle of the incline plane.",
-        "For the system to be in equilibrium, the sum of the x components of all forces must equal 0, and the sum of the y components of all forces must equal 0.",
-        "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane.",
-        "Since the net force in the x direction must be 0, we know the magnitude of the x component of the friction force is m*g*cos(θ)*cos(π/2-θ).",
-        "The y component of the normal force is equal to m*g*cos(θ)*sin(π/2-θ), where θ is the angle of the incline plane. The y component of gravity is equal to m*g",
-        "Since the net force in the x direction must be 0, we know the magnitude of the y component of the friction force is m*g*cos(θ)*sin(π/2-θ)-m*g.",
-        "Combining the x and y components of the friction force, we get the magnitude of the friction force is equal to  (m*g*cos(θ)*cos(π/2-θ))^2 + (m*g*cos(θ)*sin(π/2-θ)-m*g)^2."
+        {
+          "description": "Direction of Force of Gravity",
+          "content": "The force of gravity acts in the negative y direction: 3π/2 rad."
+        },
+        {
+          "description": "Direction of Normal Force",
+          "content": "The normal force acts in the direction perpendicular to the incline plane: π/2-θ rad, where θ is the angle of the incline plane."
+        },
+        {
+          "description": "Direction of Force of Friction",
+          "content": "The force of friction acts in the direction along the incline plane: π-θ rad, where θ is the angle of the incline plane."
+        },
+        {
+          "description": "Magnitude of Force of Gravity",
+          "content": "The magnitude of the force of gravity is approximately 9.81 meters per second squared."
+        },
+        {
+          "description": "Magnitude of Normal Force",
+          "content": "The magnitude of the normal force is equal to m*g*cos(θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "Maximum Magnitude of Force of Friction",
+          "content": "The magnitude of the force of static friction is at most equal to μ*m*g*cos(θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "Net Force in Equilibrium",
+          "content": "For the system to be in equilibrium, the sum of the x components of all forces must equal 0, and the sum of the y components of all forces must equal 0."
+        },
+        {
+          "description": "X Component of Normal Force",
+          "content": "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "X Component of Force of Friction",
+          "content": "Since the net force in the x direction must be 0, we know the magnitude of the x component of the friction force is m*g*cos(θ)*cos(π/2-θ)."
+        },
+        {
+          "description": "Y Component of Normal Force",
+          "content": "The y component of the normal force is equal to m*g*cos(θ)*sin(π/2-θ), where θ is the angle of the incline plane. The y component of gravity is equal to m*g"
+        },
+        {
+          "description": "Y Component of Force of Friction",
+          "content": "Since the net force in the x direction must be 0, we know the magnitude of the y component of the friction force is m*g*cos(θ)*sin(π/2-θ)-m*g."
+        },
+        {
+          "description": "Magnitude of Force of Friction",
+          "content": "Combining the x and y components of the friction force, we get the magnitude of the friction force is equal to  (m*g*cos(θ)*cos(π/2-θ))^2 + (m*g*cos(θ)*sin(π/2-θ)-m*g)<sup>2</sup>."
+        }
       ]
     },
     {
@@ -52,10 +88,22 @@
       ],
       "goal": "noMovement",
       "hints": [
-        "If the system is in equilibrium, the sum of the x components of all forces must equal 0. In this system, the normal force and force of static friction have non-zero x components.",
-        "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane.",
-        "The x component of the force of static friction is equal to μ*m*g*cos(θ)*cos(π-θ), where θ is the angle of the incline plane.",
-        "Since the net force in the x direction must be 0, we can solve the equation 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ) for μ to find the minimum coefficient of static friction such that the system stays in equilibrium."
+        {
+          "description": "Net Force in Equilibrium",
+          "content": "If the system is in equilibrium, the sum of the x components of all forces must equal 0. In this system, the normal force and force of static friction have non-zero x components."
+        },
+        {
+          "description": "X Component of Normal Force",
+          "content": "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "X Component of Force of Friction",
+          "content": "The x component of the force of static friction is equal to μ*m*g*cos(θ)*cos(π-θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "Equation to Solve for Minimum Coefficient of Static Friction",
+          "content": "Since the net force in the x direction must be 0, we can solve the equation 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ) for μ to find the minimum coefficient of static friction such that the system stays in equilibrium."
+        }
       ]
     },
     {
@@ -71,16 +119,46 @@
       ],
       "goal": "noMovement",
       "hints": [
-        "If the system is in equilibrium, the sum of the x components of all forces must equal 0. In this system, the normal force and force of static friction have non-zero x components.",
-        "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane.",
-        "The x component of the force of static friction is equal to μ*m*g*cos(θ)*cos(π-θ), where θ is the angle of the incline plane.",
-        "Since the net force in the x direction must be 0, we can solve the equation 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ) for θ to find the maximum wedge angle such that the system stays in equilibrium.",
-        "Simplifying 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ), we get cos(π/2-θ)=-μ*cos(π-θ).",
-        "The cosine subtraction formula states that cos(A-B)=cos(A)*cos(B)+sin(A)sin(B).",
-        "Applying the cosine subtraction formula to cos(π/2-θ)=-μ*cos(π-θ), we get cos(π/2)*cos(θ)+sin(π/2)*sin(θ)=-μ*(cos(π)cos(θ)+sin(π)sin(θ)).",
-        "Simplifying cos(π/2)*cos(θ)-sin(π/2)*sin(θ)=-μ*(cos(π)cos(θ)-sin(π)sin(θ)), we get -sin(θ)=-μ*(-cos(θ)).",
-        "Simplifying -sin(θ)=-μ*(-cos(θ)), we get tan(θ)=-μ.",
-        "Solving for θ, we get θ = atan(μ)."
+        {
+          "description": "Net Force in Equilibrium",
+          "content": "If the system is in equilibrium, the sum of the x components of all forces must equal 0. In this system, the normal force and force of static friction have non-zero x components."
+        },
+        {
+          "description": "X Component of Normal Force",
+          "content": "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "X Component of Force of Friction",
+          "content": "The x component of the force of static friction is equal to μ*m*g*cos(θ)*cos(π-θ), where θ is the angle of the incline plane."
+        },
+        {
+          "description": "Equation to Solve for Maximum Wedge Angle",
+          "content": "Since the net force in the x direction must be 0, we can solve the equation 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ) for θ to find the maximum wedge angle such that the system stays in equilibrium."
+        },
+        {
+          "description": "Simplifying Equation to Solve for Maximum Wedge Angle",
+          "content": "Simplifying 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ), we get cos(π/2-θ)=-μ*cos(π-θ)."
+        },
+        {
+          "description": "Simplifying Equation to Solve for Maximum Wedge Angle",
+          "content": "The cosine subtraction formula states that cos(A-B)=cos(A)*cos(B)+sin(A)sin(B)."
+        },
+        {
+          "description": "Simplifying Equation to Solve for Maximum Wedge Angle",
+          "content": "Applying the cosine subtraction formula to cos(π/2-θ)=-μ*cos(π-θ), we get cos(π/2)*cos(θ)+sin(π/2)*sin(θ)=-μ*(cos(π)cos(θ)+sin(π)sin(θ))."
+        },
+        {
+          "description": "Simplifying Equation to Solve for Maximum Wedge Angle",
+          "content": "Simplifying cos(π/2)*cos(θ)-sin(π/2)*sin(θ)=-μ*(cos(π)cos(θ)-sin(π)sin(θ)), we get -sin(θ)=-μ*(-cos(θ))."
+        },
+        {
+          "description": "Simplifying Equation to Solve for Maximum Wedge Angle",
+          "content": "Simplifying -sin(θ)=-μ*(-cos(θ)), we get tan(θ)=-μ."
+        },
+        {
+          "description": "Simplifying Equation to Solve for Maximum Wedge Angle",
+          "content": "Solving for θ, we get θ = atan(μ)."
+        }
       ]
     }
   ]
