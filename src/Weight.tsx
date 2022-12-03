@@ -5,8 +5,7 @@ import "./Weight.scss";
 import { Wedge } from "./Wedge";
 
 export interface IForce {
-  description?: string;
-  impulse?: boolean;
+  description: string;
   magnitude: number;
   directionInDegrees: number;
 }
@@ -770,36 +769,23 @@ export const Weight = (props: IWeightProps) => {
           let arrowEndY: number =
             arrowStartY -
             Math.abs(force.magnitude) *
-              20 *
+              25 *
               Math.sin((force.directionInDegrees * Math.PI) / 180);
           const arrowEndX: number =
             arrowStartX +
             Math.abs(force.magnitude) *
-              20 *
+              25 *
               Math.cos((force.directionInDegrees * Math.PI) / 180);
 
           let color = "#0d0d0d";
 
-          let labelTop = arrowEndY;
-          let labelLeft = arrowEndX;
-          if (force.directionInDegrees >= 0 && force.directionInDegrees < 90) {
-            labelTop += 25;
-            labelLeft += 25;
-          } else if (
-            force.directionInDegrees >= 90 &&
-            force.directionInDegrees < 180
+          let labelTop = arrowEndY + 25;
+          let labelLeft = arrowEndX + 40;
+          if (
+            force.directionInDegrees > 135 &&
+            force.directionInDegrees < 225
           ) {
-            labelTop += 25;
-            labelLeft -= 80;
-          } else if (
-            force.directionInDegrees >= 180 &&
-            force.directionInDegrees < 270
-          ) {
-            labelTop += 25;
-            labelLeft += 25;
-          } else {
-            labelTop += 25;
-            labelLeft += 25;
+            labelLeft -= 150;
           }
           labelTop = Math.min(labelTop, yMax + 50);
           labelTop = Math.max(labelTop, yMin);
@@ -845,21 +831,23 @@ export const Weight = (props: IWeightProps) => {
                   />
                 </svg>
               </div>
-                <div
-                  style={{
-                    pointerEvents: "none",
-                    position: "absolute",
-                    left: labelLeft + "px",
-                    top: labelTop + "px",
-                    zIndex: -1,
-                    lineHeight: 0.5,
-                    backgroundColor: labelBackgroundColor,
-                  }}
-                >
-                  {force.description && <p>{force.description}</p>}
-                  {!force.description && <p>Force</p>}
-                  {showForceMagnitudes && <p>{Math.round(100 * force.magnitude) / 100} N</p>}
-                </div>
+              <div
+                style={{
+                  pointerEvents: "none",
+                  position: "absolute",
+                  left: labelLeft + "px",
+                  top: labelTop + "px",
+                  zIndex: -1,
+                  lineHeight: 0.5,
+                  backgroundColor: labelBackgroundColor,
+                }}
+              >
+                {force.description && <p>{force.description}</p>}
+                {!force.description && <p>Force</p>}
+                {showForceMagnitudes && (
+                  <p>{Math.round(100 * force.magnitude) / 100} N</p>
+                )}
+              </div>
             </div>
           );
         })}
