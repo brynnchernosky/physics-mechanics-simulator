@@ -44,6 +44,16 @@ import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
 
+interface VectorTemplate {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
 interface QuestionTemplate {
   questionSetup: string[];
   variablesForQuestionSetup: string[];
@@ -111,7 +121,7 @@ function App() {
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
   const [questionPartOne, setQuestionPartOne] = useState<string>("");
   const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
-  const [mode, setMode] = useState<string>("Freeform");
+  const [mode, setMode] = useState<string>("Review");
   const [noMovement, setNoMovement] = useState(false);
   const [pendulum, setPendulum] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
@@ -126,7 +136,7 @@ function App() {
   const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
   const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
   const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
-  const [sketchMode, setSketchMode] = useState<boolean>(false);
+  const [sketchMode, setSketchMode] = useState<boolean>(mode == "Review");
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
     questions.inclinePlane[0]
   );
@@ -952,9 +962,19 @@ function App() {
   }, 60);
 
   const [sketching, setSketching] = useState(false);
-  const [forceSketches, setForceSketches] = useState<JSX.Element[]>([]);
-  const [currentForceSketch, setCurrentForceSketch] = useState<any>(null);
+  const [currentForceSketch, setCurrentForceSketch] =
+    useState<VectorTemplate | null>(null);
+  const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
   const [editing, setEditing] = useState(false);
+  const color = `rgba(0,0,0,0.5)`;
+
+  const editForce = (element: VectorTemplate) => {
+    console.log("click force ", element);
+    const sketches = forceSketches.filter((sketch) => sketch != element);
+    setForceSketches(sketches);
+    setCurrentForceSketch(element);
+    setSketching(true);
+  };
 
   return (
     <div>
@@ -963,49 +983,32 @@ function App() {
           className="mechanicsSimulationContentContainer"
           onPointerMove={(e) => {
             if (sketching) {
-              const color = `rgba(0,0,0,0.5)`;
-              setCurrentForceSketch(
-                <div
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    zIndex: -1,
-                  }}
-                >
-                  <svg
-                    width={xMax - xMin + "px"}
-                    height={window.innerHeight + "px"}
-                  >
-                    <defs>
-                      <marker
-                        id="sketchArrow"
-                        markerWidth="10"
-                        markerHeight="10"
-                        refX="0"
-                        refY="2"
-                        orient="auto"
-                        markerUnits="strokeWidth"
-                      >
-                        <path d="M0,0 L0,4 L6,2 z" fill={color} />
-                      </marker>
-                    </defs>
-                    <line
-                      x1={positionXDisplay + 50}
-                      y1={yMax - positionYDisplay - 2 * 50 + 5 + 50}
-                      x2={e.clientX}
-                      y2={e.clientY}
-                      stroke={color}
-                      strokeWidth="10"
-                      markerEnd="url(#sketchArrow)"
-                    />
-                  </svg>
-                </div>
-              );
+              const x1 = positionXDisplay + 50;
+              const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
+              const x2 = e.clientX;
+              const y2 = e.clientY;
+              const height = Math.abs(y1 - y2) + 120;
+              const width = Math.abs(x1 - x2) + 120;
+              const top = Math.min(y1, y2) - 60;
+              const left = Math.min(x1, x2) - 60;
+              const x1Updated = x1 - left;
+              const x2Updated = x2 - left;
+              const y1Updated = y1 - top;
+              const y2Updated = y2 - top;
+              setCurrentForceSketch({
+                top: top,
+                left: left,
+                width: width,
+                height: height,
+                x1: x1Updated,
+                y1: y1Updated,
+                x2: x2Updated,
+                y2: y2Updated,
+              });
             }
           }}
           onPointerDown={(e) => {
-            if (sketching) {
+            if (sketching && currentForceSketch) {
               setSketching(false);
               const sketches = forceSketches;
               sketches.push(currentForceSketch);
@@ -1052,12 +1055,12 @@ function App() {
                   </div>
                 </div>
               )}
-              <div
+              {/* <div
                 style={{
                   zIndex: 10000,
                   position: "fixed",
-                  top: 1 + "em",
-                  left: xMax - 100 + "px",
+                  top: 4 + "em",
+                  left: xMin + "px",
                 }}
               >
                 {" "}
@@ -1068,7 +1071,7 @@ function App() {
                 >
                   {sketchMode ? <p>Exit Sketch Mode</p> : <p>Sketch Forces</p>}
                 </Button>{" "}
-              </div>
+              </div> */}
             </div>
             <div className="alerts">
               {correctMessageVisible && (
@@ -1095,23 +1098,91 @@ function App() {
               )}
             </div>
             <div className="mechanicsSimulationElements">
-              {showForces && currentForceSketch}
+              {showForces && currentForceSketch && (
+                <div
+                  style={{
+                    position: "fixed",
+                    top: currentForceSketch.top,
+                    left: currentForceSketch.left,
+                  }}
+                >
+                  <svg
+                    width={currentForceSketch.width + "px"}
+                    height={currentForceSketch.height + "px"}
+                  >
+                    <defs>
+                      <marker
+                        id="sketchArrow"
+                        markerWidth="10"
+                        markerHeight="10"
+                        refX="0"
+                        refY="2"
+                        orient="auto"
+                        markerUnits="strokeWidth"
+                      >
+                        <path d="M0,0 L0,4 L6,2 z" fill={color} />
+                      </marker>
+                    </defs>
+                    <line
+                      x1={currentForceSketch.x1}
+                      y1={currentForceSketch.y1}
+                      x2={currentForceSketch.x2}
+                      y2={currentForceSketch.y2}
+                      stroke={color}
+                      strokeWidth="10"
+                      markerEnd="url(#sketchArrow)"
+                    />
+                  </svg>
+                </div>
+              )}
               {showForces &&
                 forceSketches.length > 0 &&
-                forceSketches.map((element, index) => {
+                forceSketches.map((element: VectorTemplate, index) => {
                   return (
                     <div
                       key={index}
-                      onClick={() => {
-                        const sketches = forceSketches.filter(
-                          (sketch) => sketch != element
-                        );
-                        setForceSketches(sketches);
-                        setCurrentForceSketch(element);
-                        setSketching(true);
+                      style={{
+                        position: "fixed",
+                        top: element.top,
+                        left: element.left,
                       }}
                     >
-                      {element}
+                      <svg
+                        width={element.width + "px"}
+                        height={element.height + "px"}
+                      >
+                        <defs>
+                          <marker
+                            id="sketchArrow"
+                            markerWidth="10"
+                            markerHeight="10"
+                            refX="0"
+                            refY="2"
+                            orient="auto"
+                            markerUnits="strokeWidth"
+                          >
+                            <path
+                              d="M0,0 L0,4 L6,2 z"
+                              fill={color}
+                              onClick={() => {
+                                editForce(element);
+                              }}
+                            />
+                          </marker>
+                        </defs>
+                        <line
+                          x1={element.x1}
+                          y1={element.y1}
+                          x2={element.x2}
+                          y2={element.y2}
+                          stroke={color}
+                          strokeWidth="10"
+                          markerEnd="url(#sketchArrow)"
+                          onClick={() => {
+                            editForce(element);
+                          }}
+                        />
+                      </svg>
                     </div>
                   );
                 })}
