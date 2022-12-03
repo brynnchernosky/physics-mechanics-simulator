@@ -63,11 +63,11 @@
         },
         {
           "description": "Y Component of Force of Friction",
-          "content": "Since the net force in the x direction must be 0, we know the magnitude of the y component of the friction force is m*g*cos(θ)*sin(π/2-θ)-m*g."
+          "content": "Since the net force in the x direction must be 0, we know the magnitude of the y component of the friction force is m*g-m*g*cos(θ)*sin(π/2-θ)."
         },
         {
           "description": "Magnitude of Force of Friction",
-          "content": "Combining the x and y components of the friction force, we get the magnitude of the friction force is equal to  (m*g*cos(θ)*cos(π/2-θ))^2 + (m*g*cos(θ)*sin(π/2-θ)-m*g)<sup>2</sup>."
+          "content": "Combining the x and y components of the friction force, we get the magnitude of the friction force is equal to sqrt((m*g*cos(θ)*cos(π/2-θ))^2 + (m*g-m*g*cos(θ)*sin(π/2-θ))^2)."
         }
       ]
     },

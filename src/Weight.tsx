@@ -38,13 +38,12 @@ export interface IWeightProps {
   setPendulumLength: (val: number) => any;
   setStartPendulumAngle: (val: number) => any;
   showAcceleration: boolean;
-  sketchMode: boolean;
-  setSketchMode: (val: boolean) => any;
   mode: string;
   noMovement: boolean;
   pendulumAngle: number;
   setSketching: (val: boolean) => any;
   showForces: boolean;
+  showForceMagnitudes: boolean;
   showVelocity: boolean;
   startPosX: number;
   startPosY: number;
@@ -75,8 +74,6 @@ export const Weight = (props: IWeightProps) => {
     paused,
     pendulum,
     pendulumLength,
-    sketchMode,
-    setSketchMode,
     wedge,
     radius,
     mode,
@@ -96,6 +93,7 @@ export const Weight = (props: IWeightProps) => {
     setStartPendulumAngle,
     showAcceleration,
     showForces,
+    showForceMagnitudes,
     showVelocity,
     startPosX,
     startPosY,
@@ -545,7 +543,7 @@ export const Weight = (props: IWeightProps) => {
             setDragging(true);
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
-          } else if (sketchMode) {
+          } else if (mode == "Review") {
             setSketching(true);
           }
         }}
@@ -847,21 +845,21 @@ export const Weight = (props: IWeightProps) => {
                   />
                 </svg>
               </div>
-              <div
-                style={{
-                  pointerEvents: "none",
-                  position: "absolute",
-                  left: labelLeft + "px",
-                  top: labelTop + "px",
-                  zIndex: -1,
-                  lineHeight: 0.5,
-                  backgroundColor: labelBackgroundColor,
-                }}
-              >
-                {force.description && <p>{force.description}</p>}
-                {!force.description && <p>Force</p>}
-                <p>{Math.round(100 * force.magnitude) / 100} N</p>
-              </div>
+                <div
+                  style={{
+                    pointerEvents: "none",
+                    position: "absolute",
+                    left: labelLeft + "px",
+                    top: labelTop + "px",
+                    zIndex: -1,
+                    lineHeight: 0.5,
+                    backgroundColor: labelBackgroundColor,
+                  }}
+                >
+                  {force.description && <p>{force.description}</p>}
+                  {!force.description && <p>Force</p>}
+                  {showForceMagnitudes && <p>{Math.round(100 * force.magnitude) / 100} N</p>}
+                </div>
             </div>
           );
         })}

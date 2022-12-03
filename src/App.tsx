@@ -51,6 +51,7 @@ import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
+import { Description } from "@mui/icons-material";
 
 interface VectorTemplate {
   top: number;
@@ -76,7 +77,16 @@ interface QuestionTemplate {
 
 interface TutorialTemplate {
   question: string;
-  steps: { description: string; content: string }[];
+  steps: {
+    description: string;
+    content: string;
+    forces: {
+      description: string;
+      magnitude: number;
+      directionInDegrees: number;
+    }[];
+    showMagnitude: boolean;
+  }[];
 }
 
 export interface ISimulationElement {
@@ -143,7 +153,7 @@ function App() {
   const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
 
   const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
-  const [mode, setMode] = useState<string>("Review");
+  const [mode, setMode] = useState<string>("Tutorial");
   const [noMovement, setNoMovement] = useState(false);
   const [pendulum, setPendulum] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
@@ -158,7 +168,6 @@ function App() {
   const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
   const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
   const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
-  const [sketchMode, setSketchMode] = useState<boolean>(mode == "Review");
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
     questions.inclinePlane[0]
   );
@@ -338,7 +347,6 @@ function App() {
 
   // Change wedge height and width and weight position to match new wedge angle
   const changeWedgeBasedOnNewAngle = (angle: number) => {
-    console.log("update wedge appearance");
     let width = 0;
     let height = 0;
     if (angle < 50) {
@@ -963,11 +971,36 @@ function App() {
       if (simulationType == "Incline Plane") {
         addWedge();
         setSelectedTutorial(tutorials.inclinePlane);
+        setStartForces(
+          getForceFromJSON(tutorials.inclinePlane.steps[0].forces)
+        );
+        setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
       }
-      setStartForces([]);
-      setUpdatedForces([]);
+      // setStartForces([]);
+      // setUpdatedForces([]);
     }
   }, [simulationType, mode]);
+
+  const [showForceMagnitudes, setShowForceMagnitudes] = useState<boolean>(true);
+
+  const getForceFromJSON = (
+    json: {
+      description: string;
+      magnitude: number;
+      directionInDegrees: number;
+    }[]
+  ): IForce[] => {
+    const forces: IForce[] = [];
+    for (let i = 0; i < json.length; i++) {
+      const force: IForce = {
+        description: json[i].description,
+        magnitude: json[i].magnitude,
+        directionInDegrees: json[i].directionInDegrees,
+      };
+      forces.push(force);
+    }
+    return forces;
+  };
 
   // Use effect hook to handle force change in review mode
   useEffect(() => {
@@ -1259,6 +1292,7 @@ function App() {
                         pendulumLength={pendulumLength}
                         radius={element.radius ?? 5}
                         reset={simulationReset}
+                        showForceMagnitudes={showForceMagnitudes}
                         setSketching={setSketching}
                         setDisplayXAcceleration={setAccelerationXDisplay}
                         setDisplayXPosition={setPositionXDisplay}
@@ -1269,13 +1303,11 @@ function App() {
                         setPaused={setSimulationPaused}
                         setPendulumAngle={setPendulumAngle}
                         setPendulumLength={setPendulumLength}
-                        setSketchMode={setSketchMode}
                         setStartPendulumAngle={setStartPendulumAngle}
                         setUpdatedForces={setUpdatedForces}
                         showAcceleration={showAcceleration}
                         showForces={showForces}
                         showVelocity={showVelocity}
-                        sketchMode={sketchMode}
                         startForces={startForces}
                         startPosX={element.startPosX}
                         startPosY={element.startPosY}
@@ -1448,12 +1480,18 @@ function App() {
                 <IconButton
                   onClick={() => {
                     let step = stepNumber - 1;
-                    step = Math.max(stepNumber, 0);
-                    step = Math.min(
-                      stepNumber,
-                      selectedTutorial.steps.length - 1
-                    );
+                    step = Math.max(step, 0);
+                    step = Math.min(step, selectedTutorial.steps.length - 1);
                     setStepNumber(step);
+                    setStartForces(
+                      getForceFromJSON(selectedTutorial.steps[step].forces)
+                    );
+                    setUpdatedForces(
+                      getForceFromJSON(selectedTutorial.steps[step].forces)
+                    );
+                    setShowForceMagnitudes(
+                      selectedTutorial.steps[step].showMagnitude
+                    );
                   }}
                   disabled={stepNumber == 0}
                 >
@@ -1469,12 +1507,18 @@ function App() {
                 <IconButton
                   onClick={() => {
                     let step = stepNumber + 1;
-                    step = Math.max(stepNumber, 0);
-                    step = Math.min(
-                      stepNumber,
-                      selectedTutorial.steps.length - 1
-                    );
+                    step = Math.max(step, 0);
+                    step = Math.min(step, selectedTutorial.steps.length - 1);
                     setStepNumber(step);
+                    setStartForces(
+                      getForceFromJSON(selectedTutorial.steps[step].forces)
+                    );
+                    setUpdatedForces(
+                      getForceFromJSON(selectedTutorial.steps[step].forces)
+                    );
+                    setShowForceMagnitudes(
+                      selectedTutorial.steps[step].showMagnitude
+                    );
                   }}
                   disabled={stepNumber == selectedTutorial.steps.length - 1}
                 >
