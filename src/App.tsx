@@ -4,7 +4,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
-
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { SelectChangeEvent } from "@mui/material/Select";
 import {
   Alert,
@@ -12,6 +12,11 @@ import {
   Button,
   Checkbox,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
   Divider,
   FormControl,
   FormControlLabel,
@@ -999,6 +1004,8 @@ function App() {
     });
   }, []);
 
+  const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
+
   return (
     <div>
       <div className="mechanicsSimulationContainer">
@@ -1346,12 +1353,51 @@ function App() {
             </div>
           </div>
           {mode == "Review" && (
-            <div className="wordProblemBox">
-              <div className="question">
-                <p>{questionPartOne}</p>
-                <p>{questionPartTwo}</p>
+            <div>
+              <IconButton
+                onClick={() => {
+                  setHintDialogueOpen(true);
+                  //open hint dialogue, spoiler tag type thing to hide each hint until user clicks to uncover
+                }}
+              >
+                <QuestionMarkIcon />
+              </IconButton>
+              <Dialog
+                maxWidth={"sm"}
+                fullWidth={true}
+                open={hintDialogueOpen}
+                onClose={() => setHintDialogueOpen(false)}
+              >
+                <DialogTitle>Hints</DialogTitle>
+                <DialogContent>
+                  {selectedQuestion.hints.map((hint, index) => {
+                    return (
+                      <div key={index}>
+                        <DialogContentText>
+                          Hint {index}: {hint}
+                        </DialogContentText>
+                        <br />
+                      </div>
+                    );
+                  })}
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() => {
+                      setHintDialogueOpen(false);
+                    }}
+                  >
+                    Close
+                  </Button>
+                </DialogActions>
+              </Dialog>
+              <div className="wordProblemBox">
+                <div className="question">
+                  <p>{questionPartOne}</p>
+                  <p>{questionPartTwo}</p>
+                </div>
+                <div className="answer">{answerInputFields}</div>
               </div>
-              <div className="answer">{answerInputFields}</div>
             </div>
           )}
 

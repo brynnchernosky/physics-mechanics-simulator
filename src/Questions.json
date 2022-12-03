@@ -52,8 +52,7 @@
       ],
       "goal": "noMovement",
       "hints": [
-        "If the system is in equilibrium, the sum of the x components of all forces must equal 0.",
-        "In this system, the normal force and force of static friction have non-zero x components.",
+        "If the system is in equilibrium, the sum of the x components of all forces must equal 0. In this system, the normal force and force of static friction have non-zero x components.",
         "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane.",
         "The x component of the force of static friction is equal to μ*m*g*cos(θ)*cos(π-θ), where θ is the angle of the incline plane.",
         "Since the net force in the x direction must be 0, we can solve the equation 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ) for μ to find the minimum coefficient of static friction such that the system stays in equilibrium."
@@ -72,8 +71,7 @@
       ],
       "goal": "noMovement",
       "hints": [
-        "If the system is in equilibrium, the sum of the x components of all forces must equal 0.",
-        "In this system, the normal force and force of static friction have non-zero x components.",
+        "If the system is in equilibrium, the sum of the x components of all forces must equal 0. In this system, the normal force and force of static friction have non-zero x components.",
         "The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane.",
         "The x component of the force of static friction is equal to μ*m*g*cos(θ)*cos(π-θ), where θ is the angle of the incline plane.",
         "Since the net force in the x direction must be 0, we can solve the equation 0=m*g*cos(θ)*cos(π/2-θ)+μ*m*g*cos(θ)*cos(π-θ) for θ to find the maximum wedge angle such that the system stays in equilibrium.",
