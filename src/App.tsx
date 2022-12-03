@@ -275,6 +275,7 @@ function App() {
     );
     setSimulationElements([weight]);
     setUpdatedForces([forceOfGravity]);
+    setStartForces([forceOfGravity]);
     removeWalls();
     setSimulationReset(!simulationReset);
   };
@@ -1568,7 +1569,12 @@ function App() {
                   unit={"°"}
                   upperBound={79}
                   value={pendulumAngle}
-                  effect={setAdjustPendulumAngle}
+                  effect={(value) => {
+                    if (pendulum) {
+                      setUpdatedForces([forceOfGravity]);
+                      setAdjustPendulumAngle(value);
+                    }
+                  }}
                   radianEquivalent={true}
                   mode={"Freeform"}
                 />
