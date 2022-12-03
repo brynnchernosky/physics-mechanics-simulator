@@ -1542,8 +1542,11 @@ function App() {
               )}
               {wedge && !simulationPaused && (
                 <Typography>
-                  &theta;: {Math.round(Number(wedgeAngle) * 100) / 100}
-                  °<br />
+                  &theta;: {Math.round(Number(wedgeAngle) * 100) / 100}° ≈{" "}
+                  {Math.round(((Number(wedgeAngle) * Math.PI) / 180) * 100) /
+                    100}{" "}
+                  rad
+                  <br />
                   &mu; <sub>s</sub>: {coefficientOfStaticFriction}
                   <br />
                   &mu; <sub>k</sub>: {coefficientOfKineticFriction}
@@ -1551,7 +1554,9 @@ function App() {
               )}
               {pendulum && !simulationPaused && (
                 <Typography>
-                  &theta;: {Math.round(pendulumAngle * 100) / 100}°
+                  &theta;: {Math.round(pendulumAngle * 100) / 100}° ≈{" "}
+                  {Math.round(((pendulumAngle * Math.PI) / 180) * 100) / 100}{" "}
+                  rad
                 </Typography>
               )}
               {pendulum && simulationPaused && (

@@ -530,6 +530,7 @@ export const Weight = (props: IWeightProps) => {
 
   const [clickPositionX, setClickPositionX] = useState(0);
   const [clickPositionY, setClickPositionY] = useState(0);
+  const labelBackgroundColor = `rgba(255,255,255,0.5)`;
 
   const epsilon = 0.0001;
 
@@ -616,6 +617,7 @@ export const Weight = (props: IWeightProps) => {
                   zIndex: 5,
                   left: xPosition + "px",
                   top: yPosition - 70 + "px",
+                  backgroundColor: labelBackgroundColor,
                 }}
               >
                 {Math.round(pendulumLength)} m
@@ -626,6 +628,7 @@ export const Weight = (props: IWeightProps) => {
                   zIndex: -1,
                   left: xMax / 2 + "px",
                   top: 30 + "px",
+                  backgroundColor: labelBackgroundColor,
                 }}
               >
                 {Math.round(pendulumAngle * 100) / 100}°
@@ -789,7 +792,7 @@ export const Weight = (props: IWeightProps) => {
             force.directionInDegrees < 180
           ) {
             labelTop += 25;
-            labelLeft -= 160;
+            labelLeft -= 80;
           } else if (
             force.directionInDegrees >= 180 &&
             force.directionInDegrees < 270
@@ -852,7 +855,7 @@ export const Weight = (props: IWeightProps) => {
                   top: labelTop + "px",
                   zIndex: -1,
                   lineHeight: 0.5,
-                  backgroundColor: `rgba(255,255,255,0.5)`,
+                  backgroundColor: labelBackgroundColor,
                 }}
               >
                 {force.description && <p>{force.description}</p>}

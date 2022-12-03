@@ -145,7 +145,7 @@ export const InputField = (props: IInputProps) => {
         <div
           style={{ marginTop: "0.3em", marginBottom: "-0.5em", width: "1em" }}
         >
-          <p>=</p>
+          <p>≈</p>
         </div>
       )}
       {radianEquivalent && (
