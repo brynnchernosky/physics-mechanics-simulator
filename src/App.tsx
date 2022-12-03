@@ -53,6 +53,8 @@ interface VectorTemplate {
   y1: number;
   x2: number;
   y2: number;
+  weightX: number;
+  weightY: number;
 }
 interface QuestionTemplate {
   questionSetup: string[];
@@ -1025,6 +1027,8 @@ function App() {
                 y1: y1Updated,
                 x2: x2Updated,
                 y2: y2Updated,
+                weightX: positionXDisplay,
+                weightY: positionYDisplay,
               });
             }
           }}
@@ -1119,7 +1123,7 @@ function App() {
               )}
             </div>
             <div className="mechanicsSimulationElements">
-              {showForces && currentForceSketch && (
+              {showForces && currentForceSketch && simulationPaused && (
                 <div
                   style={{
                     position: "fixed",
@@ -1158,14 +1162,16 @@ function App() {
               )}
               {showForces &&
                 forceSketches.length > 0 &&
+                simulationPaused &&
                 forceSketches.map((element: VectorTemplate, index) => {
                   return (
                     <div
                       key={index}
                       style={{
                         position: "fixed",
-                        top: element.top,
-                        left: element.left,
+                        top: element.top + (positionYDisplay - element.weightY),
+                        left:
+                          element.left + (positionXDisplay - element.weightX),
                       }}
                     >
                       <svg
