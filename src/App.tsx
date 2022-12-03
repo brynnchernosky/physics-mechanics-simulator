@@ -965,16 +965,37 @@ function App() {
   const [currentForceSketch, setCurrentForceSketch] =
     useState<VectorTemplate | null>(null);
   const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
-  const [editing, setEditing] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
   const color = `rgba(0,0,0,0.5)`;
 
   const editForce = (element: VectorTemplate) => {
-    console.log("click force ", element);
-    const sketches = forceSketches.filter((sketch) => sketch != element);
-    setForceSketches(sketches);
-    setCurrentForceSketch(element);
-    setSketching(true);
+    if (!sketching) {
+      const sketches = forceSketches.filter((sketch) => sketch != element);
+      setForceSketches(sketches);
+      setCurrentForceSketch(element);
+      setSketching(true);
+    }
   };
+
+  const deleteForce = (element: VectorTemplate) => {
+    if (!sketching) {
+      const sketches = forceSketches.filter((sketch) => sketch != element);
+      setForceSketches(sketches);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", (e) => {
+      if (e.shiftKey) {
+        setDeleteMode(true);
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.shiftKey) {
+        setDeleteMode(false);
+      }
+    });
+  }, []);
 
   return (
     <div>
@@ -1161,13 +1182,7 @@ function App() {
                             orient="auto"
                             markerUnits="strokeWidth"
                           >
-                            <path
-                              d="M0,0 L0,4 L6,2 z"
-                              fill={color}
-                              onClick={() => {
-                                editForce(element);
-                              }}
-                            />
+                            <path d="M0,0 L0,4 L6,2 z" fill={color} />
                           </marker>
                         </defs>
                         <line
@@ -1179,7 +1194,11 @@ function App() {
                           strokeWidth="10"
                           markerEnd="url(#sketchArrow)"
                           onClick={() => {
-                            editForce(element);
+                            if (deleteMode) {
+                              deleteForce(element);
+                            } else {
+                              editForce(element);
+                            }
                           }}
                         />
                       </svg>
