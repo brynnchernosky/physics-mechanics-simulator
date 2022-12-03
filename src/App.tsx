@@ -109,6 +109,7 @@ function App() {
   const yMin = 0;
   const xMax = window.innerWidth * 0.7;
   const yMax = window.innerHeight * 0.8;
+  const color = `rgba(0,0,0,0.5)`;
 
   // Variables
   let questionVariables: number[] = [];
@@ -124,9 +125,15 @@ function App() {
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
     React.useState<number | string | Array<number | string>>(0);
   const [correctMessageVisible, setCorrectMessageVisible] = useState(false);
+  const [currentForceSketch, setCurrentForceSketch] =
+    useState<VectorTemplate | null>(null);
+  const [deleteMode, setDeleteMode] = useState(false);
   const [displayChange, setDisplayChange] = useState<any>(false);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
+  const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
   const [questionPartOne, setQuestionPartOne] = useState<string>("");
+  const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
+
   const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
   const [mode, setMode] = useState<string>("Review");
   const [noMovement, setNoMovement] = useState(false);
@@ -158,6 +165,7 @@ function App() {
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
   const [simulationType, setSimulationType] = useState<string>("Incline Plane");
+  const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [timer, setTimer] = useState<number>(0);
@@ -630,6 +638,24 @@ function App() {
     setAnswerInputFields(<div></div>);
   };
 
+  // In review mode, edit force arrow sketch on mouse movement
+  const editForce = (element: VectorTemplate) => {
+    if (!sketching) {
+      const sketches = forceSketches.filter((sketch) => sketch != element);
+      setForceSketches(sketches);
+      setCurrentForceSketch(element);
+      setSketching(true);
+    }
+  };
+
+  // In review mode, used to delete force arrow sketch on SHIFT+click
+  const deleteForce = (element: VectorTemplate) => {
+    if (!sketching) {
+      const sketches = forceSketches.filter((sketch) => sketch != element);
+      setForceSketches(sketches);
+    }
+  };
+
   // In review mode, reset problem variables and generate a new question
   const generateNewQuestion = () => {
     resetReviewValuesToDefault();
@@ -961,34 +987,7 @@ function App() {
     reviewStaticAngle,
   ]);
 
-  // Timer for animating the simulation
-  setInterval(() => {
-    setTimer(timer + 1);
-  }, 60);
-
-  const [sketching, setSketching] = useState(false);
-  const [currentForceSketch, setCurrentForceSketch] =
-    useState<VectorTemplate | null>(null);
-  const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
-  const [deleteMode, setDeleteMode] = useState(false);
-  const color = `rgba(0,0,0,0.5)`;
-
-  const editForce = (element: VectorTemplate) => {
-    if (!sketching) {
-      const sketches = forceSketches.filter((sketch) => sketch != element);
-      setForceSketches(sketches);
-      setCurrentForceSketch(element);
-      setSketching(true);
-    }
-  };
-
-  const deleteForce = (element: VectorTemplate) => {
-    if (!sketching) {
-      const sketches = forceSketches.filter((sketch) => sketch != element);
-      setForceSketches(sketches);
-    }
-  };
-
+  // Use effect to add listener for SHIFT key, which determines if sketch force arrow will be edited or deleted on click
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
       if (e.shiftKey) {
@@ -1002,7 +1001,10 @@ function App() {
     });
   }, []);
 
-  const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
+  // Timer for animating the simulation
+  setInterval(() => {
+    setTimer(timer + 1);
+  }, 60);
 
   return (
     <div>

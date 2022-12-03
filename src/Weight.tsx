@@ -800,6 +800,10 @@ export const Weight = (props: IWeightProps) => {
             labelTop += 25;
             labelLeft += 25;
           }
+          labelTop = Math.min(labelTop, yMax + 50);
+          labelTop = Math.max(labelTop, yMin);
+          labelLeft = Math.min(labelLeft, xMax - 60);
+          labelLeft = Math.max(labelLeft, xMin);
 
           return (
             <div key={index}>
@@ -808,11 +812,14 @@ export const Weight = (props: IWeightProps) => {
                   pointerEvents: "none",
                   position: "absolute",
                   zIndex: -1,
-                  left: 0,
-                  top: 0,
+                  left: xMin,
+                  top: yMin,
                 }}
               >
-                <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+                <svg
+                  width={xMax - xMin + "px"}
+                  height={window.innerHeight + "px"}
+                >
                   <defs>
                     <marker
                       id="forceArrow"
@@ -845,6 +852,7 @@ export const Weight = (props: IWeightProps) => {
                   top: labelTop + "px",
                   zIndex: -1,
                   lineHeight: 0.5,
+                  backgroundColor: `rgba(255,255,255,0.5)`,
                 }}
               >
                 {force.description && <p>{force.description}</p>}
