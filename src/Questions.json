@@ -39,15 +39,11 @@
         },
         {
           "description": "Magnitude of Force of Gravity",
-          "content": "The magnitude of the force of gravity is approximately 9.81 meters per second squared."
+          "content": "The magnitude of the force of gravity is approximately 9.81."
         },
         {
           "description": "Magnitude of Normal Force",
           "content": "The magnitude of the normal force is equal to m*g*cos(θ), where θ is the angle of the incline plane."
-        },
-        {
-          "description": "Maximum Magnitude of Force of Friction",
-          "content": "The magnitude of the force of static friction is at most equal to μ*m*g*cos(θ), where θ is the angle of the incline plane."
         },
         {
           "description": "Net Force in Equilibrium",

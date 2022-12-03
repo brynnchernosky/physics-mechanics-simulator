@@ -5,6 +5,8 @@ import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { SelectChangeEvent } from "@mui/material/Select";
 import {
   Alert,
@@ -44,6 +46,7 @@ import React, { useEffect, useState } from "react";
 import "./App.scss";
 import { InputField } from "./InputField";
 import questions from "./Questions.json";
+import tutorials from "./Tutorial.json";
 import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
@@ -69,6 +72,11 @@ interface QuestionTemplate {
   answerSolutionDescriptions: string[];
   goal: string;
   hints: { description: string; content: string }[];
+}
+
+interface TutorialTemplate {
+  question: string;
+  steps: { description: string; content: string }[];
 }
 
 export interface ISimulationElement {
@@ -154,6 +162,9 @@ function App() {
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
     questions.inclinePlane[0]
   );
+  const [selectedTutorial, setSelectedTutorial] = useState<TutorialTemplate>(
+    tutorials.inclinePlane
+  );
   const [questionPartTwo, setQuestionPartTwo] = useState<string>("");
   const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
@@ -168,6 +179,7 @@ function App() {
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
+  const [stepNumber, setStepNumber] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([
     forceOfGravity,
@@ -326,6 +338,7 @@ function App() {
 
   // Change wedge height and width and weight position to match new wedge angle
   const changeWedgeBasedOnNewAngle = (angle: number) => {
+    console.log("update wedge appearance");
     let width = 0;
     let height = 0;
     if (angle < 50) {
@@ -936,7 +949,6 @@ function App() {
         addPendulum();
       }
     } else if (mode == "Review") {
-      setPendulum(false);
       if (simulationType == "Incline Plane") {
         addWedge();
       }
@@ -947,8 +959,15 @@ function App() {
       setTimeout(() => {
         generateNewQuestion();
       }, 20);
+    } else if (mode == "Tutorial") {
+      if (simulationType == "Incline Plane") {
+        addWedge();
+        setSelectedTutorial(tutorials.inclinePlane);
+      }
+      setStartForces([]);
+      setUpdatedForces([]);
     }
-  }, [simulationType, mode, simulationType]);
+  }, [simulationType, mode]);
 
   // Use effect hook to handle force change in review mode
   useEffect(() => {
@@ -1305,7 +1324,7 @@ function App() {
         <div className="mechanicsSimulationEquationContainer">
           <div className="mechanicsSimulationControls">
             <Stack direction="row" spacing={1}>
-              {simulationPaused && (
+              {simulationPaused && mode != "Tutorial" && (
                 <Tooltip title="Start simulation" followCursor>
                   <IconButton
                     onClick={() => {
@@ -1316,7 +1335,7 @@ function App() {
                   </IconButton>
                 </Tooltip>
               )}
-              {!simulationPaused && (
+              {!simulationPaused && mode != "Tutorial" && (
                 <Tooltip title="Pause simulation" followCursor>
                   <IconButton
                     onClick={() => {
@@ -1327,7 +1346,7 @@ function App() {
                   </IconButton>
                 </Tooltip>
               )}
-              {simulationPaused && (
+              {simulationPaused && mode != "Tutorial" && (
                 <Tooltip title="Reset simulation" followCursor>
                   <IconButton
                     onClick={() => {
@@ -1413,7 +1432,57 @@ function App() {
               </div>
             </div>
           )}
-
+          {mode == "Tutorial" && (
+            <div className="wordProblemBox">
+              <div className="question">
+                <h2>Problem</h2>
+                <p>{selectedTutorial.question}</p>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "spaceBetween",
+                  width: "100%",
+                }}
+              >
+                <IconButton
+                  onClick={() => {
+                    let step = stepNumber - 1;
+                    step = Math.max(stepNumber, 0);
+                    step = Math.min(
+                      stepNumber,
+                      selectedTutorial.steps.length - 1
+                    );
+                    setStepNumber(step);
+                  }}
+                  disabled={stepNumber == 0}
+                >
+                  <ArrowLeftIcon />
+                </IconButton>
+                <div>
+                  <h3>
+                    Step {stepNumber + 1}:{" "}
+                    {selectedTutorial.steps[stepNumber].description}
+                  </h3>
+                  <p>{selectedTutorial.steps[stepNumber].content}</p>
+                </div>
+                <IconButton
+                  onClick={() => {
+                    let step = stepNumber + 1;
+                    step = Math.max(stepNumber, 0);
+                    step = Math.min(
+                      stepNumber,
+                      selectedTutorial.steps.length - 1
+                    );
+                    setStepNumber(step);
+                  }}
+                  disabled={stepNumber == selectedTutorial.steps.length - 1}
+                >
+                  <ArrowRightIcon />
+                </IconButton>
+              </div>
+            </div>
+          )}
           {mode == "Review" && (
             <div
               style={{

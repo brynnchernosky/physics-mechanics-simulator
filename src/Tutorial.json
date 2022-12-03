@@ -1,0 +1,35 @@
+{
+  "inclinePlane": {
+    "question": "There is a 1kg weight on an inclined plane. The plane is at an angle θ from the ground, and has a coefficient of static friction μ. The system is in equilibrium (the net force on the weight is 0). What are the magnitudes and directions of the forces acting on the weight?",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "There are three forces acting on the weight: the force of gravity, the normal force, and the force of static friction."
+      },
+      {
+        "description": "Force of Gravity",
+        "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81."
+      },
+      {
+        "description": "Normal Force",
+        "content": "The normal force acts in the direction perpendicular to the incline plane: π/2-θ rad, where θ is the angle of the incline plane. The magnitude of the normal force is equal to m*g*cos(θ)."
+      },
+      {
+        "description": "Force of Static Friction",
+        "content": "The force of static friction acts in the direction along the incline plane: π-θ rad, where θ is the angle of the incline plane. We can use the knowledge that the system is in equilibrium to solve for the magnitude of the force of static friction."
+      },
+      {
+        "description": "Net X Force in Equilibrium",
+        "content": "For the system to be in equilibrium, the sum of the x components of all forces must equal 0. The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane. The x component of gravity is equal to 0. Since the net force in the x direction must be 0, we know the magnitude of the x component of the friction force is m*g*cos(θ)*cos(π/2-θ)."
+      },
+      {
+        "description": "Net Y Force Normal Force",
+        "content": "For the system to be in equilibrium, the sum of the y components of all forces must equal 0. The y component of the normal force is equal to m*g*cos(θ)*sin(π/2-θ), where θ is the angle of the incline plane. The y component of gravity is equal to m*g. Since the net force in the x direction must be 0, we know the magnitude of the y component of the friction force is m*g*cos(θ)*sin(π/2-θ)-m*g."
+      },
+      {
+        "description": "Magnitude of Force of Friction",
+        "content": "Combining the x and y components of the friction force, we get the magnitude of the friction force is equal to (m*g*cos(θ)*cos(π/2-θ))^2 + (m*g*cos(θ)*sin(π/2-θ)-m*g)^2."
+      }
+    ]
+  }
+}
