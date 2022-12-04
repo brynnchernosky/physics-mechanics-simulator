@@ -142,7 +142,6 @@ function App() {
     React.useState<number | string | Array<number | string>>(0);
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
     React.useState<number | string | Array<number | string>>(0);
-  const [correctMessageVisible, setCorrectMessageVisible] = useState(false);
   const [currentForceSketch, setCurrentForceSketch] =
     useState<VectorTemplate | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
@@ -151,8 +150,6 @@ function App() {
   const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
   const [questionPartOne, setQuestionPartOne] = useState<string>("");
   const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
-
-  const [incorrectMessageVisible, setIncorrectMessageVisible] = useState(false);
   const [mode, setMode] = useState<string>("Tutorial");
   const [noMovement, setNoMovement] = useState(false);
   const [pendulum, setPendulum] = useState(false);
@@ -623,19 +620,11 @@ function App() {
         setTimeout(() => {
           setSimulationPaused(true);
         }, 3000);
-        setCorrectMessageVisible(true);
-        setTimeout(() => {
-          setCorrectMessageVisible(false);
-        }, 2000);
       } else {
         setSimulationPaused(false);
         setTimeout(() => {
           setSimulationPaused(true);
         }, 3000);
-        setIncorrectMessageVisible(true);
-        setTimeout(() => {
-          setIncorrectMessageVisible(false);
-        }, 2000);
       }
     }
     if (selectedQuestion.goal == "noMovement") {
@@ -1116,29 +1105,27 @@ function App() {
                   <LinearProgress />
                 </div>
               )}
-              {mode == "Freeform" && (
-                <div
-                  style={{
-                    position: "fixed",
-                    top: 1 + "em",
-                    left: xMin + 12 + "px",
-                  }}
-                >
-                  <div className="dropdownMenu">
-                    <select
-                      value={simulationType}
-                      onChange={(event) => {
-                        setSimulationType(event.target.value);
-                      }}
-                      style={{ height: "2em", width: "100%", fontSize: "16px" }}
-                    >
-                      <option value="Free Weight">Free Weight</option>
-                      <option value="Incline Plane">Incline Plane</option>
-                      <option value="Pendulum">Pendulum</option>
-                    </select>
-                  </div>
+              <div
+                style={{
+                  position: "fixed",
+                  top: 1 + "em",
+                  left: xMin + 12 + "px",
+                }}
+              >
+                <div className="dropdownMenu">
+                  <select
+                    value={simulationType}
+                    onChange={(event) => {
+                      setSimulationType(event.target.value);
+                    }}
+                    style={{ height: "2em", width: "100%", fontSize: "16px" }}
+                  >
+                    <option value="Free Weight">Free Weight</option>
+                    <option value="Incline Plane">Incline Plane</option>
+                    <option value="Pendulum">Pendulum</option>
+                  </select>
                 </div>
-              )}
+              </div>
               {/* <div
                 style={{
                   zIndex: 10000,
@@ -1156,30 +1143,6 @@ function App() {
                   {sketchMode ? <p>Exit Sketch Mode</p> : <p>Sketch Forces</p>}
                 </Button>{" "}
               </div> */}
-            </div>
-            <div className="alerts">
-              {correctMessageVisible && (
-                <Alert
-                  severity="success"
-                  onClose={() => {
-                    setCorrectMessageVisible(false);
-                  }}
-                >
-                  Correct!
-                </Alert>
-              )}
-            </div>
-            <div className="alerts">
-              {incorrectMessageVisible && (
-                <Alert
-                  severity="error"
-                  onClose={() => {
-                    setIncorrectMessageVisible(false);
-                  }}
-                >
-                  Not quite!
-                </Alert>
-              )}
             </div>
             <div className="mechanicsSimulationElements">
               {showForces && currentForceSketch && simulationPaused && (
@@ -1535,15 +1498,18 @@ function App() {
                 marginTop: "10px",
               }}
             >
-              <div>
-                <Button
-                  onClick={() => generateNewQuestion()}
-                  variant="outlined"
-                >
-                  <Typography>New question</Typography>
-                </Button>
-              </div>
-              <div>
+              <p
+                style={{
+                  color: "blue",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+                onClick={() => setMode("Tutorial")}
+              >
+                {" "}
+                Go to walkthrough{" "}
+              </p>
+              <div style={{ display: "flex", flexDirection: "column" }}>
                 <Button
                   onClick={() => {
                     setSimulationReset(!simulationReset);
@@ -1553,6 +1519,12 @@ function App() {
                   variant="outlined"
                 >
                   <Typography>Submit</Typography>
+                </Button>
+                <Button
+                  onClick={() => generateNewQuestion()}
+                  variant="outlined"
+                >
+                  <Typography>New question</Typography>
                 </Button>
               </div>
             </div>
@@ -1704,7 +1676,7 @@ function App() {
                     <td>Y</td>
                   </tr>
                   <tr>
-                    <td>
+                    <td style={{ cursor: "help" }}>
                       <Tooltip
                         title={
                           <React.Fragment>
@@ -1726,8 +1698,11 @@ function App() {
                       </Tooltip>
                     </td>
                     <td>
-                      {(!simulationPaused || wedge) && positionXDisplay}{" "}
-                      {(!simulationPaused || wedge) && <p>m</p>}{" "}
+                      {(!simulationPaused || wedge) && (
+                        <p style={{ cursor: "default" }}>
+                          {positionXDisplay} m
+                        </p>
+                      )}{" "}
                       {simulationPaused && !wedge && (
                         <InputField
                           lowerBound={0}
@@ -1743,8 +1718,11 @@ function App() {
                       )}{" "}
                     </td>
                     <td>
-                      {(!simulationPaused || wedge) && positionYDisplay}{" "}
-                      {(!simulationPaused || wedge) && <p>m</p>}{" "}
+                      {(!simulationPaused || wedge) && (
+                        <p style={{ cursor: "default" }}>
+                          {positionYDisplay} m
+                        </p>
+                      )}{" "}
                       {simulationPaused && !wedge && (
                         <InputField
                           lowerBound={0}
@@ -1761,7 +1739,7 @@ function App() {
                     </td>
                   </tr>
                   <tr>
-                    <td>
+                    <td style={{ cursor: "help" }}>
                       <Tooltip
                         title={
                           <React.Fragment>
@@ -1780,9 +1758,11 @@ function App() {
                       </Tooltip>
                     </td>
                     <td>
-                      {(!simulationPaused || pendulum || wedge) &&
-                        velocityXDisplay}{" "}
-                      {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
+                      {(!simulationPaused || pendulum || wedge) && (
+                        <p style={{ cursor: "default" }}>
+                          {velocityXDisplay} m/s
+                        </p>
+                      )}{" "}
                       {simulationPaused && !pendulum && !wedge && (
                         <InputField
                           lowerBound={-50}
@@ -1798,9 +1778,11 @@ function App() {
                       )}{" "}
                     </td>
                     <td>
-                      {(!simulationPaused || pendulum || wedge) &&
-                        velocityYDisplay}{" "}
-                      {(!simulationPaused || pendulum || wedge) && <p>m/s</p>}{" "}
+                      {(!simulationPaused || pendulum || wedge) && (
+                        <p style={{ cursor: "default" }}>
+                          {velocityYDisplay} m/s
+                        </p>
+                      )}{" "}
                       {simulationPaused && !pendulum && !wedge && (
                         <InputField
                           lowerBound={-50}
@@ -1817,7 +1799,7 @@ function App() {
                     </td>
                   </tr>
                   <tr>
-                    <td>
+                    <td style={{ cursor: "help" }}>
                       <Tooltip
                         title={
                           <React.Fragment>
@@ -1835,10 +1817,10 @@ function App() {
                         <Box>Acceleration</Box>
                       </Tooltip>
                     </td>
-                    <td>
+                    <td style={{ cursor: "default" }}>
                       {accelerationXDisplay} m/s<sup>2</sup>
                     </td>
-                    <td>
+                    <td style={{ cursor: "default" }}>
                       {accelerationYDisplay} m/s<sup>2</sup>
                     </td>
                   </tr>

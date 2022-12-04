@@ -769,23 +769,27 @@ export const Weight = (props: IWeightProps) => {
           let arrowEndY: number =
             arrowStartY -
             Math.abs(force.magnitude) *
-              25 *
+              30 *
               Math.sin((force.directionInDegrees * Math.PI) / 180);
           const arrowEndX: number =
             arrowStartX +
             Math.abs(force.magnitude) *
-              25 *
+              30 *
               Math.cos((force.directionInDegrees * Math.PI) / 180);
 
           let color = "#0d0d0d";
 
-          let labelTop = arrowEndY + 25;
-          let labelLeft = arrowEndX + 40;
-          if (
-            force.directionInDegrees > 135 &&
-            force.directionInDegrees < 225
-          ) {
+          let labelTop = arrowEndY;
+          let labelLeft = arrowEndX;
+          if (force.directionInDegrees > 90 && force.directionInDegrees < 270) {
             labelLeft -= 150;
+          } else {
+            labelLeft += 30;
+          }
+          if (force.directionInDegrees >= 0 && force.directionInDegrees < 180) {
+            labelTop += 40;
+          } else {
+            labelTop -= 40;
           }
           labelTop = Math.min(labelTop, yMax + 50);
           labelTop = Math.max(labelTop, yMin);
@@ -837,7 +841,7 @@ export const Weight = (props: IWeightProps) => {
                   position: "absolute",
                   left: labelLeft + "px",
                   top: labelTop + "px",
-                  zIndex: -1,
+                  // zIndex: -1,
                   lineHeight: 0.5,
                   backgroundColor: labelBackgroundColor,
                 }}
