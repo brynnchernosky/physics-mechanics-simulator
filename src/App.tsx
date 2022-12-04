@@ -181,7 +181,8 @@ function App() {
   >([]);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] = useState<string>("Incline Plane");
+  const [simulationType, setSimulationType] =
+    useState<string>("Inclined Plane");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
@@ -674,7 +675,7 @@ function App() {
     const vars: number[] = [];
     let question: QuestionTemplate = questions.inclinePlane[0];
 
-    if (simulationType == "Incline Plane") {
+    if (simulationType == "Inclined Plane") {
       if (questionNumber == questions.inclinePlane.length - 1) {
         setQuestionNumber(0);
       } else {
@@ -938,15 +939,17 @@ function App() {
   // Use effect hook to handle mode/topic change
   useEffect(() => {
     if (mode == "Freeform") {
+      setShowForceMagnitudes(true);
       if (simulationType == "Free Weight") {
         addWeight();
-      } else if (simulationType == "Incline Plane") {
+      } else if (simulationType == "Inclined Plane") {
         addWedge();
       } else if (simulationType == "Pendulum") {
         addPendulum();
       }
     } else if (mode == "Review") {
-      if (simulationType == "Incline Plane") {
+      setShowForceMagnitudes(true);
+      if (simulationType == "Inclined Plane") {
         addWedge();
       }
       setShowAcceleration(false);
@@ -957,7 +960,7 @@ function App() {
         generateNewQuestion();
       }, 20);
     } else if (mode == "Tutorial") {
-      if (simulationType == "Incline Plane") {
+      if (simulationType == "Inclined Plane") {
         addWedge();
         setSelectedTutorial(tutorials.inclinePlane);
         setStartForces(
@@ -1121,28 +1124,11 @@ function App() {
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
                     <option value="Free Weight">Free Weight</option>
-                    <option value="Incline Plane">Incline Plane</option>
+                    <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                   </select>
                 </div>
               </div>
-              {/* <div
-                style={{
-                  zIndex: 10000,
-                  position: "fixed",
-                  top: 4 + "em",
-                  left: xMin + "px",
-                }}
-              >
-                {" "}
-                <Button
-                  onClick={() => {
-                    setSketchMode(!sketchMode);
-                  }}
-                >
-                  {sketchMode ? <p>Exit Sketch Mode</p> : <p>Sketch Forces</p>}
-                </Button>{" "}
-              </div> */}
             </div>
             <div className="mechanicsSimulationElements">
               {showForces && currentForceSketch && simulationPaused && (
@@ -1488,6 +1474,16 @@ function App() {
                   <ArrowRightIcon />
                 </IconButton>
               </div>
+              <div>
+                <p>Resources</p>
+                <ul style={{ color: "blue", textDecoration: "underline" }}>
+                  <li>
+                    <a href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction">
+                      Khan Academy - Inclined Planes
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           )}
           {mode == "Review" && (
@@ -1676,7 +1672,14 @@ function App() {
                     <td>Y</td>
                   </tr>
                   <tr>
-                    <td style={{ cursor: "help" }}>
+                    <td
+                      style={{ cursor: "help" }}
+                      onClick={() => {
+                        window.open(
+                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        );
+                      }}
+                    >
                       <Tooltip
                         title={
                           <React.Fragment>
@@ -1739,7 +1742,14 @@ function App() {
                     </td>
                   </tr>
                   <tr>
-                    <td style={{ cursor: "help" }}>
+                    <td
+                      style={{ cursor: "help" }}
+                      onClick={() => {
+                        window.open(
+                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        );
+                      }}
+                    >
                       <Tooltip
                         title={
                           <React.Fragment>
@@ -1799,7 +1809,14 @@ function App() {
                     </td>
                   </tr>
                   <tr>
-                    <td style={{ cursor: "help" }}>
+                    <td
+                      style={{ cursor: "help" }}
+                      onClick={() => {
+                        window.open(
+                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        );
+                      }}
+                    >
                       <Tooltip
                         title={
                           <React.Fragment>

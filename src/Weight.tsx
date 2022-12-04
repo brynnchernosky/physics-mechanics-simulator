@@ -782,7 +782,7 @@ export const Weight = (props: IWeightProps) => {
           let labelTop = arrowEndY;
           let labelLeft = arrowEndX;
           if (force.directionInDegrees > 90 && force.directionInDegrees < 270) {
-            labelLeft -= 150;
+            labelLeft -= 120;
           } else {
             labelLeft += 30;
           }
