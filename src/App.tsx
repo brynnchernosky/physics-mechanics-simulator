@@ -217,15 +217,7 @@ function App() {
       pendulum: false,
       wedge: false,
     };
-    setPositionXDisplay(xMin + 70);
-    setPositionYDisplay(
-      Math.round((yMax - (yMin + 70) - 2 * 50 + 5) * 10) / 10
-    );
-    setSimulationElements([weight]);
-    setUpdatedForces([forceOfGravity]);
-    setStartForces([forceOfGravity]);
-    addWalls();
-    setSimulationReset(!simulationReset);
+    return [weight];
   };
 
   // Add a wedge with a free weight to the simulation
@@ -247,20 +239,7 @@ function App() {
       pendulum: false,
       wedge: true,
     };
-    setSimulationElements([wedge, weight]);
-    if (mode == "Freeform") {
-      setPositionXDisplay(Math.round((xMax * 0.5 - 200) * 10) / 10);
-      setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
-      setStartForces([forceOfGravity]);
-      updateForcesWithFriction(Number(coefficientOfStaticFriction));
-      setWedgeAngle(26);
-      changeWedgeBasedOnNewAngle(26);
-    } else {
-      setStartForces([]);
-      setUpdatedForces([]);
-    }
-    addWalls();
-    setSimulationReset(!simulationReset);
+    return [wedge, weight];
   };
 
   // Add a simple pendulum to the simulation
@@ -297,6 +276,7 @@ function App() {
     setStartForces([forceOfGravity]);
     removeWalls();
     setSimulationReset(!simulationReset);
+    return [weight];
   };
 
   // Update forces when coefficient of static friction changes in freeform mode
@@ -870,9 +850,21 @@ function App() {
           <div key={i + d.getTime()}>
             <InputField
               label={
-                <p>
-                  &mu;<sub>s</sub>
-                </p>
+                <Tooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">
+                        &mu;<sub>s</sub>
+                      </Typography>
+                      Coefficient of static friction; between 0 and 1
+                    </React.Fragment>
+                  }
+                  followCursor
+                >
+                  <Box>
+                    &mu;<sub>s</sub>
+                  </Box>
+                </Tooltip>
               }
               lowerBound={0}
               changeValue={setCoefficientOfStaticFriction}
@@ -891,7 +883,19 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={<p>&theta;</p>}
+              label={
+                <Tooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">&theta;</Typography>
+                      Angle of incline plane from the ground, 0-49
+                    </React.Fragment>
+                  }
+                  followCursor
+                >
+                  <Box>&theta;</Box>
+                </Tooltip>
+              }
               lowerBound={0}
               changeValue={setWedgeAngle}
               step={1}
@@ -941,35 +945,61 @@ function App() {
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "Free Weight") {
-        addWeight();
+        const result = addWeight();
+        setSimulationElements(result);
+        setPositionXDisplay(xMin + 70);
+        setPositionYDisplay(
+          Math.round((yMax - (yMin + 70) - 2 * 50 + 5) * 10) / 10
+        );
+        setUpdatedForces([forceOfGravity]);
+        setStartForces([forceOfGravity]);
+        addWalls();
+        setSimulationReset(!simulationReset);
       } else if (simulationType == "Inclined Plane") {
-        addWedge();
+        const result = addWedge();
+        setSimulationElements(result);
+        setPositionXDisplay(Math.round((xMax * 0.5 - 200) * 10) / 10);
+        setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
+        setWedgeAngle(26);
+        addWalls();
+        setStartForces([forceOfGravity]);
+        updateForcesWithFriction(Number(coefficientOfStaticFriction));
+        setTimeout(() => {
+          changeWedgeBasedOnNewAngle(26);
+        }, 50);
       } else if (simulationType == "Pendulum") {
         addPendulum();
       }
     } else if (mode == "Review") {
       setShowForceMagnitudes(true);
       if (simulationType == "Inclined Plane") {
-        addWedge();
+        const result = addWedge();
+        setSimulationElements(result);
+        addWalls();
       }
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
       // hack to mke sure weight positioned correctly
-      setTimeout(() => {
-        generateNewQuestion();
-      }, 20);
+      generateNewQuestion();
     } else if (mode == "Tutorial") {
       if (simulationType == "Inclined Plane") {
-        addWedge();
+        const result = addWedge();
+        setSimulationElements(result);
+        setPositionXDisplay(Math.round((xMax * 0.5 - 200) * 10) / 10);
+        setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
+        setWedgeAngle(26);
+        addWalls();
+        setSimulationReset(!simulationReset);
         setSelectedTutorial(tutorials.inclinePlane);
         setStartForces(
           getForceFromJSON(tutorials.inclinePlane.steps[0].forces)
         );
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
+        setTimeout(() => {
+          changeWedgeBasedOnNewAngle(26);
+        }, 50);
       }
-      // setStartForces([]);
-      // setUpdatedForces([]);
     }
   }, [simulationType, mode]);
 
@@ -1476,9 +1506,14 @@ function App() {
               </div>
               <div>
                 <p>Resources</p>
-                <ul style={{ color: "blue", textDecoration: "underline" }}>
+                <ul>
                   <li>
-                    <a href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction">
+                    <a
+                      href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: "blue", textDecoration: "underline" }}
+                    >
                       Khan Academy - Inclined Planes
                     </a>
                   </li>
@@ -1580,12 +1615,24 @@ function App() {
               {wedge && simulationPaused && (
                 <div>
                   <InputField
-                    label={<p>&theta;</p>}
+                    label={
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">&theta;</Typography>
+                            Angle of incline plane from the ground, 0-49
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>&theta;</Box>
+                      </Tooltip>
+                    }
                     lowerBound={0}
                     changeValue={setWedgeAngle}
                     step={1}
                     unit={"°"}
-                    upperBound={79}
+                    upperBound={49}
                     value={wedgeAngle}
                     effect={changeWedgeBasedOnNewAngle}
                     radianEquivalent={true}
@@ -1593,9 +1640,21 @@ function App() {
                   />
                   <InputField
                     label={
-                      <p>
-                        &mu;<sub>s</sub>
-                      </p>
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">
+                              &mu;<sub>s</sub>
+                            </Typography>
+                            Coefficient of static friction, between 0 and 1
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>
+                          &mu;<sub>s</sub>
+                        </Box>
+                      </Tooltip>
                     }
                     lowerBound={0}
                     changeValue={setCoefficientOfStaticFriction}
@@ -1608,9 +1667,22 @@ function App() {
                   />
                   <InputField
                     label={
-                      <p>
-                        &mu;<sub>k</sub>
-                      </p>
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">
+                              &mu;<sub>k</sub>
+                            </Typography>
+                            Coefficient of kinetic friction, between 0 and
+                            coefficient of static friction
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>
+                          &mu;<sub>k</sub>
+                        </Box>
+                      </Tooltip>
                     }
                     lowerBound={0}
                     changeValue={setCoefficientOfKineticFriction}
@@ -1643,7 +1715,19 @@ function App() {
               )}
               {pendulum && simulationPaused && (
                 <InputField
-                  label={<p>&theta;</p>}
+                  label={
+                    <Tooltip
+                      title={
+                        <React.Fragment>
+                          <Typography color="inherit">&theta;</Typography>
+                          Pendulum angle offest from equilibrium
+                        </React.Fragment>
+                      }
+                      followCursor
+                    >
+                      <Box>&theta;</Box>
+                    </Tooltip>
+                  }
                   lowerBound={0}
                   changeValue={setPendulumAngle}
                   step={1}

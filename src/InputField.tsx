@@ -60,17 +60,6 @@ export const InputField = (props: IInputProps) => {
     let value = event.target.value == "" ? 0 : Number(event.target.value);
     if (value > upperBound) {
       value = upperBound;
-
-      if (
-        label ===
-        (
-          <p>
-            &mu;<sub>k</sub>
-          </p>
-        )
-      ) {
-        // add alert "Coefficient of kinetic friction must be less than coefficient of static friction"
-      }
     } else if (value < lowerBound) {
       value = lowerBound;
     }
