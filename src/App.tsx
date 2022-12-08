@@ -136,7 +136,10 @@ function App() {
   // State variables
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
-  const [adjustPendulumAngle, setAdjustPendulumAngle] = useState(0);
+  const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
+    angle: number;
+    length: number;
+  }>({ angle: 0, length: 0 });
   const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
@@ -954,32 +957,27 @@ function App() {
           changeWedgeBasedOnNewAngle(26);
         }, 50);
       } else if (simulationType == "Pendulum") {
-        const result = addPendulum(xMin + 150, yMin + 150);
-        // const x = xMax / 2 - xMin + 150 - 50;
-        // const y = yMin + 150 + 50 + 5;
-        // let angle = (Math.atan(y / x) * 180) / Math.PI;
-        // if (angle < 0) {
-        //   angle += 180;
-        // }
-        // let oppositeAngle = 90 - angle;
-        // if (oppositeAngle < 0) {
-        //   oppositeAngle = 90 - (180 - angle);
-        // }
-        // setPendulumAngle(oppositeAngle);
-        // setPositionXDisplay(xMin + 150);
-        // setPositionYDisplay(
-        //   Math.round((yMax - (yMin + 150) - 2 * 50 + 5) * 10) / 10
-        // );
+        console.log("create freeform pendulum");
+        const length = 300;
+        const angle = 50;
+        const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
+        const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
+        const xPos = xMax / 2 - x - 50;
+        const yPos = y - 50 - 5;
+        const result = addPendulum(xPos, yPos);
+        console.log("add freeform pendulum at ", xPos, yPos);
         setSimulationElements(result);
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
+        setAdjustPendulumAngle({ angle: 50, length: 300 });
         removeWalls();
-        setSimulationReset(!simulationReset);
       }
     } else if (mode == "Review") {
       setShowForceMagnitudes(true);
       if (simulationType == "Inclined Plane") {
         const result = addWedge();
+        setUpdatedForces([]);
+        setStartForces([]);
         setSimulationElements(result);
         addWalls();
       }
@@ -1004,13 +1002,13 @@ function App() {
         const xPos = xMax / 2 - x - 50;
         const yPos = y - 50 - 5;
         const result = addPendulum(xPos, yPos);
+        console.log("add tutorial pendulum at ", xPos, yPos);
         setSimulationElements(result);
         setSelectedTutorial(tutorials.pendulum);
         setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));
         setShowForceMagnitudes(tutorials.pendulum.steps[0].showMagnitude);
-        setPendulumAngle(30);
-        setAdjustPendulumAngle(30);
-        addWalls();
+        setAdjustPendulumAngle({ angle: 30, length: 300 });
+        removeWalls();
       } else if (simulationType == "Inclined Plane") {
         const result = addWedge();
         setSimulationElements(result);
@@ -1760,12 +1758,12 @@ function App() {
                   changeValue={setPendulumAngle}
                   step={1}
                   unit={"°"}
-                  upperBound={79}
+                  upperBound={59}
                   value={pendulumAngle}
                   effect={(value) => {
                     if (pendulum) {
                       setUpdatedForces([forceOfGravity]);
-                      setAdjustPendulumAngle(value);
+                      setAdjustPendulumAngle({ angle: value, length: 300 });
                     }
                   }}
                   radianEquivalent={true}

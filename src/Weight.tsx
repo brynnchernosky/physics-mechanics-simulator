@@ -10,7 +10,7 @@ export interface IForce {
   directionInDegrees: number;
 }
 export interface IWeightProps {
-  adjustPendulumAngle: number;
+  adjustPendulumAngle: { angle: number; length: number };
   color: string;
   displayXPosition: number;
   displayYPosition: number;
@@ -215,48 +215,26 @@ export const Weight = (props: IWeightProps) => {
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
     setUpdatedForces(startForces);
-
-    if (pendulum) {
-      const x = xMax / 2 - updatedStartPosX - radius;
-      const y = updatedStartPosY + radius + 5;
-      let angle = (Math.atan(y / x) * 180) / Math.PI;
-      if (angle < 0) {
-        angle += 180;
-      }
-      let oppositeAngle = 90 - angle;
-      if (oppositeAngle < 0) {
-        oppositeAngle = 90 - (180 - angle);
-      }
-      setPendulumLength(Math.sqrt(x * x + y * y));
-      setPendulumAngle(oppositeAngle);
-      setStartPendulumAngle(oppositeAngle);
-    }
     setDisplayValues();
   };
 
   // Change pendulum angle based on input field
   useEffect(() => {
-    if (paused && pendulum && pendulumLength != 0) {
-      let length = pendulumLength;
-      // const x = xMax / 2 - updatedStartPosX - radius;
-      // const y = updatedStartPosY + radius + 5;
-      // let angle = (Math.atan(y / x) * 180) / Math.PI;
-      // if (angle < 0) {
-      //   angle += 180;
-      // }
-      // let oppositeAngle = 90 - angle;
-      // if (oppositeAngle < 0) {
-      //   oppositeAngle = 90 - (180 - angle);
-      // }
-
-      // Finish debugging
-      const x = length * Math.cos(((90 - pendulumAngle) * Math.PI) / 180);
-      const y = length * Math.sin(((90 - pendulumAngle) * Math.PI) / 180);
-      const xPos = xMax / 2 - x - radius;
-      const yPos = y - radius - 5;
-      setXPosition(xPos);
-      setYPosition(yPos);
-    }
+    console.log("use effect triggered");
+    let length = adjustPendulumAngle.length;
+    const x =
+      length * Math.cos(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
+    const y =
+      length * Math.sin(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
+    const xPos = xMax / 2 - x - radius;
+    const yPos = y - radius - 5;
+    setXPosition(xPos);
+    setYPosition(yPos);
+    setUpdatedStartPosX(xPos);
+    setUpdatedStartPosY(yPos);
+    setPendulumAngle(adjustPendulumAngle.angle);
+    setPendulumLength(adjustPendulumAngle.length);
+    console.log("adjust pendulum angle, set pos to ", xPos, yPos);
   }, [adjustPendulumAngle]);
 
   const getNewAccelerationX = (forceList: IForce[]) => {
