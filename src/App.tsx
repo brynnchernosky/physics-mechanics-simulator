@@ -955,21 +955,21 @@ function App() {
         }, 50);
       } else if (simulationType == "Pendulum") {
         const result = addPendulum(xMin + 150, yMin + 150);
-        const x = xMax / 2 - xMin + 150 - 50;
-        const y = yMin + 150 + 50 + 5;
-        let angle = (Math.atan(y / x) * 180) / Math.PI;
-        if (angle < 0) {
-          angle += 180;
-        }
-        let oppositeAngle = 90 - angle;
-        if (oppositeAngle < 0) {
-          oppositeAngle = 90 - (180 - angle);
-        }
-        setPendulumAngle(oppositeAngle);
-        setPositionXDisplay(xMin + 150);
-        setPositionYDisplay(
-          Math.round((yMax - (yMin + 150) - 2 * 50 + 5) * 10) / 10
-        );
+        // const x = xMax / 2 - xMin + 150 - 50;
+        // const y = yMin + 150 + 50 + 5;
+        // let angle = (Math.atan(y / x) * 180) / Math.PI;
+        // if (angle < 0) {
+        //   angle += 180;
+        // }
+        // let oppositeAngle = 90 - angle;
+        // if (oppositeAngle < 0) {
+        //   oppositeAngle = 90 - (180 - angle);
+        // }
+        // setPendulumAngle(oppositeAngle);
+        // setPositionXDisplay(xMin + 150);
+        // setPositionYDisplay(
+        //   Math.round((yMax - (yMin + 150) - 2 * 50 + 5) * 10) / 10
+        // );
         setSimulationElements(result);
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
