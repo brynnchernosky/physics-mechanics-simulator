@@ -923,6 +923,7 @@ function App() {
       setShowForces(true);
       generateNewQuestion();
     } else if (mode == "Tutorial") {
+      setStepNumber(0);
       if (simulationType == "Free Weight") {
         addWeight();
         setStartPosY(yMin + 50);
@@ -1455,18 +1456,68 @@ function App() {
               </div>
               <div>
                 <p>Resources</p>
-                <ul>
-                  <li>
-                    <a
-                      href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction"
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ color: "blue", textDecoration: "underline" }}
-                    >
-                      Khan Academy - Inclined Planes
-                    </a>
-                  </li>
-                </ul>
+                {simulationType == "Free Weight" && (
+                  <ul>
+                    <li>
+                      <a
+                        href="https://www.khanacademy.org/science/physics/one-dimensional-motion"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "blue", textDecoration: "underline" }}
+                      >
+                        Khan Academy - One Dimensional Motion
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "blue", textDecoration: "underline" }}
+                      >
+                        Khan Academy - Two Dimensional Motion
+                      </a>
+                    </li>
+                  </ul>
+                )}
+                {simulationType == "Inclined Plane" && (
+                  <ul>
+                    <li>
+                      <a
+                        href="https://www.khanacademy.org/science/physics/forces-newtons-laws#normal-contact-force"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "blue", textDecoration: "underline" }}
+                      >
+                        Khan Academy - Normal Force
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "blue", textDecoration: "underline" }}
+                      >
+                        Khan Academy - Inclined Planes
+                      </a>
+                    </li>
+                  </ul>
+                )}
+                {simulationType == "Pendulum" && (
+                  <ul>
+                    <li>
+                      <a
+                        href="https://www.khanacademy.org/science/physics/forces-newtons-laws#tension-tutorial"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "blue", textDecoration: "underline" }}
+                      >
+                        Khan Academy - Tension
+                      </a>
+                    </li>
+                  </ul>
+                )}
               </div>
             </div>
           )}
