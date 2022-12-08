@@ -879,8 +879,6 @@ function App() {
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
-        setPositionXDisplay((xMax + xMin - 50) / 2);
-        setPositionXDisplay(getDisplayYPos(yMin + 50));
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
         addWalls();
@@ -927,8 +925,8 @@ function App() {
     } else if (mode == "Tutorial") {
       if (simulationType == "Free Weight") {
         addWeight();
-        setStartPosY(100);
-        setStartPosX((xMax + xMin + 50) / 2);
+        setStartPosY(yMin + 50);
+        setStartPosX((xMax + xMin - 50) / 2);
         setSelectedTutorial(tutorials.freeWeight);
         setSelectedTutorial(tutorials.freeWeight);
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
@@ -1516,20 +1514,21 @@ function App() {
             <div>
               <FormControl component="fieldset">
                 <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        disabled={wedge || pendulum}
-                        value={elasticCollisions}
-                        onChange={() =>
-                          setElasticCollisions(!elasticCollisions)
-                        }
-                      />
-                    }
-                    label="Make collisions elastic"
-                    labelPlacement="start"
-                  />
-                  <Divider />
+                  {!wedge && !pendulum && (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value={elasticCollisions}
+                          onChange={() =>
+                            setElasticCollisions(!elasticCollisions)
+                          }
+                        />
+                      }
+                      label="Make collisions elastic"
+                      labelPlacement="start"
+                    />
+                  )}
+                  {!wedge && !pendulum && <Divider />}
                   <FormControlLabel
                     control={
                       <Checkbox
