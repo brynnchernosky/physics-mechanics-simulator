@@ -365,16 +365,6 @@ function App() {
     }
   };
 
-  // Remove everything from simulation
-  const clearSimulation = () => {
-    setPendulum(false);
-    setWedge(false);
-    setSimulationElements([]);
-    setUpdatedForces([forceOfGravity]);
-    setStartForces([forceOfGravity]);
-    setSimulationPaused(true);
-  };
-
   // In review mode, update forces when coefficient of static friction changed
   const updateReviewForcesBasedOnCoefficient = (coefficient: number) => {
     let theta: number = Number(wedgeAngle);
@@ -516,7 +506,6 @@ function App() {
         solutions.push((Math.atan(muS) * 180) / Math.PI);
       }
     }
-    console.log(solutions); // used for debugging/testing
     setSelectedSolutions(solutions);
     return solutions;
   };
@@ -957,7 +946,6 @@ function App() {
           changeWedgeBasedOnNewAngle(26);
         }, 50);
       } else if (simulationType == "Pendulum") {
-        console.log("create freeform pendulum");
         const length = 300;
         const angle = 50;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
@@ -965,10 +953,15 @@ function App() {
         const xPos = xMax / 2 - x - 50;
         const yPos = y - 50 - 5;
         const result = addPendulum(xPos, yPos);
-        console.log("add freeform pendulum at ", xPos, yPos);
         setSimulationElements(result);
-        setUpdatedForces([forceOfGravity]);
-        setStartForces([forceOfGravity]);
+        const mag = 9.81 * Math.cos((50 * Math.PI) / 180);
+        const forceOfTension: IForce = {
+          description: "Tension",
+          magnitude: mag,
+          directionInDegrees: 90 - angle,
+        };
+        setUpdatedForces([forceOfGravity, forceOfTension]);
+        setStartForces([forceOfGravity, forceOfTension]);
         setAdjustPendulumAngle({ angle: 50, length: 300 });
         removeWalls();
       }
@@ -1002,7 +995,6 @@ function App() {
         const xPos = xMax / 2 - x - 50;
         const yPos = y - 50 - 5;
         const result = addPendulum(xPos, yPos);
-        console.log("add tutorial pendulum at ", xPos, yPos);
         setSimulationElements(result);
         setSelectedTutorial(tutorials.pendulum);
         setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));

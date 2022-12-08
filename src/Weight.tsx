@@ -210,8 +210,13 @@ export const Weight = (props: IWeightProps) => {
 
   const resetEverything = () => {
     setKineticFriction(false);
+    if (!pendulum) {
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
+    } else {
+     setXPosition(startPosX)
+     setYPosition(startPosY)
+    }
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
     setUpdatedForces(startForces);
@@ -220,7 +225,6 @@ export const Weight = (props: IWeightProps) => {
 
   // Change pendulum angle based on input field
   useEffect(() => {
-    console.log("use effect triggered");
     let length = adjustPendulumAngle.length;
     const x =
       length * Math.cos(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
@@ -234,7 +238,6 @@ export const Weight = (props: IWeightProps) => {
     setUpdatedStartPosY(yPos);
     setPendulumAngle(adjustPendulumAngle.angle);
     setPendulumLength(adjustPendulumAngle.length);
-    console.log("adjust pendulum angle, set pos to ", xPos, yPos);
   }, [adjustPendulumAngle]);
 
   const getNewAccelerationX = (forceList: IForce[]) => {
@@ -554,8 +557,49 @@ export const Weight = (props: IWeightProps) => {
         onPointerUp={(e) => {
           if (dragging) {
             e.preventDefault();
+            if (!pendulum) {
+              resetEverything();
+            }
             setDragging(false);
-            resetEverything();
+            let newY = yPosition + e.clientY - clickPositionY;
+            if (newY > yMax - 2 * radius) {
+              newY = yMax - 2 * radius;
+            }
+
+            let newX = xPosition + e.clientX - clickPositionX;
+            if (newX > xMax - 2 * radius) {
+              newX = xMax - 2 * radius;
+            } else if (newX < 0) {
+              newX = 0;
+            }
+            if (pendulum) {
+              const x = xMax / 2 - newX - radius;
+              const y = newY + radius + 5;
+              let angle = (Math.atan(y / x) * 180) / Math.PI;
+              if (angle < 0) {
+                angle += 180;
+              }
+              let oppositeAngle = 90 - angle;
+              if (oppositeAngle < 0) {
+                oppositeAngle = 90 - (180 - angle);
+              }
+
+              const pendulumLength = Math.sqrt(x * x + y * y);
+              setPendulumAngle(oppositeAngle);
+              setPendulumLength(Math.sqrt(x * x + y * y));
+              const mag = 9.81 * Math.cos((oppositeAngle * Math.PI) / 180);
+              const forceOfTension: IForce = {
+                description: "Tension",
+                magnitude: mag,
+                directionInDegrees: angle,
+              };
+
+              setKineticFriction(false);
+              setXVelocity(startVelX ?? 0);
+              setYVelocity(startVelY ?? 0);
+              setDisplayValues();
+              setUpdatedForces([forceOfGravity, forceOfTension]);
+            }
           }
         }}
       >
