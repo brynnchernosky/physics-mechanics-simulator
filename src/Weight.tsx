@@ -49,7 +49,7 @@ export interface IWeightProps {
   startVelX?: number;
   startVelY?: number;
   timestepSize: number;
-  updateDisplay: any;
+  updateDisplay: { xDisplay: number; yDisplay: number };
   updatedForces: IForce[];
   setUpdatedForces: (val: IForce[]) => any;
   walls: IWallProps[];
@@ -108,28 +108,31 @@ export const Weight = (props: IWeightProps) => {
     wedgeHeight,
   } = props;
 
-  const xMin = 0;
-  const yMin = 0;
-  const xMax = window.innerWidth * 0.7;
-  const yMax = window.innerHeight * 0.8;
-
-  const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
-  const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
-  const [xPosition, setXPosition] = useState(startPosX);
-  const [yPosition, setYPosition] = useState(startPosY);
-  const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
-  const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
-  const [kineticFriction, setKineticFriction] = useState(false);
-
-  const [dragging, setDragging] = useState(false);
+  // Constants
   const draggable = !wedge && mode == "Freeform";
+  const epsilon = 0.0001;
 
   const forceOfGravity: IForce = {
     description: "Gravity",
     magnitude: mass * 9.81,
     directionInDegrees: 270,
   };
+  const xMax = window.innerWidth * 0.7;
+  const xMin = 0;
+  const yMax = window.innerHeight * 0.8;
+  const yMin = 0;
 
+  // State hooks
+  const [dragging, setDragging] = useState(false);
+  const [kineticFriction, setKineticFriction] = useState(false);
+  const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
+  const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
+  const [xPosition, setXPosition] = useState(startPosX);
+  const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
+  const [yPosition, setYPosition] = useState(startPosY);
+  const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
+
+  // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
     return yMax - yPos - 2 * radius + 5;
   };
@@ -137,6 +140,7 @@ export const Weight = (props: IWeightProps) => {
     return yMax - yDisplay - 2 * radius + 5;
   };
 
+  // Set display values based on real values
   const setDisplayValues = () => {
     const displayPos = getDisplayYPos(yPosition);
     setDisplayYPosition(Math.round(displayPos * 100) / 100);
@@ -151,9 +155,10 @@ export const Weight = (props: IWeightProps) => {
     );
   };
 
+  // When display values updated by user, update real values
   useEffect(() => {
-    if (displayXPosition != xPosition) {
-      let x = displayXPosition;
+    if (updateDisplay.xDisplay != xPosition) {
+      let x = updateDisplay.xDisplay;
       x = Math.max(0, x);
       x = Math.min(x, xMax - 2 * radius);
       setUpdatedStartPosX(x);
@@ -161,8 +166,8 @@ export const Weight = (props: IWeightProps) => {
       setDisplayXPosition(x);
     }
 
-    if (displayYPosition != getDisplayYPos(yPosition)) {
-      let y = displayYPosition;
+    if (updateDisplay.yDisplay != getDisplayYPos(yPosition)) {
+      let y = updateDisplay.yDisplay;
       y = Math.max(0, y);
       y = Math.min(y, yMax - 2 * radius);
       setDisplayYPosition(y);
@@ -184,6 +189,7 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [updateDisplay]);
 
+  // Check for collisions and update
   useEffect(() => {
     if (!paused && !noMovement) {
       let collisions = false;
@@ -210,13 +216,8 @@ export const Weight = (props: IWeightProps) => {
 
   const resetEverything = () => {
     setKineticFriction(false);
-    if (!pendulum) {
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
-    } else {
-     setXPosition(startPosX)
-     setYPosition(startPosY)
-    }
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
     setUpdatedForces(startForces);
@@ -238,6 +239,7 @@ export const Weight = (props: IWeightProps) => {
     setUpdatedStartPosY(yPos);
     setPendulumAngle(adjustPendulumAngle.angle);
     setPendulumLength(adjustPendulumAngle.length);
+    console.log("adjust start values ", xPos, yPos);
   }, [adjustPendulumAngle]);
 
   const getNewAccelerationX = (forceList: IForce[]) => {
@@ -510,7 +512,19 @@ export const Weight = (props: IWeightProps) => {
   const [clickPositionY, setClickPositionY] = useState(0);
   const labelBackgroundColor = `rgba(255,255,255,0.5)`;
 
-  const epsilon = 0.0001;
+  // Update x start position
+  useEffect(() => {
+    console.log("update x start");
+    setUpdatedStartPosX(startPosX);
+    setXPosition(startPosX);
+  }, [startPosX]);
+
+  // Update y start position
+  useEffect(() => {
+    console.log("update y start");
+    setUpdatedStartPosY(startPosY);
+    setXPosition(startPosY);
+  }, [startPosY]);
 
   return (
     <div style={{ zIndex: -1000 }}>
