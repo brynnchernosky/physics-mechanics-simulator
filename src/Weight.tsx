@@ -239,7 +239,6 @@ export const Weight = (props: IWeightProps) => {
     setUpdatedStartPosY(yPos);
     setPendulumAngle(adjustPendulumAngle.angle);
     setPendulumLength(adjustPendulumAngle.length);
-    console.log("adjust start values ", xPos, yPos);
   }, [adjustPendulumAngle]);
 
   const getNewAccelerationX = (forceList: IForce[]) => {

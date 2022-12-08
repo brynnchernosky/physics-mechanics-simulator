@@ -303,11 +303,11 @@ function App() {
     }
 
     setStartPosX(Math.round((xMax * 0.5 - 200) * 10) / 10);
-    setStartPosY(yPos);
+    setStartPosY(getDisplayYPos(yPos));
     console.log(
       "set start pos to be ",
       Math.round((xMax * 0.5 - 200) * 10) / 10,
-      yPos
+      getDisplayYPos(yPos)
     );
 
     if (mode == "Freeform") {
@@ -317,6 +317,11 @@ function App() {
         height
       );
     }
+  };
+
+  // Helper function to go between display and real values
+  const getDisplayYPos = (yPos: number) => {
+    return yMax - yPos - 2 * 50 + 5;
   };
 
   // In review mode, update forces when coefficient of static friction changed
