@@ -141,12 +141,30 @@ export const Weight = (props: IWeightProps) => {
   };
 
   // Set display values based on real values
-  const setDisplayValues = () => {
-    const displayPos = getDisplayYPos(yPosition);
+  const setYPosDisplay = (yPos: number) => {
+    const displayPos = getDisplayYPos(yPos);
     setDisplayYPosition(Math.round(displayPos * 100) / 100);
-    setDisplayXPosition(Math.round(xPosition * 100) / 100);
-    setDisplayYVelocity((-1 * Math.round(yVelocity * 100)) / 100);
-    setDisplayXVelocity(Math.round(xVelocity * 100) / 100);
+  };
+  const setXPosDisplay = (xPos: number) => {
+    setDisplayXPosition(Math.round(xPos * 100) / 100);
+  };
+  const setYVelDisplay = (yVel: number) => {
+    setDisplayYVelocity((-1 * Math.round(yVel * 100)) / 100);
+  };
+  const setXVelDisplay = (xVel: number) => {
+    setDisplayXVelocity(Math.round(xVel * 100) / 100);
+  };
+
+  const setDisplayValues = (
+    xPos: number = xPosition,
+    yPos: number = yPosition,
+    xVel: number = xVelocity,
+    yVel: number = yVelocity
+  ) => {
+    setYPosDisplay(yPos);
+    setXPosDisplay(xPos);
+    setYVelDisplay(yVel);
+    setXVelDisplay(xVel);
     setDisplayYAcceleration(
       (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
     );
@@ -212,6 +230,7 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
+    setDisplayValues();
   }, [startForces]);
 
   const resetEverything = () => {
@@ -516,6 +535,7 @@ export const Weight = (props: IWeightProps) => {
     console.log("update x start to ", startPosX);
     setUpdatedStartPosX(startPosX);
     setXPosition(startPosX);
+    setXPosDisplay(startPosX);
   }, [startPosX]);
 
   // Update y start position
@@ -523,6 +543,7 @@ export const Weight = (props: IWeightProps) => {
     console.log("update y start to ", startPosY);
     setUpdatedStartPosY(startPosY);
     setYPosition(startPosY);
+    setYPosDisplay(startPosY);
   }, [startPosY]);
 
   return (

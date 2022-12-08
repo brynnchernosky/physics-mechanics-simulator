@@ -304,12 +304,6 @@ function App() {
 
     setStartPosX(Math.round((xMax * 0.5 - 200) * 10) / 10);
     setStartPosY(getDisplayYPos(yPos));
-    console.log(
-      "set start pos to be ",
-      Math.round((xMax * 0.5 - 200) * 10) / 10,
-      getDisplayYPos(yPos)
-    );
-
     if (mode == "Freeform") {
       updateForcesWithFriction(
         Number(coefficientOfStaticFriction),
@@ -885,6 +879,8 @@ function App() {
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
+        setPositionXDisplay((xMax + xMin - 50) / 2);
+        setPositionXDisplay(getDisplayYPos(yMin + 50));
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
         addWalls();
