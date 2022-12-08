@@ -243,13 +243,13 @@ function App() {
   };
 
   // Add a simple pendulum to the simulation
-  const addPendulum = () => {
+  const addPendulum = (xPos: number, yPos: number) => {
     setPendulum(true);
     setWedge(false);
     const weight: ISimulationElement = {
       type: "weight",
-      startPosX: xMin + 150,
-      startPosY: yMin + 150,
+      startPosX: xPos,
+      startPosY: yPos,
       color: "red",
       mass: 1,
       radius: 50,
@@ -954,7 +954,7 @@ function App() {
           changeWedgeBasedOnNewAngle(26);
         }, 50);
       } else if (simulationType == "Pendulum") {
-        const result = addPendulum();
+        const result = addPendulum(xMin + 150, yMin + 150);
         const x = xMax / 2 - xMin + 150 - 50;
         const y = yMin + 150 + 50 + 5;
         let angle = (Math.atan(y / x) * 180) / Math.PI;
@@ -997,13 +997,19 @@ function App() {
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
         addWalls();
       } else if (simulationType == "Pendulum") {
-        const result = addPendulum();
+        const length = 300;
+        const angle = 30;
+        const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
+        const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
+        const xPos = xMax / 2 - x - 50;
+        const yPos = y - 50 - 5;
+        const result = addPendulum(xPos, yPos);
         setSimulationElements(result);
-        setPendulumAngle(30);
-        setPendulumLength(200);
         setSelectedTutorial(tutorials.pendulum);
         setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));
         setShowForceMagnitudes(tutorials.pendulum.steps[0].showMagnitude);
+        setPendulumAngle(30);
+        setAdjustPendulumAngle(30);
         addWalls();
       } else if (simulationType == "Inclined Plane") {
         const result = addWedge();

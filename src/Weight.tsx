@@ -769,12 +769,12 @@ export const Weight = (props: IWeightProps) => {
           let arrowEndY: number =
             arrowStartY -
             Math.abs(force.magnitude) *
-              30 *
+              20 *
               Math.sin((force.directionInDegrees * Math.PI) / 180);
           const arrowEndX: number =
             arrowStartX +
             Math.abs(force.magnitude) *
-              30 *
+              20 *
               Math.cos((force.directionInDegrees * Math.PI) / 180);
 
           let color = "#0d0d0d";
