@@ -514,16 +514,16 @@ export const Weight = (props: IWeightProps) => {
 
   // Update x start position
   useEffect(() => {
-    console.log("update x start");
+    console.log("update x start to ", startPosX);
     setUpdatedStartPosX(startPosX);
     setXPosition(startPosX);
   }, [startPosX]);
 
   // Update y start position
   useEffect(() => {
-    console.log("update y start");
+    console.log("update y start to ", startPosY);
     setUpdatedStartPosY(startPosY);
-    setXPosition(startPosY);
+    setYPosition(startPosY);
   }, [startPosY]);
 
   return (

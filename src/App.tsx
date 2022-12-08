@@ -143,7 +143,7 @@ function App() {
   const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
   const [questionPartOne, setQuestionPartOne] = useState<string>("");
   const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
-  const [mode, setMode] = useState<string>("Tutorial");
+  const [mode, setMode] = useState<string>("Freeform");
   const [noMovement, setNoMovement] = useState(false);
   const [weight, setWeight] = useState(false);
   const [pendulum, setPendulum] = useState(false);
@@ -878,8 +878,8 @@ function App() {
       setShowForceMagnitudes(true);
       if (simulationType == "Free Weight") {
         addWeight();
-        setStartPosY(100);
-        setStartPosX((xMax + xMin + 50) / 2);
+        setStartPosY(yMin + 50);
+        setStartPosX((xMax + xMin - 50) / 2);
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
         addWalls();
@@ -898,9 +898,8 @@ function App() {
         const xPos = xMax / 2 - x - 50;
         const yPos = y - 50 - 5;
         addPendulum();
-        // setStartPosX(xPos);
-        // setStartPosY(yPos);
-        // console.log("start values ", xPos, yPos);
+        setStartPosX(xPos);
+        setStartPosY(yPos);
         const mag = 9.81 * Math.cos((50 * Math.PI) / 180);
         const forceOfTension: IForce = {
           description: "Tension",
@@ -1687,13 +1686,12 @@ function App() {
                   value={pendulumAngle}
                   effect={(value) => {
                     if (pendulum) {
-                      const mag =
-                        1 * 9.81 * Math.cos((value * Math.PI) / 180);
+                      const mag = 1 * 9.81 * Math.cos((value * Math.PI) / 180);
 
                       const forceOfTension: IForce = {
                         description: "Tension",
                         magnitude: mag,
-                        directionInDegrees: 90-value,
+                        directionInDegrees: 90 - value,
                       };
                       setUpdatedForces([forceOfGravity, forceOfTension]);
                       setAdjustPendulumAngle({ angle: value, length: 300 });
