@@ -256,26 +256,6 @@ function App() {
       pendulum: true,
       wedge: false,
     };
-    const x = xMax / 2 - xMin + 150 - 50;
-    const y = yMin + 150 + 50 + 5;
-    let angle = (Math.atan(y / x) * 180) / Math.PI;
-    if (angle < 0) {
-      angle += 180;
-    }
-    let oppositeAngle = 90 - angle;
-    if (oppositeAngle < 0) {
-      oppositeAngle = 90 - (180 - angle);
-    }
-    setPendulumAngle(oppositeAngle);
-    setPositionXDisplay(xMin + 150);
-    setPositionYDisplay(
-      Math.round((yMax - (yMin + 150) - 2 * 50 + 5) * 10) / 10
-    );
-    setSimulationElements([weight]);
-    setUpdatedForces([forceOfGravity]);
-    setStartForces([forceOfGravity]);
-    removeWalls();
-    setSimulationReset(!simulationReset);
     return [weight];
   };
 
@@ -716,6 +696,7 @@ function App() {
     const d = new Date();
     for (let i = 0; i < question.answerParts.length; i++) {
       if (question.answerParts[i] == "force of gravity") {
+        setReviewGravityMagnitude(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -736,6 +717,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "angle of gravity") {
+        setReviewGravityAngle(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -757,6 +739,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "normal force") {
+        setReviewNormalMagnitude(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -777,6 +760,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "angle of normal force") {
+        setReviewNormalAngle(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -798,6 +782,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "force of static friction") {
+        setReviewStaticMagnitude(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -821,6 +806,7 @@ function App() {
           </div>
         );
       } else if (question.answerParts[i] == "angle of static friction") {
+        setReviewStaticAngle(0);
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
@@ -968,7 +954,27 @@ function App() {
           changeWedgeBasedOnNewAngle(26);
         }, 50);
       } else if (simulationType == "Pendulum") {
-        addPendulum();
+        const result = addPendulum();
+        const x = xMax / 2 - xMin + 150 - 50;
+        const y = yMin + 150 + 50 + 5;
+        let angle = (Math.atan(y / x) * 180) / Math.PI;
+        if (angle < 0) {
+          angle += 180;
+        }
+        let oppositeAngle = 90 - angle;
+        if (oppositeAngle < 0) {
+          oppositeAngle = 90 - (180 - angle);
+        }
+        setPendulumAngle(oppositeAngle);
+        setPositionXDisplay(xMin + 150);
+        setPositionYDisplay(
+          Math.round((yMax - (yMin + 150) - 2 * 50 + 5) * 10) / 10
+        );
+        setSimulationElements(result);
+        setUpdatedForces([forceOfGravity]);
+        setStartForces([forceOfGravity]);
+        removeWalls();
+        setSimulationReset(!simulationReset);
       }
     } else if (mode == "Review") {
       setShowForceMagnitudes(true);
@@ -980,26 +986,42 @@ function App() {
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
-      // hack to mke sure weight positioned correctly
       generateNewQuestion();
     } else if (mode == "Tutorial") {
-      if (simulationType == "Inclined Plane") {
+      if (simulationType == "Free Weight") {
+        const result = addWeight();
+        setSimulationElements(result);
+        setSelectedTutorial(tutorials.freeWeight);
+        setSelectedTutorial(tutorials.freeWeight);
+        setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
+        setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
+        addWalls();
+      } else if (simulationType == "Pendulum") {
+        const result = addPendulum();
+        setSimulationElements(result);
+        setPendulumAngle(30);
+        setPendulumLength(200);
+        setSelectedTutorial(tutorials.pendulum);
+        setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));
+        setShowForceMagnitudes(tutorials.pendulum.steps[0].showMagnitude);
+        addWalls();
+      } else if (simulationType == "Inclined Plane") {
         const result = addWedge();
         setSimulationElements(result);
         setPositionXDisplay(Math.round((xMax * 0.5 - 200) * 10) / 10);
         setPositionYDisplay(Math.round((200 + 50 + 25 - 2 * 50 + 5) * 10) / 10);
         setWedgeAngle(26);
-        addWalls();
-        setSimulationReset(!simulationReset);
+        setTimeout(() => {
+          changeWedgeBasedOnNewAngle(26);
+        }, 50);
         setSelectedTutorial(tutorials.inclinePlane);
         setStartForces(
           getForceFromJSON(tutorials.inclinePlane.steps[0].forces)
         );
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
-        setTimeout(() => {
-          changeWedgeBasedOnNewAngle(26);
-        }, 50);
+        addWalls();
       }
+      setSimulationReset(!simulationReset);
     }
   }, [simulationType, mode]);
 

@@ -1,4 +1,47 @@
 {
+  "freeWeight": {
+    "question": "A 1kg weight is released from 200m above the ground. What are the magnitude and directions of the forces acting on the weight? (Ignore air resistance)",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "There is only one force acting on the weight: the force of gravity.",
+        "forces": [
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+        ],
+        "showMagnitude": false
+      },
+      {
+        "description": "Force of Gravity",
+        "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
+        "forces": [
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+        ],
+        "showMagnitude": true
+      }
+    ]
+  },
+  "pendulum": {
+    "question": "A 1kg weight on a 200m rod is released from an angle 30 degrees offset from equilibrium. What are the magnitude and directions of the forces acting on the weight immediately after release? (Ignore air resistance)",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "There are two force acting on the weight: the force of gravity and the force of tension.",
+        "forces": [
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
+          { "description": "Tension", "magnitude": 8.5, "directionInDegrees": 60 }
+        ],
+        "showMagnitude": false
+      },
+      {
+        "description": "Force of Gravity",
+        "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
+        "forces": [
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+        ],
+        "showMagnitude": true
+      }
+    ]
+  },
   "inclinePlane": {
     "question": "There is a 1kg weight on an inclined plane. The plane is at an angle θ from the ground, and has a coefficient of static friction μ. The system is in equilibrium (the net force on the weight is 0). What are the magnitudes and directions of the forces acting on the weight?",
     "steps": [
