@@ -148,7 +148,7 @@ function App() {
   const [weight, setWeight] = useState(false);
   const [pendulum, setPendulum] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
-  const [pendulumLength, setPendulumLength] = useState(0);
+  const [pendulumLength, setPendulumLength] = useState(300);
   const [positionXDisplay, setPositionXDisplay] = useState(0);
   const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
@@ -907,6 +907,8 @@ function App() {
         };
         setUpdatedForces([forceOfGravity, forceOfTension]);
         setStartForces([forceOfGravity, forceOfTension]);
+        setPendulumAngle(50)
+        setPendulumLength(300)
         setAdjustPendulumAngle({ angle: 50, length: 300 });
         removeWalls();
       }
@@ -946,6 +948,8 @@ function App() {
         setSelectedTutorial(tutorials.pendulum);
         setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));
         setShowForceMagnitudes(tutorials.pendulum.steps[0].showMagnitude);
+        setPendulumAngle(50)
+        setPendulumLength(300)
         setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
       } else if (simulationType == "Inclined Plane") {
@@ -1715,42 +1719,79 @@ function App() {
                 </Typography>
               )}
               {pendulum && simulationPaused && (
-                <InputField
-                  label={
-                    <Tooltip
-                      title={
-                        <React.Fragment>
-                          <Typography color="inherit">&theta;</Typography>
-                          Pendulum angle offest from equilibrium
-                        </React.Fragment>
-                      }
-                      followCursor
-                    >
-                      <Box>&theta;</Box>
-                    </Tooltip>
-                  }
-                  lowerBound={0}
-                  changeValue={setPendulumAngle}
-                  step={1}
-                  unit={"°"}
-                  upperBound={59}
-                  value={pendulumAngle}
-                  effect={(value) => {
-                    if (pendulum) {
-                      const mag = 1 * 9.81 * Math.cos((value * Math.PI) / 180);
-
-                      const forceOfTension: IForce = {
-                        description: "Tension",
-                        magnitude: mag,
-                        directionInDegrees: 90 - value,
-                      };
-                      setUpdatedForces([forceOfGravity, forceOfTension]);
-                      setAdjustPendulumAngle({ angle: value, length: 300 });
+                <div>
+                  <InputField
+                    label={
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">&theta;</Typography>
+                            Pendulum angle offest from equilibrium
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>&theta;</Box>
+                      </Tooltip>
                     }
-                  }}
-                  radianEquivalent={true}
-                  mode={"Freeform"}
-                />
+                    lowerBound={0}
+                    changeValue={setPendulumAngle}
+                    step={1}
+                    unit={"°"}
+                    upperBound={59}
+                    value={pendulumAngle}
+                    effect={(value) => {
+                      if (pendulum) {
+                        const mag =
+                          1 * 9.81 * Math.cos((value * Math.PI) / 180);
+
+                        const forceOfTension: IForce = {
+                          description: "Tension",
+                          magnitude: mag,
+                          directionInDegrees: 90 - value,
+                        };
+                        setUpdatedForces([forceOfGravity, forceOfTension]);
+                        setAdjustPendulumAngle({
+                          angle: value,
+                          length: pendulumLength,
+                        });
+                      }
+                    }}
+                    radianEquivalent={true}
+                    mode={"Freeform"}
+                  />
+                  <InputField
+                    label={
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">Length</Typography>
+                            Pendulum rod length
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>Length</Box>
+                      </Tooltip>
+                    }
+                    lowerBound={0}
+                    changeValue={setPendulumLength}
+                    step={1}
+                    unit={"m"}
+                    upperBound={400}
+                    value={pendulumLength}
+                    effect={(value) => {
+                      if (pendulum) {
+                        setAdjustPendulumAngle({
+                          angle: pendulumAngle,
+                          length: value,
+                        });
+                      }
+                    }}
+                    radianEquivalent={false}
+                    mode={"Freeform"}
+                  />
+                </div>
               )}
             </div>
           )}
