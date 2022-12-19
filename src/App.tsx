@@ -123,6 +123,20 @@ function App() {
   const [startPosY, setStartPosY] = useState(0);
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
+  const [positionXDisplay, setPositionXDisplay] = useState(0);
+  const [positionYDisplay, setPositionYDisplay] = useState(0);
+  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
+  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
+
+  const [startPosX2, setStartPosX2] = useState(0);
+  const [startPosY2, setStartPosY2] = useState(0);
+  const [accelerationXDisplay2, setAccelerationXDisplay2] = useState(0);
+  const [accelerationYDisplay2, setAccelerationYDisplay2] = useState(0);
+  const [positionXDisplay2, setPositionXDisplay2] = useState(0);
+  const [positionYDisplay2, setPositionYDisplay2] = useState(0);
+  const [velocityXDisplay2, setVelocityXDisplay2] = useState(0);
+  const [velocityYDisplay2, setVelocityYDisplay2] = useState(0);
+
   const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
     angle: number;
     length: number;
@@ -149,8 +163,6 @@ function App() {
   const [pendulum, setPendulum] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
   const [pendulumLength, setPendulumLength] = useState(300);
-  const [positionXDisplay, setPositionXDisplay] = useState(0);
-  const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
   const [reviewGravityMagnitude, setReviewGravityMagnitude] =
@@ -182,8 +194,6 @@ function App() {
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([
     forceOfGravity,
   ]);
-  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
-  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
   const [wedge, setWedge] = useState(false);
   const [wedgeAngle, setWedgeAngle] = React.useState<
@@ -193,17 +203,28 @@ function App() {
     Math.tan((26 * Math.PI) / 180) * 400
   );
   const [wedgeWidth, setWedgeWidth] = useState(400);
+  const [twoWeights, setTwoWeights] = useState(false);
 
-  // Add a free weight to the simulation
+  // Add one weight to the simulation
   const addWeight = () => {
     setWeight(true);
+    setTwoWeights(false);
     setWedge(false);
     setPendulum(false);
   };
 
-  // Add a wedge with a free weight to the simulation
+  // Add two weights to the simulation
+  const addTwoWeights = () => {
+    setWeight(true);
+    setTwoWeights(true);
+    setWedge(false);
+    setPendulum(false);
+  };
+
+  // Add a wedge with a One Weight to the simulation
   const addWedge = () => {
     setWeight(true);
+    setTwoWeights(false);
     setWedge(true);
     setPendulum(false);
   };
@@ -211,6 +232,7 @@ function App() {
   // Add a simple pendulum to the simulation
   const addPendulum = () => {
     setWeight(true);
+    setTwoWeights(false);
     setPendulum(true);
     setWedge(false);
   };
@@ -875,7 +897,7 @@ function App() {
   useEffect(() => {
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
-      if (simulationType == "Free Weight") {
+      if (simulationType == "One Weight") {
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
@@ -883,6 +905,17 @@ function App() {
         setStartForces([forceOfGravity]);
         addWalls();
         setSimulationReset(!simulationReset);
+      } else if (simulationType == "Two Weights") {
+        addTwoWeights();
+        setStartPosY(yMax - 75);
+        setStartPosX((xMax + xMin - 200) / 2);
+        setStartPosY2(yMax - 75);
+        setStartPosX2((xMax + xMin + 200) / 2);
+        setUpdatedForces([forceOfGravity]);
+        setStartForces([forceOfGravity]);
+        addWalls();
+        setSimulationReset(!simulationReset);
+        // TODO
       } else if (simulationType == "Inclined Plane") {
         addWedge();
         changeWedgeBasedOnNewAngle(26);
@@ -907,14 +940,16 @@ function App() {
         };
         setUpdatedForces([forceOfGravity, forceOfTension]);
         setStartForces([forceOfGravity, forceOfTension]);
-        setPendulumAngle(50)
-        setPendulumLength(300)
+        setPendulumAngle(50);
+        setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 50, length: 300 });
         removeWalls();
       }
     } else if (mode == "Review") {
       setShowForceMagnitudes(true);
-      if (simulationType == "Inclined Plane") {
+      if (simulationType == "Two Weights") {
+        // TODO
+      } else if (simulationType == "Inclined Plane") {
         addWedge();
         setUpdatedForces([]);
         setStartForces([]);
@@ -926,7 +961,7 @@ function App() {
       generateNewQuestion();
     } else if (mode == "Tutorial") {
       setStepNumber(0);
-      if (simulationType == "Free Weight") {
+      if (simulationType == "One Weight") {
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
@@ -935,6 +970,8 @@ function App() {
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
         addWalls();
+      } else if (simulationType == "Two Weights") {
+        // TODO
       } else if (simulationType == "Pendulum") {
         const length = 300;
         const angle = 30;
@@ -948,8 +985,8 @@ function App() {
         setSelectedTutorial(tutorials.pendulum);
         setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));
         setShowForceMagnitudes(tutorials.pendulum.steps[0].showMagnitude);
-        setPendulumAngle(50)
-        setPendulumLength(300)
+        setPendulumAngle(50);
+        setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
       } else if (simulationType == "Inclined Plane") {
@@ -1117,7 +1154,8 @@ function App() {
                     }}
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
-                    <option value="Free Weight">Free Weight</option>
+                    <option value="One Weight">One Weight</option>
+                    <option value="Two Weights">Two Weights</option>
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                   </select>
@@ -1251,6 +1289,56 @@ function App() {
                   startForces={startForces}
                   startPosX={startPosX}
                   startPosY={startPosY}
+                  timestepSize={0.002}
+                  updateDisplay={displayChange}
+                  updatedForces={updatedForces}
+                  walls={wallPositions}
+                  wedge={wedge}
+                  wedgeHeight={wedgeHeight}
+                  wedgeWidth={wedgeWidth}
+                  coefficientOfKineticFriction={Number(
+                    coefficientOfKineticFriction
+                  )}
+                />
+              )}
+              {twoWeights && (
+                <Weight
+                  adjustPendulumAngle={adjustPendulumAngle}
+                  color={"blue"}
+                  displayXPosition={positionXDisplay2}
+                  displayXVelocity={velocityXDisplay2}
+                  displayYPosition={positionYDisplay2}
+                  displayYVelocity={velocityYDisplay2}
+                  elasticCollisions={elasticCollisions}
+                  incrementTime={timer}
+                  mass={1}
+                  mode={mode}
+                  noMovement={noMovement}
+                  paused={simulationPaused}
+                  pendulum={pendulum}
+                  pendulumAngle={pendulumAngle}
+                  pendulumLength={pendulumLength}
+                  radius={50}
+                  reset={simulationReset}
+                  showForceMagnitudes={showForceMagnitudes}
+                  setSketching={setSketching}
+                  setDisplayXAcceleration={setAccelerationXDisplay2}
+                  setDisplayXPosition={setPositionXDisplay2}
+                  setDisplayXVelocity={setVelocityXDisplay2}
+                  setDisplayYAcceleration={setAccelerationYDisplay2}
+                  setDisplayYPosition={setPositionYDisplay2}
+                  setDisplayYVelocity={setVelocityYDisplay2}
+                  setPaused={setSimulationPaused}
+                  setPendulumAngle={setPendulumAngle}
+                  setPendulumLength={setPendulumLength}
+                  setStartPendulumAngle={setStartPendulumAngle}
+                  setUpdatedForces={setUpdatedForces}
+                  showAcceleration={showAcceleration}
+                  showForces={showForces}
+                  showVelocity={showVelocity}
+                  startForces={startForces}
+                  startPosX={startPosX2}
+                  startPosY={startPosY2}
                   timestepSize={0.002}
                   updateDisplay={displayChange}
                   updatedForces={updatedForces}
@@ -1460,7 +1548,7 @@ function App() {
               </div>
               <div>
                 <p>Resources</p>
-                {simulationType == "Free Weight" && (
+                {simulationType == "One Weight" && (
                   <ul>
                     <li>
                       <a
@@ -1796,6 +1884,7 @@ function App() {
             </div>
           )}
           <div className="mechanicsSimulationEquation">
+             {mode == "Freeform" && twoWeights && (<p>Red Weight</p>)}
             {mode == "Freeform" && weight && (
               <table>
                 <tbody>
