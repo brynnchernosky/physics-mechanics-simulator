@@ -1,4 +1,3 @@
-import { InputAdornment, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
@@ -26,6 +25,11 @@ export interface IWeightProps {
   wedge: boolean;
   radius: number;
   reset: boolean;
+  spring: boolean;
+  springConstant: number;
+  springStartLength: number;
+  springCurrentLength: number;
+  setSpringCurrentLength: (val: number) => any;
   setDisplayXAcceleration: (val: number) => any;
   setDisplayXPosition: (val: number) => any;
   setDisplayXVelocity: (val: number) => any;
@@ -90,6 +94,12 @@ export const Weight = (props: IWeightProps) => {
     setPendulumAngle,
     setPendulumLength,
     setStartPendulumAngle,
+    spring,
+    springConstant,
+    springStartLength,
+    springCurrentLength,
+    setSpringCurrentLength,
+    setDisplayXAcceleration,
     showAcceleration,
     showForces,
     showForceMagnitudes,
@@ -211,7 +221,7 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (!paused && !noMovement) {
       let collisions = false;
-      if (!pendulum) {
+      if (!pendulum && !spring) {
         const collisionsWithGround = checkForCollisionsWithGround();
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
@@ -283,7 +293,17 @@ export const Weight = (props: IWeightProps) => {
     return newYAcc;
   };
 
-  const getNewForces = (
+  const getNewSpringForces = (yPos: number) => {
+    const springForce: IForce = {
+      description: "Tension",
+      magnitude: springConstant * (yPos - springStartLength),
+      directionInDegrees: 90,
+    };
+
+    return [forceOfGravity, springForce];
+  };
+
+  const getNewPendulumForces = (
     xPos: number,
     yPos: number,
     xVel: number,
@@ -448,7 +468,9 @@ export const Weight = (props: IWeightProps) => {
     let xVel = xVelocity;
     let yVel = yVelocity;
     for (let i = 0; i < 60; i++) {
-      let forces1 = getNewForces(xPos, yPos, xVel, yVel);
+      let forces1 = pendulum
+        ? getNewPendulumForces(xPos, yPos, xVel, yVel)
+        : updatedForces;
       const xAcc1 = getNewAccelerationX(forces1);
       const yAcc1 = getNewAccelerationY(forces1);
       const xVel1 = getNewVelocity(xVel, xAcc1);
@@ -458,7 +480,9 @@ export const Weight = (props: IWeightProps) => {
       let yVel2 = getNewVelocity(yVel, yAcc1 / 2);
       let xPos2 = getNewPosition(xPos, xVel1 / 2);
       let yPos2 = getNewPosition(yPos, yVel1 / 2);
-      const forces2 = getNewForces(xPos2, yPos2, xVel2, yVel2);
+      const forces2 = pendulum
+        ? getNewPendulumForces(xPos2, yPos2, xVel2, yVel2)
+        : updatedForces;
       const xAcc2 = getNewAccelerationX(forces2);
       const yAcc2 = getNewAccelerationY(forces2);
       xVel2 = getNewVelocity(xVel2, xAcc2);
@@ -470,7 +494,9 @@ export const Weight = (props: IWeightProps) => {
       let yVel3 = getNewVelocity(yVel, yAcc2 / 2);
       let xPos3 = getNewPosition(xPos, xVel2 / 2);
       let yPos3 = getNewPosition(yPos, yVel2 / 2);
-      const forces3 = getNewForces(xPos3, yPos3, xVel3, yVel3);
+      const forces3 = pendulum
+        ? getNewPendulumForces(xPos3, yPos3, xVel3, yVel3)
+        : updatedForces;
       const xAcc3 = getNewAccelerationX(forces3);
       const yAcc3 = getNewAccelerationY(forces3);
       xVel3 = getNewVelocity(xVel3, xAcc3);
@@ -482,7 +508,9 @@ export const Weight = (props: IWeightProps) => {
       let yVel4 = getNewVelocity(yVel, yAcc3);
       let xPos4 = getNewPosition(xPos, xVel3);
       let yPos4 = getNewPosition(yPos, yVel3);
-      const forces4 = getNewForces(xPos4, yPos4, xVel4, yVel4);
+      const forces4 = pendulum
+        ? getNewPendulumForces(xPos4, yPos4, xVel4, yVel4)
+        : updatedForces;
       const xAcc4 = getNewAccelerationX(forces4);
       const yAcc4 = getNewAccelerationY(forces4);
       xVel4 = getNewVelocity(xVel4, xAcc4);
@@ -504,7 +532,7 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(yVel);
     setXPosition(xPos);
     setYPosition(yPos);
-    setUpdatedForces(getNewForces(xPos, yPos, xVel, yVel));
+    setUpdatedForces(getNewPendulumForces(xPos, yPos, xVel, yVel));
   };
 
   let weightStyle = {

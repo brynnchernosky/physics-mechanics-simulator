@@ -163,6 +163,10 @@ function App() {
   const [pendulum, setPendulum] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
   const [pendulumLength, setPendulumLength] = useState(300);
+  const [spring, setSpring] = useState(false);
+  const [springConstant, setSpringConstant] = useState(1);
+  const [springStartLength, setSpringStartLength] = useState(100);
+  const [springCurrentLength, setSpringCurrentLength] = useState(100);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
   const [reviewGravityMagnitude, setReviewGravityMagnitude] =
@@ -211,6 +215,7 @@ function App() {
     setTwoWeights(false);
     setWedge(false);
     setPendulum(false);
+    setSpring(false);
   };
 
   // Add two weights to the simulation
@@ -219,6 +224,7 @@ function App() {
     setTwoWeights(true);
     setWedge(false);
     setPendulum(false);
+    setSpring(false);
   };
 
   // Add a wedge with a One Weight to the simulation
@@ -227,6 +233,7 @@ function App() {
     setTwoWeights(false);
     setWedge(true);
     setPendulum(false);
+    setSpring(false);
   };
 
   // Add a simple pendulum to the simulation
@@ -235,6 +242,7 @@ function App() {
     setTwoWeights(false);
     setPendulum(true);
     setWedge(false);
+    setSpring(false);
   };
 
   // Update forces when coefficient of static friction changes in freeform mode
@@ -907,9 +915,9 @@ function App() {
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Two Weights") {
         addTwoWeights();
-        setStartPosY(yMax - 75);
+        setStartPosY(yMax - 100);
         setStartPosX((xMax + xMin - 200) / 2);
-        setStartPosY2(yMax - 75);
+        setStartPosY2(yMax - 100);
         setStartPosX2((xMax + xMin + 200) / 2);
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
@@ -944,10 +952,26 @@ function App() {
         setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 50, length: 300 });
         removeWalls();
+      } else if (simulationType == "Spring") {
+        const springForce: IForce = {
+          description: "Spring force",
+          magnitude: 0,
+          directionInDegrees: 90,
+        };
+        setUpdatedForces([forceOfGravity, springForce]);
+        setStartForces([forceOfGravity, springForce]);
+        setStartPosX(xMax / 2 - 50);
+        setStartPosY(100);
+        setSpringConstant(1);
+        setSpringStartLength(100);
+        setSpringCurrentLength(100);
+        removeWalls();
       }
     } else if (mode == "Review") {
       setShowForceMagnitudes(true);
       if (simulationType == "Two Weights") {
+        // TODO
+      } else if (simulationType == "Spring) {
         // TODO
       } else if (simulationType == "Inclined Plane") {
         addWedge();
@@ -971,6 +995,8 @@ function App() {
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
         addWalls();
       } else if (simulationType == "Two Weights") {
+        // TODO
+      } else if (simulationType == "Spring") {
         // TODO
       } else if (simulationType == "Pendulum") {
         const length = 300;
@@ -1155,9 +1181,10 @@ function App() {
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
                     <option value="One Weight">One Weight</option>
-                    <option value="Two Weights">Two Weights</option>
+                    {/* <option value="Two Weights">Two Weights</option> */}
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
+                    <option value="Spring">Spring</option>
                   </select>
                 </div>
               </div>
@@ -1270,6 +1297,11 @@ function App() {
                   pendulumLength={pendulumLength}
                   radius={50}
                   reset={simulationReset}
+                  spring={spring}
+                  springStartLength={springStartLength}
+                  springCurrentLength={springCurrentLength}
+                  setSpringCurrentLength={setSpringCurrentLength}
+                  springConstant={springConstant}
                   showForceMagnitudes={showForceMagnitudes}
                   setSketching={setSketching}
                   setDisplayXAcceleration={setAccelerationXDisplay}
@@ -1884,7 +1916,7 @@ function App() {
             </div>
           )}
           <div className="mechanicsSimulationEquation">
-             {mode == "Freeform" && twoWeights && (<p>Red Weight</p>)}
+            {mode == "Freeform" && twoWeights && <p>Red Weight</p>}
             {mode == "Freeform" && weight && (
               <table>
                 <tbody>
