@@ -234,6 +234,7 @@ export const Weight = (props: IWeightProps) => {
 
   useEffect(() => {
     resetEverything();
+    console.log("reset everything");
   }, [reset]);
 
   useEffect(() => {

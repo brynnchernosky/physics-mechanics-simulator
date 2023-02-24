@@ -59,7 +59,6 @@ export const InputField = (props: IInputProps) => {
   }, [value]);
 
   const externalUpdate = () => {
-    console.log("run external update ");
     changeValue(Number(value));
     setTempValue(Number(value));
     setTempRadianValue((Number(value) * Math.PI) / 180);
@@ -69,7 +68,6 @@ export const InputField = (props: IInputProps) => {
   };
 
   useEffect(() => {
-    console.log("trigger external update ");
     externalUpdate();
   }, [update]);
 

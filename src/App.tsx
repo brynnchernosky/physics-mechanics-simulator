@@ -926,6 +926,7 @@ function App() {
         setSimulationReset(!simulationReset);
         // TODO
       } else if (simulationType == "Inclined Plane") {
+        console.log("reset from mode/topic");
         addWedge();
         changeWedgeBasedOnNewAngle(26);
         addWalls();
@@ -1767,7 +1768,8 @@ function App() {
                     value={wedgeAngle}
                     effect={(val: number) => {
                       changeWedgeBasedOnNewAngle(val);
-                      setSimulationReset(!simulationReset);
+                      // setSimulationReset(!simulationReset);
+                      // console.log("reset from angle");
                     }}
                     radianEquivalent={true}
                     mode={"Freeform"}
@@ -1799,6 +1801,7 @@ function App() {
                     effect={(val: number) => {
                       updateForcesWithFriction(val);
                       setSimulationReset(!simulationReset);
+                      console.log("reset from static");
                       if (val < Number(coefficientOfKineticFriction)) {
                         setCoefficientOfKineticFriction(val);
                         setUpdateKineticFriction(!updateKineticFriction);
@@ -1832,7 +1835,7 @@ function App() {
                     upperBound={Number(coefficientOfStaticFriction)}
                     value={coefficientOfKineticFriction}
                     effect={(val: number) => {
-                      setSimulationReset(!simulationReset);
+                      // setSimulationReset(!simulationReset);
                     }}
                     mode={"Freeform"}
                     update={updateKineticFriction}
