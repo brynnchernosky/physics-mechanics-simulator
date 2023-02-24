@@ -317,9 +317,9 @@ export const Weight = (props: IWeightProps) => {
     xVel: number,
     yVel: number
   ) => {
-   if (!pendulum) {
-   return updatedForces
-   }
+    if (!pendulum) {
+      return updatedForces;
+    }
     const x = xMax / 2 - xPos - radius;
     const y = yPos + radius + 5;
     let angle = (Math.atan(y / x) * 180) / Math.PI;
@@ -428,7 +428,12 @@ export const Weight = (props: IWeightProps) => {
   };
 
   useEffect(() => {
-    if (wedge && xVelocity != 0 && mode != "Review" && !kineticFriction) {
+    if (
+      wedge &&
+      Math.abs(xVelocity) > 0.1 &&
+      mode != "Review" &&
+      !kineticFriction
+    ) {
       setKineticFriction(true);
       //switch from static to kinetic friction
       const normalForce: IForce = {
