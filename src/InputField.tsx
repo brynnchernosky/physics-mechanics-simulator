@@ -62,9 +62,6 @@ export const InputField = (props: IInputProps) => {
     changeValue(Number(value));
     setTempValue(Number(value));
     setTempRadianValue((Number(value) * Math.PI) / 180);
-    if (effect) {
-      effect(Number(value));
-    }
   };
 
   useEffect(() => {
