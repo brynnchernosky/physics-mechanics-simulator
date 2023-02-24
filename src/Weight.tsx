@@ -317,6 +317,9 @@ export const Weight = (props: IWeightProps) => {
     xVel: number,
     yVel: number
   ) => {
+   if (!pendulum) {
+   return updatedForces
+   }
     const x = xMax / 2 - xPos - radius;
     const y = yPos + radius + 5;
     let angle = (Math.atan(y / x) * 180) / Math.PI;
