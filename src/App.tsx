@@ -121,6 +121,8 @@ function App() {
   // State variables
   const [startPosX, setStartPosX] = useState(0);
   const [startPosY, setStartPosY] = useState(0);
+  const [startVelX, setStartVelX] = useState(0);
+  const [startVelY, setStartVelY] = useState(0);
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
   const [positionXDisplay, setPositionXDisplay] = useState(0);
@@ -904,12 +906,16 @@ function App() {
 
   // Use effect hook to handle mode/topic change
   useEffect(() => {
+    setStartVelX(0);
+    setStartVelY(0);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
+        setPositionYDisplay(getDisplayYPos(yMin + 50));
+        setPositionXDisplay((xMax + xMin - 50) / 2);
         setUpdatedForces([forceOfGravity]);
         setStartForces([forceOfGravity]);
         addWalls();
@@ -1322,6 +1328,8 @@ function App() {
                   startForces={startForces}
                   startPosX={startPosX}
                   startPosY={startPosY}
+                  startVelX={startVelX}
+                  startVelY={startVelY}
                   timestepSize={0.002}
                   updateDisplay={displayChange}
                   updatedForces={updatedForces}
@@ -1924,16 +1932,16 @@ function App() {
                     value={Math.round(pendulumLength)}
                     effect={(value) => {
                       if (pendulum) {
-                       const mag =
-                         1 * 9.81 * Math.cos((pendulumAngle * Math.PI) / 180);
+                        const mag =
+                          1 * 9.81 * Math.cos((pendulumAngle * Math.PI) / 180);
 
-                       const forceOfTension: IForce = {
-                         description: "Tension",
-                         magnitude: mag,
-                         directionInDegrees: 90 - pendulumAngle,
-                       };
-                       setStartForces([forceOfGravity, forceOfTension]);
-                       setUpdatedForces([forceOfGravity, forceOfTension]);
+                        const forceOfTension: IForce = {
+                          description: "Tension",
+                          magnitude: mag,
+                          directionInDegrees: 90 - pendulumAngle,
+                        };
+                        setStartForces([forceOfGravity, forceOfTension]);
+                        setUpdatedForces([forceOfGravity, forceOfTension]);
                         setAdjustPendulumAngle({
                           angle: pendulumAngle,
                           length: value,
@@ -1999,7 +2007,7 @@ function App() {
                           changeValue={setPositionXDisplay}
                           step={1}
                           unit={"m"}
-                          upperBound={xMax-110}
+                          upperBound={xMax - 110}
                           value={positionXDisplay}
                           effect={(value) => {
                             setDisplayChange({
@@ -2024,7 +2032,7 @@ function App() {
                           changeValue={setPositionYDisplay}
                           step={1}
                           unit={"m"}
-                          upperBound={yMax-110}
+                          upperBound={yMax - 110}
                           value={positionYDisplay}
                           effect={(value) => {
                             setDisplayChange({
@@ -2078,12 +2086,13 @@ function App() {
                           unit={"m/s"}
                           upperBound={50}
                           value={velocityXDisplay}
-                          effect={(value) =>
+                          effect={(value) => {
+                            setStartVelX(value);
                             setDisplayChange({
                               xDisplay: positionXDisplay,
                               yDisplay: positionYDisplay,
-                            })
-                          }
+                            });
+                          }}
                           small={true}
                           mode={"Freeform"}
                         />
@@ -2103,12 +2112,13 @@ function App() {
                           unit={"m/s"}
                           upperBound={50}
                           value={velocityYDisplay}
-                          effect={(value) =>
+                          effect={(value) => {
+                            setStartVelY(value);
                             setDisplayChange({
                               xDisplay: positionXDisplay,
                               yDisplay: positionYDisplay,
-                            })
-                          }
+                            });
+                          }}
                           small={true}
                           mode={"Freeform"}
                         />

@@ -191,6 +191,8 @@ export const Weight = (props: IWeightProps) => {
       setUpdatedStartPosX(x);
       setXPosition(x);
       setDisplayXPosition(x);
+      console.log("old xPos: ", xPosition);
+      console.log("xDisplay: ", updateDisplay.xDisplay);
     }
 
     if (updateDisplay.yDisplay != getDisplayYPos(yPosition)) {
@@ -201,6 +203,8 @@ export const Weight = (props: IWeightProps) => {
       let coordinatePosition = getYPosFromDisplay(y);
       setUpdatedStartPosY(coordinatePosition);
       setYPosition(coordinatePosition);
+      console.log("old yPos: ", yPosition);
+      console.log("yDisplay: ", updateDisplay.yDisplay);
     }
 
     if (displayXVelocity != xVelocity) {
@@ -249,7 +253,12 @@ export const Weight = (props: IWeightProps) => {
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
     setUpdatedForces(startForces);
-    setDisplayValues();
+    setDisplayValues(
+      updatedStartPosX,
+      updatedStartPosY,
+      startVelX ?? 0,
+      startVelY ?? 0
+    );
   };
 
   // Change pendulum angle based on input field
