@@ -794,8 +794,8 @@ export const Weight = (props: IWeightProps) => {
                 {Math.round(
                   100 *
                     Math.sqrt(
-                      Math.pow(getNewAccelerationX(updatedForces) * 3, 2) +
-                        Math.pow(getNewAccelerationY(updatedForces) * 3, 2)
+                      Math.pow(getNewAccelerationX(updatedForces), 2) +
+                        Math.pow(getNewAccelerationY(updatedForces), 2)
                     )
                 ) / 100}{" "}
                 m/s<sup>2</sup>
