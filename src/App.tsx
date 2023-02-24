@@ -908,6 +908,7 @@ function App() {
   useEffect(() => {
     setStartVelX(0);
     setStartVelY(0);
+    setElasticCollisions(false);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
@@ -992,6 +993,8 @@ function App() {
       generateNewQuestion();
     } else if (mode == "Tutorial") {
       setStepNumber(0);
+      setShowVelocity(false);
+      setShowAcceleration(false);
       if (simulationType == "One Weight") {
         addWeight();
         setStartPosY(yMax - 100);
