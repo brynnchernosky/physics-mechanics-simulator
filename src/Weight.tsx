@@ -99,7 +99,6 @@ export const Weight = (props: IWeightProps) => {
     springStartLength,
     springCurrentLength,
     setSpringCurrentLength,
-    setDisplayXAcceleration,
     showAcceleration,
     showForces,
     showForceMagnitudes,

@@ -17,6 +17,7 @@ export interface IInputProps {
   radianEquivalent?: boolean;
   small?: boolean;
   mode?: string;
+  update?: boolean;
 }
 
 export const InputField = (props: IInputProps) => {
@@ -34,6 +35,7 @@ export const InputField = (props: IInputProps) => {
     unit,
     upperBound,
     value,
+    update,
   } = props;
   let epsilon: number = 0.01;
 
@@ -55,6 +57,21 @@ export const InputField = (props: IInputProps) => {
       }
     }
   }, [value]);
+
+  const externalUpdate = () => {
+    console.log("run external update ");
+    changeValue(Number(value));
+    setTempValue(Number(value));
+    setTempRadianValue((Number(value) * Math.PI) / 180);
+    if (effect) {
+      effect(Number(value));
+    }
+  };
+
+  useEffect(() => {
+    console.log("trigger external update ");
+    externalUpdate();
+  }, [update]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value == "" ? 0 : Number(event.target.value);

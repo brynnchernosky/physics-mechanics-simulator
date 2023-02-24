@@ -208,6 +208,7 @@ function App() {
   );
   const [wedgeWidth, setWedgeWidth] = useState(400);
   const [twoWeights, setTwoWeights] = useState(false);
+  const [updateKineticFriction, setUpdateKineticFriction] = useState(false);
 
   // Add one weight to the simulation
   const addWeight = () => {
@@ -971,7 +972,7 @@ function App() {
       setShowForceMagnitudes(true);
       if (simulationType == "Two Weights") {
         // TODO
-      } else if (simulationType == "Spring) {
+      } else if (simulationType == "Spring") {
         // TODO
       } else if (simulationType == "Inclined Plane") {
         addWedge();
@@ -1184,7 +1185,7 @@ function App() {
                     {/* <option value="Two Weights">Two Weights</option> */}
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
-                    <option value="Spring">Spring</option>
+                    {/* <option value="Spring">Spring</option> */}
                   </select>
                 </div>
               </div>
@@ -1353,6 +1354,11 @@ function App() {
                   radius={50}
                   reset={simulationReset}
                   showForceMagnitudes={showForceMagnitudes}
+                  spring={spring}
+                  springStartLength={springStartLength}
+                  springCurrentLength={springCurrentLength}
+                  setSpringCurrentLength={setSpringCurrentLength}
+                  springConstant={springConstant}
                   setSketching={setSketching}
                   setDisplayXAcceleration={setAccelerationXDisplay2}
                   setDisplayXPosition={setPositionXDisplay2}
@@ -1759,7 +1765,10 @@ function App() {
                     unit={"°"}
                     upperBound={49}
                     value={wedgeAngle}
-                    effect={changeWedgeBasedOnNewAngle}
+                    effect={(val: number) => {
+                      changeWedgeBasedOnNewAngle(val);
+                      setSimulationReset(!simulationReset);
+                    }}
                     radianEquivalent={true}
                     mode={"Freeform"}
                   />
@@ -1787,7 +1796,14 @@ function App() {
                     unit={""}
                     upperBound={1}
                     value={coefficientOfStaticFriction}
-                    effect={updateForcesWithFriction}
+                    effect={(val: number) => {
+                      updateForcesWithFriction(val);
+                      setSimulationReset(!simulationReset);
+                      if (val < Number(coefficientOfKineticFriction)) {
+                        setCoefficientOfKineticFriction(val);
+                        setUpdateKineticFriction(!updateKineticFriction);
+                      }
+                    }}
                     mode={"Freeform"}
                   />
                   <InputField
@@ -1815,7 +1831,11 @@ function App() {
                     unit={""}
                     upperBound={Number(coefficientOfStaticFriction)}
                     value={coefficientOfKineticFriction}
+                    effect={(val: number) => {
+                      setSimulationReset(!simulationReset);
+                    }}
                     mode={"Freeform"}
+                    update={updateKineticFriction}
                   />
                 </div>
               )}
@@ -1846,7 +1866,7 @@ function App() {
                         title={
                           <React.Fragment>
                             <Typography color="inherit">&theta;</Typography>
-                            Pendulum angle offest from equilibrium
+                            Pendulum angle offset from equilibrium
                           </React.Fragment>
                         }
                         followCursor
