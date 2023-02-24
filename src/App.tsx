@@ -933,7 +933,7 @@ function App() {
         updateForcesWithFriction(Number(coefficientOfStaticFriction));
       } else if (simulationType == "Pendulum") {
         const length = 300;
-        const angle = 50;
+        const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
         const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
         const xPos = xMax / 2 - x - 50;
@@ -949,9 +949,9 @@ function App() {
         };
         setUpdatedForces([forceOfGravity, forceOfTension]);
         setStartForces([forceOfGravity, forceOfTension]);
-        setPendulumAngle(50);
+        setPendulumAngle(30);
         setPendulumLength(300);
-        setAdjustPendulumAngle({ angle: 50, length: 300 });
+        setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
       } else if (simulationType == "Spring") {
         const springForce: IForce = {
@@ -1012,7 +1012,7 @@ function App() {
         setSelectedTutorial(tutorials.pendulum);
         setStartForces(getForceFromJSON(tutorials.pendulum.steps[0].forces));
         setShowForceMagnitudes(tutorials.pendulum.steps[0].showMagnitude);
-        setPendulumAngle(50);
+        setPendulumAngle(30);
         setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
@@ -1890,11 +1890,13 @@ function App() {
                           magnitude: mag,
                           directionInDegrees: 90 - value,
                         };
+                        setStartForces([forceOfGravity, forceOfTension]);
                         setUpdatedForces([forceOfGravity, forceOfTension]);
                         setAdjustPendulumAngle({
                           angle: value,
                           length: pendulumLength,
                         });
+                        setSimulationReset(!simulationReset);
                       }
                     }}
                     radianEquivalent={true}
@@ -1919,13 +1921,24 @@ function App() {
                     step={1}
                     unit={"m"}
                     upperBound={400}
-                    value={pendulumLength}
+                    value={Math.round(pendulumLength)}
                     effect={(value) => {
                       if (pendulum) {
+                       const mag =
+                         1 * 9.81 * Math.cos((pendulumAngle * Math.PI) / 180);
+
+                       const forceOfTension: IForce = {
+                         description: "Tension",
+                         magnitude: mag,
+                         directionInDegrees: 90 - pendulumAngle,
+                       };
+                       setStartForces([forceOfGravity, forceOfTension]);
+                       setUpdatedForces([forceOfGravity, forceOfTension]);
                         setAdjustPendulumAngle({
                           angle: pendulumAngle,
                           length: value,
                         });
+                        setSimulationReset(!simulationReset);
                       }
                     }}
                     radianEquivalent={false}
