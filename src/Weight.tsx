@@ -360,9 +360,10 @@ export const Weight = (props: IWeightProps) => {
             if (minX <= wallX) {
               if (elasticCollisions) {
                 setXVelocity(-xVelocity);
+                setXPosition(wallX + 10);
               } else {
                 setXVelocity(0);
-                setXPosition(wallX + 5);
+                setXPosition(wallX + 10);
               }
               collision = true;
             }
@@ -370,9 +371,10 @@ export const Weight = (props: IWeightProps) => {
             if (maxX >= wallX) {
               if (elasticCollisions) {
                 setXVelocity(-xVelocity);
+                setXPosition(wallX - 2 * radius - 10);
               } else {
                 setXVelocity(0);
-                setXPosition(wallX - 2 * radius + 5);
+                setXPosition(wallX - 2 * radius - 10);
               }
               collision = true;
             }
@@ -590,15 +592,17 @@ export const Weight = (props: IWeightProps) => {
           e.preventDefault();
           if (dragging) {
             let newY = yPosition + e.clientY - clickPositionY;
-            if (newY > yMax - 2 * radius) {
-              newY = yMax - 2 * radius;
+            if (newY > yMax - 2 * radius - 10) {
+              newY = yMax - 2 * radius - 10;
+            } else if (newY < 10) {
+              newY = 10;
             }
 
             let newX = xPosition + e.clientX - clickPositionX;
-            if (newX > xMax - 2 * radius) {
-              newX = xMax - 2 * radius;
-            } else if (newX < 0) {
-              newX = 0;
+            if (newX > xMax - 2 * radius - 10) {
+              newX = xMax - 2 * radius - 10;
+            } else if (newX < 10) {
+              newX = 10;
             }
 
             setXPosition(newX);
@@ -621,15 +625,17 @@ export const Weight = (props: IWeightProps) => {
             }
             setDragging(false);
             let newY = yPosition + e.clientY - clickPositionY;
-            if (newY > yMax - 2 * radius) {
-              newY = yMax - 2 * radius;
+            if (newY > yMax - 2 * radius - 10) {
+              newY = yMax - 2 * radius - 10;
+            } else if (newY < 10) {
+              newY = 10;
             }
 
             let newX = xPosition + e.clientX - clickPositionX;
-            if (newX > xMax - 2 * radius) {
-              newX = xMax - 2 * radius;
-            } else if (newX < 0) {
-              newX = 0;
+            if (newX > xMax - 2 * radius - 10) {
+              newX = xMax - 2 * radius - 10;
+            } else if (newX < 10) {
+              newX = 10;
             }
             if (pendulum) {
               const x = xMax / 2 - newX - radius;

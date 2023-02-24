@@ -1995,11 +1995,11 @@ function App() {
                       )}{" "}
                       {simulationPaused && !wedge && (
                         <InputField
-                          lowerBound={0}
+                          lowerBound={10}
                           changeValue={setPositionXDisplay}
                           step={1}
                           unit={"m"}
-                          upperBound={xMax}
+                          upperBound={xMax-110}
                           value={positionXDisplay}
                           effect={(value) => {
                             setDisplayChange({
@@ -2020,11 +2020,11 @@ function App() {
                       )}{" "}
                       {simulationPaused && !wedge && (
                         <InputField
-                          lowerBound={0}
+                          lowerBound={10}
                           changeValue={setPositionYDisplay}
                           step={1}
                           unit={"m"}
-                          upperBound={yMax}
+                          upperBound={yMax-110}
                           value={positionYDisplay}
                           effect={(value) => {
                             setDisplayChange({
