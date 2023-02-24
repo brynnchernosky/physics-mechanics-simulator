@@ -1,12 +1,13 @@
 {
   "freeWeight": {
-    "question": "A 1kg weight is released from 200m above the ground. What are the magnitude and directions of the forces acting on the weight? (Ignore air resistance)",
+    "question": "A 1kg weight is at rest on the ground. What are the magnitude and directions of the forces acting on the weight?",
     "steps": [
       {
         "description": "Forces",
-        "content": "There is only one force acting on the weight: the force of gravity.",
+        "content": "There are two forces acting on the weight: the force of gravity and the normal force.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
+          { "description": "Normal Force", "magnitude": 9.81, "directionInDegrees": 90 }
         ],
         "showMagnitude": false
       },
@@ -17,11 +18,28 @@
           { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
         ],
         "showMagnitude": true
+      },
+      {
+        "description": "Normal Force",
+        "content": "The normal force acts in the positive y direction: π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
+        "forces": [
+          { "description": "Normal Force", "magnitude": 9.81, "directionInDegrees": 90 }
+        ],
+        "showMagnitude": true
+      },
+      {
+        "description": "All Forces",
+        "content": "Combining all of the forces, we get the following free body diagram.",
+        "forces": [
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
+          { "description": "Normal Force", "magnitude": 9.81, "directionInDegrees": 90 }
+        ],
+        "showMagnitude": true
       }
     ]
   },
   "pendulum": {
-    "question": "A 1kg weight on a 200m rod is released from an angle 30 degrees offset from equilibrium. What are the magnitude and directions of the forces acting on the weight immediately after release? (Ignore air resistance)",
+    "question": "A 1kg weight on a 300m rod of negligible mass is released from an angle 30 degrees offset from equilibrium. What are the magnitude and directions of the forces acting on the weight immediately after release? (Ignore air resistance)",
     "steps": [
       {
         "description": "Forces",
@@ -37,6 +55,23 @@
         "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
         "forces": [
           { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+        ],
+        "showMagnitude": true
+      },
+      {
+        "description": "Tension",
+        "content": "The force of tension acts along the direction of the rod. The rod is 30 degrees offset from equilibrium, so the direction along the rod is 90-30=60 degrees. The tension force has two components—the component creating the centripetal force and the component canceling out the parallel component of gravity. The weight has just been released, so it has velocity 0, meaning the centripetal force is 0. Thus, the tension force only acts to cancel out the parallel component of gravity. Thus, the magnitude of tension is m*g*sin(60°)",
+        "forces": [
+          { "description": "Tension", "magnitude": 8.5, "directionInDegrees": 60 }
+        ],
+        "showMagnitude": true
+      },
+      {
+        "description": "All Forces",
+        "content": "Combining all of the forces, we get the following free body diagram.",
+        "forces": [
+          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
+          { "description": "Tension", "magnitude": 8.5, "directionInDegrees": 60 }
         ],
         "showMagnitude": true
       }

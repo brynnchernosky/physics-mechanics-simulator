@@ -994,7 +994,7 @@ function App() {
       setStepNumber(0);
       if (simulationType == "One Weight") {
         addWeight();
-        setStartPosY(yMin + 50);
+        setStartPosY(yMax - 100);
         setStartPosX((xMax + xMin - 50) / 2);
         setSelectedTutorial(tutorials.freeWeight);
         setSelectedTutorial(tutorials.freeWeight);
@@ -1471,7 +1471,14 @@ function App() {
               </select>
             </div>
           </div>
-          {mode == "Review" && (
+
+          {mode == "Review" && simulationType != "Inclined Plane" && (
+            <div className="wordProblemBox">
+              <p>{simulationType} review problems in progress!</p>
+            </div>
+          )}
+
+          {mode == "Review" && simulationType == "Inclined Plane" && (
             <div>
               {!hintDialogueOpen && (
                 <IconButton
@@ -1659,7 +1666,7 @@ function App() {
               </div>
             </div>
           )}
-          {mode == "Review" && (
+          {mode == "Review" && simulationType == "Inclined Plane" && (
             <div
               style={{
                 display: "flex",
