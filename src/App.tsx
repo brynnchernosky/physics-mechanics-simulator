@@ -130,14 +130,24 @@ function App() {
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
 
+  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
+    forceOfGravity,
+  ]);
+
   const [startPosX2, setStartPosX2] = useState(0);
   const [startPosY2, setStartPosY2] = useState(0);
+  const [startVelX2, setStartVelX2] = useState(0);
+  const [startVelY2, setStartVelY2] = useState(0);
   const [accelerationXDisplay2, setAccelerationXDisplay2] = useState(0);
   const [accelerationYDisplay2, setAccelerationYDisplay2] = useState(0);
   const [positionXDisplay2, setPositionXDisplay2] = useState(0);
   const [positionYDisplay2, setPositionYDisplay2] = useState(0);
   const [velocityXDisplay2, setVelocityXDisplay2] = useState(0);
   const [velocityYDisplay2, setVelocityYDisplay2] = useState(0);
+
+  const [updatedForces2, setUpdatedForces2] = useState<IForce[]>([
+    forceOfGravity,
+  ]);
 
   const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
     angle: number;
@@ -155,6 +165,10 @@ function App() {
     xDisplay: number;
     yDisplay: number;
   }>({ xDisplay: 0, yDisplay: 0 });
+  const [displayChange2, setDisplayChange2] = useState<{
+    xDisplay: number;
+    yDisplay: number;
+  }>({ xDisplay: 0, yDisplay: 0 });
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
   const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
   const [questionPartOne, setQuestionPartOne] = useState<string>("");
@@ -166,9 +180,9 @@ function App() {
   const [pendulumAngle, setPendulumAngle] = useState(0);
   const [pendulumLength, setPendulumLength] = useState(300);
   const [spring, setSpring] = useState(false);
-  const [springConstant, setSpringConstant] = useState(1);
-  const [springStartLength, setSpringStartLength] = useState(100);
-  const [springCurrentLength, setSpringCurrentLength] = useState(100);
+  const [springConstant, setSpringConstant] = useState(0.5);
+  const [springStartLength, setSpringStartLength] = useState(200);
+  const [springCurrentLength, setSpringCurrentLength] = useState(200);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
   const [reviewGravityMagnitude, setReviewGravityMagnitude] =
@@ -197,9 +211,6 @@ function App() {
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [stepNumber, setStepNumber] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
-  const [updatedForces, setUpdatedForces] = useState<IForce[]>([
-    forceOfGravity,
-  ]);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
   const [wedge, setWedge] = useState(false);
   const [wedgeAngle, setWedgeAngle] = React.useState<
@@ -700,6 +711,7 @@ function App() {
               value={reviewGravityMagnitude}
               showIcon={showIcon}
               correctValue={answers[i]}
+              labelWidth={"2em"}
             />
           </div>
         );
@@ -979,10 +991,10 @@ function App() {
         setUpdatedForces([forceOfGravity, springForce]);
         setStartForces([forceOfGravity, springForce]);
         setStartPosX(xMax / 2 - 50);
-        setStartPosY(100);
-        setSpringConstant(1);
-        setSpringStartLength(100);
-        setSpringCurrentLength(100);
+        setStartPosY(200);
+        setSpringConstant(0.5);
+        setSpringStartLength(200);
+        setSpringCurrentLength(200);
         removeWalls();
       }
     } else if (mode == "Review") {
@@ -1201,7 +1213,7 @@ function App() {
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
                     <option value="One Weight">One Weight</option>
-                    {/* <option value="Two Weights">Two Weights</option> */}
+                    <option value="Two Weights">Two Weights</option>
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
@@ -1355,7 +1367,7 @@ function App() {
                   )}
                 />
               )}
-              {twoWeights && (
+              {simulationType == "Two Weights" && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
                   color={"blue"}
@@ -1391,16 +1403,18 @@ function App() {
                   setPendulumAngle={setPendulumAngle}
                   setPendulumLength={setPendulumLength}
                   setStartPendulumAngle={setStartPendulumAngle}
-                  setUpdatedForces={setUpdatedForces}
+                  setUpdatedForces={setUpdatedForces2}
                   showAcceleration={showAcceleration}
                   showForces={showForces}
                   showVelocity={showVelocity}
                   startForces={startForces}
                   startPosX={startPosX2}
                   startPosY={startPosY2}
+                  startVelX={startVelX2}
+                  startVelY={startVelY2}
                   timestepSize={0.002}
-                  updateDisplay={displayChange}
-                  updatedForces={updatedForces}
+                  updateDisplay={displayChange2}
+                  updatedForces={updatedForces2}
                   walls={wallPositions}
                   wedge={wedge}
                   wedgeHeight={wedgeHeight}
@@ -1774,8 +1788,10 @@ function App() {
               {simulationType == "Spring" && simulationPaused && (
                 <div>
                   <InputField
-                    label={<Typography color="inherit">k</Typography>}
-                    lowerBound={1}
+                    label={
+                      <Typography color="inherit">Spring stiffness</Typography>
+                    }
+                    lowerBound={0.1}
                     changeValue={setSpringConstant}
                     step={1}
                     unit={"N/m"}
@@ -1786,24 +1802,43 @@ function App() {
                     }}
                     radianEquivalent={false}
                     mode={"Freeform"}
+                    labelWidth={"7em"}
                   />
                   <InputField
-                    label={
-                      <Typography color="inherit">Rest length</Typography>
-                    }
-                    lowerBound={1}
+                    label={<Typography color="inherit">Rest length</Typography>}
+                    lowerBound={10}
                     changeValue={setSpringStartLength}
                     step={100}
                     unit={""}
                     upperBound={500}
                     value={springStartLength}
                     effect={(val: number) => {
-                      setStartPosY(val);
-                      setSpringCurrentLength(val)
                       setSimulationReset(!simulationReset);
                     }}
                     radianEquivalent={false}
                     mode={"Freeform"}
+                    labelWidth={"7em"}
+                  />
+                  <InputField
+                    label={
+                      <Typography color="inherit">
+                        Starting displacement
+                      </Typography>
+                    }
+                    lowerBound={-(springStartLength - 10)}
+                    changeValue={(val: number) => {}}
+                    step={10}
+                    unit={""}
+                    upperBound={springStartLength}
+                    value={springCurrentLength - springStartLength}
+                    effect={(val: number) => {
+                      setStartPosY(springStartLength + val);
+                      setSpringCurrentLength(springStartLength + val);
+                      setSimulationReset(!simulationReset);
+                    }}
+                    radianEquivalent={false}
+                    mode={"Freeform"}
+                    labelWidth={"7em"}
                   />
                 </div>
               )}
@@ -1835,6 +1870,7 @@ function App() {
                     }}
                     radianEquivalent={true}
                     mode={"Freeform"}
+                    labelWidth={"2em"}
                   />
                   <InputField
                     label={
@@ -1869,6 +1905,7 @@ function App() {
                       setSimulationReset(!simulationReset);
                     }}
                     mode={"Freeform"}
+                    labelWidth={"2em"}
                   />
                   <InputField
                     label={
@@ -1900,6 +1937,7 @@ function App() {
                     }}
                     mode={"Freeform"}
                     update={updateKineticFriction}
+                    labelWidth={"2em"}
                   />
                 </div>
               )}
@@ -2020,7 +2058,7 @@ function App() {
                   <tr>
                     <td>&nbsp;</td>
                     <td>X</td>
-                    <td>Y</td>
+                    <td>{simulationType == "Two Weights" ? "Z" : "Y"}</td>
                   </tr>
                   <tr>
                     <td
@@ -2217,6 +2255,175 @@ function App() {
                 </tbody>
               </table>
             )}
+            {mode == "Freeform" && simulationType == "Two Weights" && (
+              <p>Blue Weight</p>
+            )}
+            {mode == "Freeform" && simulationType == "Two Weights" && (
+              <table>
+                <tbody>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>X</td>
+                    <td>Z</td>
+                  </tr>
+                  <tr>
+                    <td
+                      style={{ cursor: "help" }}
+                      onClick={() => {
+                        window.open(
+                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        );
+                      }}
+                    ></td>
+                    <td>
+                      {!simulationPaused && (
+                        <p style={{ cursor: "default" }}>
+                          {positionXDisplay2} m
+                        </p>
+                      )}{" "}
+                      {simulationPaused && (
+                        <InputField
+                          lowerBound={10}
+                          changeValue={setPositionXDisplay2}
+                          step={1}
+                          unit={"m"}
+                          upperBound={xMax - 110}
+                          value={positionXDisplay2}
+                          effect={(value) => {
+                            setDisplayChange2({
+                              xDisplay: value,
+                              yDisplay: positionYDisplay2,
+                            });
+                          }}
+                          small={true}
+                          mode={"Freeform"}
+                        />
+                      )}{" "}
+                    </td>
+                    <td>
+                      {!simulationPaused && (
+                        <p style={{ cursor: "default" }}>
+                          {positionYDisplay2} m
+                        </p>
+                      )}{" "}
+                      {simulationPaused && (
+                        <InputField
+                          lowerBound={10}
+                          changeValue={setPositionYDisplay2}
+                          step={1}
+                          unit={"m"}
+                          upperBound={yMax - 110}
+                          value={positionYDisplay2}
+                          effect={(value) => {
+                            setDisplayChange2({
+                              xDisplay: positionXDisplay2,
+                              yDisplay: value,
+                            });
+                          }}
+                          small={true}
+                          mode={"Freeform"}
+                        />
+                      )}{" "}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style={{ cursor: "help" }}
+                      onClick={() => {
+                        window.open(
+                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        );
+                      }}
+                    ></td>
+                    <td>
+                      {!simulationPaused && (
+                        <p style={{ cursor: "default" }}>
+                          {velocityXDisplay2} m/s
+                        </p>
+                      )}{" "}
+                      {simulationPaused && (
+                        <InputField
+                          lowerBound={-50}
+                          changeValue={setVelocityXDisplay2}
+                          step={1}
+                          unit={"m/s"}
+                          upperBound={50}
+                          value={velocityXDisplay2}
+                          effect={(value) => {
+                            setStartVelX2(value);
+                            setDisplayChange2({
+                              xDisplay: positionXDisplay2,
+                              yDisplay: positionYDisplay2,
+                            });
+                          }}
+                          small={true}
+                          mode={"Freeform"}
+                        />
+                      )}{" "}
+                    </td>
+                    <td>
+                      {!simulationPaused && (
+                        <p style={{ cursor: "default" }}>
+                          {velocityYDisplay2} m/s
+                        </p>
+                      )}{" "}
+                      {simulationPaused && (
+                        <InputField
+                          lowerBound={-50}
+                          changeValue={setVelocityYDisplay2}
+                          step={1}
+                          unit={"m/s"}
+                          upperBound={50}
+                          value={velocityYDisplay2}
+                          effect={(value) => {
+                            setStartVelY2(value);
+                            setDisplayChange2({
+                              xDisplay: positionXDisplay2,
+                              yDisplay: positionYDisplay2,
+                            });
+                          }}
+                          small={true}
+                          mode={"Freeform"}
+                        />
+                      )}{" "}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style={{ cursor: "help" }}
+                      onClick={() => {
+                        window.open(
+                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                        );
+                      }}
+                    >
+                      <Tooltip
+                        title={
+                          <React.Fragment>
+                            <Typography color="inherit">
+                              Acceleration
+                            </Typography>
+                            Equation: a=F/m
+                            <br />
+                            Units: m/s
+                            <sup>2</sup>
+                          </React.Fragment>
+                        }
+                        followCursor
+                      >
+                        <Box>Acceleration</Box>
+                      </Tooltip>
+                    </td>
+                    <td style={{ cursor: "default" }}>
+                      {accelerationXDisplay2} m/s<sup>2</sup>
+                    </td>
+                    <td style={{ cursor: "default" }}>
+                      {accelerationYDisplay2} m/s<sup>2</sup>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
           </div>
           {/* {mode == "Freeform" &&
             simulationElements.length > 0 &&
@@ -2283,7 +2490,11 @@ function App() {
             )}*/}
         </div>
       </div>
-      <CoordinateSystem top={window.innerHeight - 120} right={xMin + 90} />
+      <CoordinateSystem
+        upAxis={simulationType == "Two Weights" ? "Z" : "Y"}
+        top={window.innerHeight - 120}
+        right={xMin + 90}
+      />
     </div>
   );
 }

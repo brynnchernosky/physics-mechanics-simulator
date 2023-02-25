@@ -298,11 +298,24 @@ export const Weight = (props: IWeightProps) => {
   };
 
   const getNewSpringForces = (yPos: number) => {
-    const springForce: IForce = {
+    let springForce: IForce = {
       description: "Spring Force",
-      magnitude: springConstant * (yPos - springStartLength),
+      magnitude: 0,
       directionInDegrees: 90,
     };
+    if (yPos - springStartLength > 0) {
+      springForce = {
+        description: "Spring Force",
+        magnitude: springConstant * (yPos - springStartLength),
+        directionInDegrees: 90,
+      };
+    } else if (yPos - springStartLength < 0) {
+      springForce = {
+        description: "Spring Force",
+        magnitude: springConstant * (springStartLength - yPos),
+        directionInDegrees: 270,
+      };
+    }
 
     return [forceOfGravity, springForce];
   };
@@ -555,12 +568,12 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(yVel);
     setXPosition(xPos);
     setYPosition(yPos);
-    let forces = updatedForces
+    let forces = updatedForces;
     if (pendulum) {
-     forces = getNewPendulumForces(xPos, yPos, xVel, yVel);
-   } else if (spring) {
-     forces = getNewSpringForces(yPos);
-   }
+      forces = getNewPendulumForces(xPos, yPos, xVel, yVel);
+    } else if (spring) {
+      forces = getNewSpringForces(yPos);
+    }
     setUpdatedForces(forces);
   };
 

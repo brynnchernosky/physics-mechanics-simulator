@@ -18,6 +18,7 @@ export interface IInputProps {
   small?: boolean;
   mode?: string;
   update?: boolean;
+  labelWidth?: string;
 }
 
 export const InputField = (props: IInputProps) => {
@@ -36,6 +37,7 @@ export const InputField = (props: IInputProps) => {
     upperBound,
     value,
     update,
+    labelWidth,
   } = props;
   let epsilon: number = 0.01;
 
@@ -102,13 +104,17 @@ export const InputField = (props: IInputProps) => {
     <div
       style={{
         display: "flex",
-        lineHeight: "1",
+        lineHeight: "1.5",
         textAlign: "right",
       }}
     >
       {label && (
         <div
-          style={{ marginTop: "0.3em", marginBottom: "-0.5em", width: "2em" }}
+          style={{
+            marginTop: "0.3em",
+            marginBottom: "-0.5em",
+            width: labelWidth ?? "2em",
+          }}
         >
           {label}
         </div>

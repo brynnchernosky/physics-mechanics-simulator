@@ -4,10 +4,11 @@ import "./Wedge.scss";
 export interface ICoordinateSystemProps {
   top: number;
   right: number;
+  upAxis?: string;
 }
 
 export const CoordinateSystem = (props: ICoordinateSystemProps) => {
-  const { top, right } = props;
+  const { top, right, upAxis } = props;
 
   return (
     <div
@@ -58,7 +59,7 @@ export const CoordinateSystem = (props: ICoordinateSystemProps) => {
           left: right - 80 + "px",
         }}
       >
-        Y
+        {upAxis ?? "Y"}
       </p>
       <p
         style={{
