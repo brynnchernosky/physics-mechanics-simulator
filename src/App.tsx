@@ -248,6 +248,15 @@ function App() {
     setSpring(false);
   };
 
+  // Add spring
+  const addSpring = () => {
+    setWeight(true);
+    setTwoWeights(false);
+    setPendulum(false);
+    setWedge(false);
+    setSpring(true);
+  };
+
   // Update forces when coefficient of static friction changes in freeform mode
   const updateForcesWithFriction = (
     coefficient: number,
@@ -966,6 +975,7 @@ function App() {
           magnitude: 0,
           directionInDegrees: 90,
         };
+        addSpring();
         setUpdatedForces([forceOfGravity, springForce]);
         setStartForces([forceOfGravity, springForce]);
         setStartPosX(xMax / 2 - 50);
@@ -1194,7 +1204,7 @@ function App() {
                     {/* <option value="Two Weights">Two Weights</option> */}
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
-                    {/* <option value="Spring">Spring</option> */}
+                    <option value="Spring">Spring</option>
                   </select>
                 </div>
               </div>
@@ -1713,7 +1723,7 @@ function App() {
             <div>
               <FormControl component="fieldset">
                 <FormGroup>
-                  {!wedge && !pendulum && (
+                  {simulationType == "One Weight" && (
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -1761,7 +1771,43 @@ function App() {
                   />
                 </FormGroup>
               </FormControl>
-              {wedge && simulationPaused && (
+              {simulationType == "Spring" && simulationPaused && (
+                <div>
+                  <InputField
+                    label={<Typography color="inherit">k</Typography>}
+                    lowerBound={1}
+                    changeValue={setSpringConstant}
+                    step={1}
+                    unit={"N/m"}
+                    upperBound={500}
+                    value={springConstant}
+                    effect={(val: number) => {
+                      setSimulationReset(!simulationReset);
+                    }}
+                    radianEquivalent={false}
+                    mode={"Freeform"}
+                  />
+                  <InputField
+                    label={
+                      <Typography color="inherit">Rest length</Typography>
+                    }
+                    lowerBound={1}
+                    changeValue={setSpringStartLength}
+                    step={100}
+                    unit={""}
+                    upperBound={500}
+                    value={springStartLength}
+                    effect={(val: number) => {
+                      setStartPosY(val);
+                      setSpringCurrentLength(val)
+                      setSimulationReset(!simulationReset);
+                    }}
+                    radianEquivalent={false}
+                    mode={"Freeform"}
+                  />
+                </div>
+              )}
+              {simulationType == "Inclined Plane" && simulationPaused && (
                 <div>
                   <InputField
                     label={
@@ -1857,7 +1903,7 @@ function App() {
                   />
                 </div>
               )}
-              {wedge && !simulationPaused && (
+              {simulationType == "Inclined Plane" && !simulationPaused && (
                 <Typography>
                   &theta;: {Math.round(Number(wedgeAngle) * 100) / 100}° ≈{" "}
                   {Math.round(((Number(wedgeAngle) * Math.PI) / 180) * 100) /
@@ -1869,14 +1915,14 @@ function App() {
                   &mu; <sub>k</sub>: {coefficientOfKineticFriction}
                 </Typography>
               )}
-              {pendulum && !simulationPaused && (
+              {simulationType == "Pendulum" && !simulationPaused && (
                 <Typography>
                   &theta;: {Math.round(pendulumAngle * 100) / 100}° ≈{" "}
                   {Math.round(((pendulumAngle * Math.PI) / 180) * 100) / 100}{" "}
                   rad
                 </Typography>
               )}
-              {pendulum && simulationPaused && (
+              {simulationType == "Pendulum" && simulationPaused && (
                 <div>
                   <InputField
                     label={

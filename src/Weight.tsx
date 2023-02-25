@@ -191,8 +191,6 @@ export const Weight = (props: IWeightProps) => {
       setUpdatedStartPosX(x);
       setXPosition(x);
       setDisplayXPosition(x);
-      console.log("old xPos: ", xPosition);
-      console.log("xDisplay: ", updateDisplay.xDisplay);
     }
 
     if (updateDisplay.yDisplay != getDisplayYPos(yPosition)) {
@@ -203,8 +201,6 @@ export const Weight = (props: IWeightProps) => {
       let coordinatePosition = getYPosFromDisplay(y);
       setUpdatedStartPosY(coordinatePosition);
       setYPosition(coordinatePosition);
-      console.log("old yPos: ", yPosition);
-      console.log("yDisplay: ", updateDisplay.yDisplay);
     }
 
     if (displayXVelocity != xVelocity) {
@@ -303,7 +299,7 @@ export const Weight = (props: IWeightProps) => {
 
   const getNewSpringForces = (yPos: number) => {
     const springForce: IForce = {
-      description: "Tension",
+      description: "Spring Force",
       magnitude: springConstant * (yPos - springStartLength),
       directionInDegrees: 90,
     };
@@ -483,9 +479,12 @@ export const Weight = (props: IWeightProps) => {
     let xVel = xVelocity;
     let yVel = yVelocity;
     for (let i = 0; i < 60; i++) {
-      let forces1 = pendulum
-        ? getNewPendulumForces(xPos, yPos, xVel, yVel)
-        : updatedForces;
+      let forces1 = updatedForces;
+      if (pendulum) {
+        forces1 = getNewPendulumForces(xPos, yPos, xVel, yVel);
+      } else if (spring) {
+        forces1 = getNewSpringForces(yPos);
+      }
       const xAcc1 = getNewAccelerationX(forces1);
       const yAcc1 = getNewAccelerationY(forces1);
       const xVel1 = getNewVelocity(xVel, xAcc1);
@@ -495,9 +494,12 @@ export const Weight = (props: IWeightProps) => {
       let yVel2 = getNewVelocity(yVel, yAcc1 / 2);
       let xPos2 = getNewPosition(xPos, xVel1 / 2);
       let yPos2 = getNewPosition(yPos, yVel1 / 2);
-      const forces2 = pendulum
-        ? getNewPendulumForces(xPos2, yPos2, xVel2, yVel2)
-        : updatedForces;
+      let forces2 = updatedForces;
+      if (pendulum) {
+        forces2 = getNewPendulumForces(xPos2, yPos2, xVel2, yVel2);
+      } else if (spring) {
+        forces2 = getNewSpringForces(yPos2);
+      }
       const xAcc2 = getNewAccelerationX(forces2);
       const yAcc2 = getNewAccelerationY(forces2);
       xVel2 = getNewVelocity(xVel2, xAcc2);
@@ -509,9 +511,12 @@ export const Weight = (props: IWeightProps) => {
       let yVel3 = getNewVelocity(yVel, yAcc2 / 2);
       let xPos3 = getNewPosition(xPos, xVel2 / 2);
       let yPos3 = getNewPosition(yPos, yVel2 / 2);
-      const forces3 = pendulum
-        ? getNewPendulumForces(xPos3, yPos3, xVel3, yVel3)
-        : updatedForces;
+      let forces3 = updatedForces;
+      if (pendulum) {
+        forces3 = getNewPendulumForces(xPos3, yPos3, xVel3, yVel3);
+      } else if (spring) {
+        forces3 = getNewSpringForces(yPos3);
+      }
       const xAcc3 = getNewAccelerationX(forces3);
       const yAcc3 = getNewAccelerationY(forces3);
       xVel3 = getNewVelocity(xVel3, xAcc3);
@@ -523,9 +528,12 @@ export const Weight = (props: IWeightProps) => {
       let yVel4 = getNewVelocity(yVel, yAcc3);
       let xPos4 = getNewPosition(xPos, xVel3);
       let yPos4 = getNewPosition(yPos, yVel3);
-      const forces4 = pendulum
-        ? getNewPendulumForces(xPos4, yPos4, xVel4, yVel4)
-        : updatedForces;
+      let forces4 = updatedForces;
+      if (pendulum) {
+        forces4 = getNewPendulumForces(xPos4, yPos4, xVel4, yVel4);
+      } else if (spring) {
+        forces4 = getNewSpringForces(yPos4);
+      }
       const xAcc4 = getNewAccelerationX(forces4);
       const yAcc4 = getNewAccelerationY(forces4);
       xVel4 = getNewVelocity(xVel4, xAcc4);
@@ -547,7 +555,13 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(yVel);
     setXPosition(xPos);
     setYPosition(yPos);
-    setUpdatedForces(getNewPendulumForces(xPos, yPos, xVel, yVel));
+    let forces = updatedForces
+    if (pendulum) {
+     forces = getNewPendulumForces(xPos, yPos, xVel, yVel);
+   } else if (spring) {
+     forces = getNewSpringForces(yPos);
+   }
+    setUpdatedForces(forces);
   };
 
   let weightStyle = {
@@ -686,6 +700,48 @@ export const Weight = (props: IWeightProps) => {
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
+      {spring && (
+        <div
+          className="spring"
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((val) => {
+              const count = 10;
+              let xPos1;
+              let yPos1;
+              let xPos2;
+              let yPos2;
+              if (val % 2 == 0) {
+                xPos1 = xPosition + radius - 20;
+                xPos2 = xPosition + radius + 20;
+              } else {
+                xPos1 = xPosition + radius + 20;
+                xPos2 = xPosition + radius - 20;
+              }
+              yPos1 = (val * yPosition) / count;
+              yPos2 = ((val + 1) * yPosition) / count;
+              return (
+                <line
+                  key={val}
+                  x1={xPos1}
+                  y1={yPos1}
+                  x2={xPos2}
+                  y2={yPos2}
+                  stroke={"#808080"}
+                  strokeWidth="10"
+                />
+              );
+            })}
+          </svg>
+        </div>
+      )}
       {pendulum && (
         <div
           className="rod"
@@ -770,7 +826,7 @@ export const Weight = (props: IWeightProps) => {
                 markerEnd="url(#accArrow)"
               />
             </svg>
-            <div
+            {/* <div
               style={{
                 pointerEvents: "none",
                 position: "absolute",
@@ -800,7 +856,7 @@ export const Weight = (props: IWeightProps) => {
                 ) / 100}{" "}
                 m/s<sup>2</sup>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
@@ -839,7 +895,7 @@ export const Weight = (props: IWeightProps) => {
                 markerEnd="url(#velArrow)"
               />
             </svg>
-            <div
+            {/* <div
               style={{
                 pointerEvents: "none",
                 position: "absolute",
@@ -855,7 +911,7 @@ export const Weight = (props: IWeightProps) => {
                 ) / 100}{" "}
                 m/s
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
