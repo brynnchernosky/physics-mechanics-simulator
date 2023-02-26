@@ -84,6 +84,7 @@ interface TutorialTemplate {
       description: string;
       magnitude: number;
       directionInDegrees: number;
+      component: boolean;
     }[];
     showMagnitude: boolean;
   }[];
@@ -96,6 +97,7 @@ function App() {
     description: "Gravity",
     magnitude: gravityMagnitude,
     directionInDegrees: 270,
+    component: false,
   };
   const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -176,10 +178,8 @@ function App() {
   const [mode, setMode] = useState<string>("Freeform");
   const [noMovement, setNoMovement] = useState(false);
   const [weight, setWeight] = useState(false);
-  const [pendulum, setPendulum] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
   const [pendulumLength, setPendulumLength] = useState(300);
-  const [spring, setSpring] = useState(false);
   const [springConstant, setSpringConstant] = useState(0.5);
   const [springStartLength, setSpringStartLength] = useState(200);
   const [springCurrentLength, setSpringCurrentLength] = useState(200);
@@ -212,7 +212,6 @@ function App() {
   const [stepNumber, setStepNumber] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
   const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
-  const [wedge, setWedge] = useState(false);
   const [wedgeAngle, setWedgeAngle] = React.useState<
     number | string | Array<number | string>
   >(26);
@@ -227,45 +226,30 @@ function App() {
   const addWeight = () => {
     setWeight(true);
     setTwoWeights(false);
-    setWedge(false);
-    setPendulum(false);
-    setSpring(false);
   };
 
   // Add two weights to the simulation
   const addTwoWeights = () => {
     setWeight(true);
     setTwoWeights(true);
-    setWedge(false);
-    setPendulum(false);
-    setSpring(false);
   };
 
   // Add a wedge with a One Weight to the simulation
   const addWedge = () => {
     setWeight(true);
     setTwoWeights(false);
-    setWedge(true);
-    setPendulum(false);
-    setSpring(false);
   };
 
   // Add a simple pendulum to the simulation
   const addPendulum = () => {
     setWeight(true);
     setTwoWeights(false);
-    setPendulum(true);
-    setWedge(false);
-    setSpring(false);
   };
 
   // Add spring
   const addSpring = () => {
     setWeight(true);
     setTwoWeights(false);
-    setPendulum(false);
-    setWedge(false);
-    setSpring(true);
   };
 
   // Update forces when coefficient of static friction changes in freeform mode
@@ -279,6 +263,7 @@ function App() {
       magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
       directionInDegrees:
         180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
+      component: false,
     };
     let frictionForce: IForce = {
       description: "Static Friction Force",
@@ -287,6 +272,7 @@ function App() {
         forceOfGravity.magnitude *
         Math.cos(Math.atan(height / width)),
       directionInDegrees: 180 - (Math.atan(height / width) * 180) / Math.PI,
+      component: false,
     };
     // reduce magnitude of friction force if necessary such that block cannot slide up plane
     let yForce = -forceOfGravity.magnitude;
@@ -642,13 +628,13 @@ function App() {
       question = questions.inclinePlane[questionNumber];
 
       let coefficient = 0;
-      let wedge = 0;
+      let wedgeAngle = 0;
 
       for (let i = 0; i < question.variablesForQuestionSetup.length; i++) {
         if (question.variablesForQuestionSetup[i] == "theta - max 45") {
           let randValue = Math.floor(Math.random() * 44 + 1);
           vars.push(randValue);
-          wedge = randValue;
+          wedgeAngle = randValue;
         } else if (
           question.variablesForQuestionSetup[i] ==
           "coefficient of static friction"
@@ -658,8 +644,8 @@ function App() {
           coefficient = randValue;
         }
       }
-      setWedgeAngle(wedge);
-      changeWedgeBasedOnNewAngle(wedge);
+      setWedgeAngle(wedgeAngle);
+      changeWedgeBasedOnNewAngle(wedgeAngle);
       setCoefficientOfStaticFriction(coefficient);
       reviewCoefficient = coefficient;
     }
@@ -682,6 +668,7 @@ function App() {
     setQuestionPartTwo(question.question);
     const answers = getAnswersToQuestion(question, vars);
     generateInputFieldsForQuestion(false, question, answers);
+    setSimulationReset(!simulationReset);
   };
 
   // Generate answerInputFields for new review question
@@ -698,11 +685,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <p>
-                  F<sub>G</sub>
-                </p>
-              }
+              label={<p>Gravity magnitude</p>}
               lowerBound={0}
               changeValue={setReviewGravityMagnitude}
               step={0.1}
@@ -711,7 +694,7 @@ function App() {
               value={reviewGravityMagnitude}
               showIcon={showIcon}
               correctValue={answers[i]}
-              labelWidth={"2em"}
+              labelWidth={"7em"}
             />
           </div>
         );
@@ -720,11 +703,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <p>
-                  &theta;<sub>G</sub>
-                </p>
-              }
+              label={<p>Gravity angle</p>}
               lowerBound={0}
               changeValue={setReviewGravityAngle}
               step={1}
@@ -734,6 +713,7 @@ function App() {
               radianEquivalent={true}
               showIcon={showIcon}
               correctValue={answers[i]}
+              labelWidth={"7em"}
             />
           </div>
         );
@@ -742,11 +722,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <p>
-                  F<sub>N</sub>
-                </p>
-              }
+              label={<p>Normal force magnitude</p>}
               lowerBound={0}
               changeValue={setReviewNormalMagnitude}
               step={0.1}
@@ -755,6 +731,7 @@ function App() {
               value={reviewNormalMagnitude}
               showIcon={showIcon}
               correctValue={answers[i]}
+              labelWidth={"7em"}
             />
           </div>
         );
@@ -763,11 +740,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <p>
-                  &theta;<sub>N</sub>
-                </p>
-              }
+              label={<p>Normal force angle</p>}
               lowerBound={0}
               changeValue={setReviewNormalAngle}
               step={1}
@@ -777,6 +750,7 @@ function App() {
               radianEquivalent={true}
               showIcon={showIcon}
               correctValue={answers[i]}
+              labelWidth={"7em"}
             />
           </div>
         );
@@ -785,14 +759,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <p>
-                  F
-                  <sub>
-                    F<sub>s</sub>
-                  </sub>
-                </p>
-              }
+              label={<p>Static friction magnitude</p>}
               lowerBound={0}
               changeValue={setReviewStaticMagnitude}
               step={0.1}
@@ -801,6 +768,7 @@ function App() {
               value={reviewStaticMagnitude}
               showIcon={showIcon}
               correctValue={answers[i]}
+              labelWidth={"7em"}
             />
           </div>
         );
@@ -809,14 +777,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <p>
-                  &theta;
-                  <sub>
-                    F<sub>s</sub>
-                  </sub>
-                </p>
-              }
+              label={<p>Static friction angle</p>}
               lowerBound={0}
               changeValue={setReviewStaticAngle}
               step={1}
@@ -826,6 +787,7 @@ function App() {
               radianEquivalent={true}
               showIcon={showIcon}
               correctValue={answers[i]}
+              labelWidth={"7em"}
             />
           </div>
         );
@@ -835,21 +797,9 @@ function App() {
           <div key={i + d.getTime()}>
             <InputField
               label={
-                <Tooltip
-                  title={
-                    <React.Fragment>
-                      <Typography color="inherit">
-                        &mu;<sub>s</sub>
-                      </Typography>
-                      Coefficient of static friction; between 0 and 1
-                    </React.Fragment>
-                  }
-                  followCursor
-                >
-                  <Box>
-                    &mu;<sub>s</sub>
-                  </Box>
-                </Tooltip>
+                <Box>
+                  &mu;<sub>s</sub>
+                </Box>
               }
               lowerBound={0}
               changeValue={setCoefficientOfStaticFriction}
@@ -868,19 +818,7 @@ function App() {
         answerInput.push(
           <div key={i + d.getTime()}>
             <InputField
-              label={
-                <Tooltip
-                  title={
-                    <React.Fragment>
-                      <Typography color="inherit">&theta;</Typography>
-                      Angle of incline plane from the ground, 0-49
-                    </React.Fragment>
-                  }
-                  followCursor
-                >
-                  <Box>&theta;</Box>
-                </Tooltip>
-              }
+              label={<Box>&theta;</Box>}
               lowerBound={0}
               changeValue={setWedgeAngle}
               step={1}
@@ -948,8 +886,8 @@ function App() {
         setStartPosX((xMax + xMin - 200) / 2);
         setStartPosY2(yMax - 100);
         setStartPosX2((xMax + xMin + 200) / 2);
-        setUpdatedForces([forceOfGravity]);
-        setStartForces([forceOfGravity]);
+        setUpdatedForces([]);
+        setStartForces([]);
         addWalls();
         setSimulationReset(!simulationReset);
         // TODO
@@ -969,11 +907,12 @@ function App() {
         addPendulum();
         setStartPosX(xPos);
         setStartPosY(yPos);
-        const mag = 9.81 * Math.cos((50 * Math.PI) / 180);
+        const mag = 9.81 * Math.sin((60 * Math.PI) / 180);
         const forceOfTension: IForce = {
           description: "Tension",
           magnitude: mag,
           directionInDegrees: 90 - angle,
+          component: false,
         };
         setUpdatedForces([forceOfGravity, forceOfTension]);
         setStartForces([forceOfGravity, forceOfTension]);
@@ -986,6 +925,7 @@ function App() {
           description: "Spring force",
           magnitude: 0,
           directionInDegrees: 90,
+          component: false,
         };
         addSpring();
         setUpdatedForces([forceOfGravity, springForce]);
@@ -1017,6 +957,7 @@ function App() {
       setStepNumber(0);
       setShowVelocity(false);
       setShowAcceleration(false);
+      setShowForces(true);
       if (simulationType == "One Weight") {
         addWeight();
         setStartPosY(yMax - 100);
@@ -1069,6 +1010,7 @@ function App() {
       description: string;
       magnitude: number;
       directionInDegrees: number;
+      component: boolean;
     }[]
   ): IForce[] => {
     const forces: IForce[] = [];
@@ -1077,6 +1019,7 @@ function App() {
         description: json[i].description,
         magnitude: json[i].magnitude,
         directionInDegrees: json[i].directionInDegrees,
+        component: json[i].component,
       };
       forces.push(force);
     }
@@ -1090,16 +1033,19 @@ function App() {
         description: "Gravity",
         magnitude: reviewGravityMagnitude,
         directionInDegrees: reviewGravityAngle,
+        component: false,
       };
       const normalForceReview: IForce = {
         description: "Normal Force",
         magnitude: reviewNormalMagnitude,
         directionInDegrees: reviewNormalAngle,
+        component: false,
       };
       const staticFrictionForceReview: IForce = {
         description: "Static Friction Force",
         magnitude: reviewStaticMagnitude,
         directionInDegrees: reviewStaticAngle,
+        component: false,
       };
       setStartForces([
         forceOfGravityReview,
@@ -1314,6 +1260,9 @@ function App() {
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
                   color={"red"}
+                  coefficientOfKineticFriction={Number(
+                    coefficientOfKineticFriction
+                  )}
                   displayXPosition={positionXDisplay}
                   displayXVelocity={velocityXDisplay}
                   displayYPosition={positionYDisplay}
@@ -1324,18 +1273,10 @@ function App() {
                   mode={mode}
                   noMovement={noMovement}
                   paused={simulationPaused}
-                  pendulum={pendulum}
                   pendulumAngle={pendulumAngle}
                   pendulumLength={pendulumLength}
                   radius={50}
                   reset={simulationReset}
-                  spring={spring}
-                  springStartLength={springStartLength}
-                  springCurrentLength={springCurrentLength}
-                  setSpringCurrentLength={setSpringCurrentLength}
-                  springConstant={springConstant}
-                  showForceMagnitudes={showForceMagnitudes}
-                  setSketching={setSketching}
                   setDisplayXAcceleration={setAccelerationXDisplay}
                   setDisplayXPosition={setPositionXDisplay}
                   setDisplayXVelocity={setVelocityXDisplay}
@@ -1345,11 +1286,18 @@ function App() {
                   setPaused={setSimulationPaused}
                   setPendulumAngle={setPendulumAngle}
                   setPendulumLength={setPendulumLength}
+                  setSketching={setSketching}
+                  setSpringCurrentLength={setSpringCurrentLength}
                   setStartPendulumAngle={setStartPendulumAngle}
                   setUpdatedForces={setUpdatedForces}
                   showAcceleration={showAcceleration}
+                  showForceMagnitudes={showForceMagnitudes}
                   showForces={showForces}
                   showVelocity={showVelocity}
+                  simulationType={simulationType}
+                  springConstant={springConstant}
+                  springCurrentLength={springCurrentLength}
+                  springStartLength={springStartLength}
                   startForces={startForces}
                   startPosX={startPosX}
                   startPosY={startPosY}
@@ -1359,18 +1307,17 @@ function App() {
                   updateDisplay={displayChange}
                   updatedForces={updatedForces}
                   walls={wallPositions}
-                  wedge={wedge}
                   wedgeHeight={wedgeHeight}
                   wedgeWidth={wedgeWidth}
-                  coefficientOfKineticFriction={Number(
-                    coefficientOfKineticFriction
-                  )}
                 />
               )}
               {simulationType == "Two Weights" && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
                   color={"blue"}
+                  coefficientOfKineticFriction={Number(
+                    coefficientOfKineticFriction
+                  )}
                   displayXPosition={positionXDisplay2}
                   displayXVelocity={velocityXDisplay2}
                   displayYPosition={positionYDisplay2}
@@ -1381,18 +1328,10 @@ function App() {
                   mode={mode}
                   noMovement={noMovement}
                   paused={simulationPaused}
-                  pendulum={pendulum}
                   pendulumAngle={pendulumAngle}
                   pendulumLength={pendulumLength}
                   radius={50}
                   reset={simulationReset}
-                  showForceMagnitudes={showForceMagnitudes}
-                  spring={spring}
-                  springStartLength={springStartLength}
-                  springCurrentLength={springCurrentLength}
-                  setSpringCurrentLength={setSpringCurrentLength}
-                  springConstant={springConstant}
-                  setSketching={setSketching}
                   setDisplayXAcceleration={setAccelerationXDisplay2}
                   setDisplayXPosition={setPositionXDisplay2}
                   setDisplayXVelocity={setVelocityXDisplay2}
@@ -1402,11 +1341,18 @@ function App() {
                   setPaused={setSimulationPaused}
                   setPendulumAngle={setPendulumAngle}
                   setPendulumLength={setPendulumLength}
+                  setSketching={setSketching}
+                  setSpringCurrentLength={setSpringCurrentLength}
                   setStartPendulumAngle={setStartPendulumAngle}
                   setUpdatedForces={setUpdatedForces2}
                   showAcceleration={showAcceleration}
+                  showForceMagnitudes={showForceMagnitudes}
                   showForces={showForces}
                   showVelocity={showVelocity}
+                  simulationType={simulationType}
+                  springConstant={springConstant}
+                  springCurrentLength={springCurrentLength}
+                  springStartLength={springStartLength}
                   startForces={startForces}
                   startPosX={startPosX2}
                   startPosY={startPosY2}
@@ -1416,15 +1362,11 @@ function App() {
                   updateDisplay={displayChange2}
                   updatedForces={updatedForces2}
                   walls={wallPositions}
-                  wedge={wedge}
                   wedgeHeight={wedgeHeight}
                   wedgeWidth={wedgeWidth}
-                  coefficientOfKineticFriction={Number(
-                    coefficientOfKineticFriction
-                  )}
                 />
               )}
-              {wedge && (
+              {simulationType == "Inclined Plane" && (
                 <Wedge
                   startWidth={wedgeWidth}
                   startHeight={wedgeHeight}
@@ -1451,37 +1393,31 @@ function App() {
           <div className="mechanicsSimulationControls">
             <Stack direction="row" spacing={1}>
               {simulationPaused && mode != "Tutorial" && (
-                <Tooltip title="Start simulation" followCursor>
-                  <IconButton
-                    onClick={() => {
-                      setSimulationPaused(false);
-                    }}
-                  >
-                    <PlayArrowIcon />
-                  </IconButton>
-                </Tooltip>
+                <IconButton
+                  onClick={() => {
+                    setSimulationPaused(false);
+                  }}
+                >
+                  <PlayArrowIcon />
+                </IconButton>
               )}
               {!simulationPaused && mode != "Tutorial" && (
-                <Tooltip title="Pause simulation" followCursor>
-                  <IconButton
-                    onClick={() => {
-                      setSimulationPaused(true);
-                    }}
-                  >
-                    <PauseIcon />
-                  </IconButton>
-                </Tooltip>
+                <IconButton
+                  onClick={() => {
+                    setSimulationPaused(true);
+                  }}
+                >
+                  <PauseIcon />
+                </IconButton>
               )}
               {simulationPaused && mode != "Tutorial" && (
-                <Tooltip title="Reset simulation" followCursor>
-                  <IconButton
-                    onClick={() => {
-                      setSimulationReset(!simulationReset);
-                    }}
-                  >
-                    <ReplayIcon />
-                  </IconButton>
-                </Tooltip>
+                <IconButton
+                  onClick={() => {
+                    setSimulationReset(!simulationReset);
+                  }}
+                >
+                  <ReplayIcon />
+                </IconButton>
               )}
             </Stack>
             <div className="dropdownMenu">
@@ -1492,9 +1428,9 @@ function App() {
                 }}
                 style={{ height: "2em", width: "100%", fontSize: "16px" }}
               >
+                <option value="Tutorial">Tutorial Mode</option>
                 <option value="Freeform">Freeform Mode</option>
                 <option value="Review">Review Mode</option>
-                <option value="Tutorial">Tutorial Mode</option>
               </select>
             </div>
           </div>
@@ -1751,7 +1687,6 @@ function App() {
                       labelPlacement="start"
                     />
                   )}
-                  {!wedge && !pendulum && <Divider />}
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -1845,19 +1780,7 @@ function App() {
               {simulationType == "Inclined Plane" && simulationPaused && (
                 <div>
                   <InputField
-                    label={
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">&theta;</Typography>
-                            Angle of incline plane from the ground, 0-49
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>&theta;</Box>
-                      </Tooltip>
-                    }
+                    label={<Box>&theta;</Box>}
                     lowerBound={0}
                     changeValue={setWedgeAngle}
                     step={1}
@@ -1874,21 +1797,9 @@ function App() {
                   />
                   <InputField
                     label={
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">
-                              &mu;<sub>s</sub>
-                            </Typography>
-                            Coefficient of static friction, between 0 and 1
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>
-                          &mu;<sub>s</sub>
-                        </Box>
-                      </Tooltip>
+                      <Box>
+                        &mu;<sub>s</sub>
+                      </Box>
                     }
                     lowerBound={0}
                     changeValue={setCoefficientOfStaticFriction}
@@ -1909,22 +1820,9 @@ function App() {
                   />
                   <InputField
                     label={
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">
-                              &mu;<sub>k</sub>
-                            </Typography>
-                            Coefficient of kinetic friction, between 0 and
-                            coefficient of static friction
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>
-                          &mu;<sub>k</sub>
-                        </Box>
-                      </Tooltip>
+                      <Box>
+                        &mu;<sub>k</sub>
+                      </Box>
                     }
                     lowerBound={0}
                     changeValue={setCoefficientOfKineticFriction}
@@ -1963,19 +1861,7 @@ function App() {
               {simulationType == "Pendulum" && simulationPaused && (
                 <div>
                   <InputField
-                    label={
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">&theta;</Typography>
-                            Pendulum angle offset from equilibrium
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>&theta;</Box>
-                      </Tooltip>
-                    }
+                    label={<Box>&theta;</Box>}
                     lowerBound={0}
                     changeValue={setPendulumAngle}
                     step={1}
@@ -1983,7 +1869,7 @@ function App() {
                     upperBound={59}
                     value={pendulumAngle}
                     effect={(value) => {
-                      if (pendulum) {
+                      if (simulationType == "Pendulum") {
                         const mag =
                           1 * 9.81 * Math.cos((value * Math.PI) / 180);
 
@@ -1991,6 +1877,7 @@ function App() {
                           description: "Tension",
                           magnitude: mag,
                           directionInDegrees: 90 - value,
+                          component: false,
                         };
                         setStartForces([forceOfGravity, forceOfTension]);
                         setUpdatedForces([forceOfGravity, forceOfTension]);
@@ -2005,19 +1892,7 @@ function App() {
                     mode={"Freeform"}
                   />
                   <InputField
-                    label={
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">Length</Typography>
-                            Pendulum rod length
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>Length</Box>
-                      </Tooltip>
-                    }
+                    label={<Box>Rod length</Box>}
                     lowerBound={0}
                     changeValue={setPendulumLength}
                     step={1}
@@ -2025,7 +1900,7 @@ function App() {
                     upperBound={400}
                     value={Math.round(pendulumLength)}
                     effect={(value) => {
-                      if (pendulum) {
+                      if (simulationType == "Pendulum") {
                         const mag =
                           1 * 9.81 * Math.cos((pendulumAngle * Math.PI) / 180);
 
@@ -2033,6 +1908,7 @@ function App() {
                           description: "Tension",
                           magnitude: mag,
                           directionInDegrees: 90 - pendulumAngle,
+                          component: false,
                         };
                         setStartForces([forceOfGravity, forceOfTension]);
                         setUpdatedForces([forceOfGravity, forceOfTension]);
@@ -2069,75 +1945,61 @@ function App() {
                         );
                       }}
                     >
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">Position</Typography>
-                            Equation: x<sub>1</sub>
-                            =x
-                            <sub>0</sub>
-                            +v
-                            <sub>0</sub>
-                            t+0.5at
-                            <sup>2</sup>
-                            <br />
-                            Units: m
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>Position</Box>
-                      </Tooltip>
+                      <Box>Position</Box>
                     </td>
                     <td>
-                      {(!simulationPaused || wedge) && (
+                      {(!simulationPaused ||
+                        simulationType == "Inclined Plane") && (
                         <p style={{ cursor: "default" }}>
                           {positionXDisplay} m
                         </p>
                       )}{" "}
-                      {simulationPaused && !wedge && (
-                        <InputField
-                          lowerBound={10}
-                          changeValue={setPositionXDisplay}
-                          step={1}
-                          unit={"m"}
-                          upperBound={xMax - 110}
-                          value={positionXDisplay}
-                          effect={(value) => {
-                            setDisplayChange({
-                              xDisplay: value,
-                              yDisplay: positionYDisplay,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
+                      {simulationPaused &&
+                        simulationType != "Inclined Plane" && (
+                          <InputField
+                            lowerBound={10}
+                            changeValue={setPositionXDisplay}
+                            step={1}
+                            unit={"m"}
+                            upperBound={xMax - 110}
+                            value={positionXDisplay}
+                            effect={(value) => {
+                              setDisplayChange({
+                                xDisplay: value,
+                                yDisplay: positionYDisplay,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
                     </td>
                     <td>
-                      {(!simulationPaused || wedge) && (
+                      {(!simulationPaused ||
+                        simulationType == "Inclined Plane") && (
                         <p style={{ cursor: "default" }}>
                           {positionYDisplay} m
                         </p>
                       )}{" "}
-                      {simulationPaused && !wedge && (
-                        <InputField
-                          lowerBound={10}
-                          changeValue={setPositionYDisplay}
-                          step={1}
-                          unit={"m"}
-                          upperBound={yMax - 110}
-                          value={positionYDisplay}
-                          effect={(value) => {
-                            setDisplayChange({
-                              xDisplay: positionXDisplay,
-                              yDisplay: value,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
+                      {simulationPaused &&
+                        simulationType != "Inclined Plane" && (
+                          <InputField
+                            lowerBound={10}
+                            changeValue={setPositionYDisplay}
+                            step={1}
+                            unit={"m"}
+                            upperBound={yMax - 110}
+                            value={positionYDisplay}
+                            effect={(value) => {
+                              setDisplayChange({
+                                xDisplay: positionXDisplay,
+                                yDisplay: value,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
                     </td>
                   </tr>
                   <tr>
@@ -2149,30 +2011,16 @@ function App() {
                         );
                       }}
                     >
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">Velocity</Typography>
-                            Equation: v<sub>1</sub>
-                            =v
-                            <sub>0</sub>
-                            +at
-                            <br />
-                            Units: m/s
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>Velocity</Box>
-                      </Tooltip>
+                      <Box>Velocity</Box>
                     </td>
                     <td>
-                      {(!simulationPaused || pendulum || wedge) && (
-                        <p style={{ cursor: "default" }}>
-                          {velocityXDisplay} m/s
-                        </p>
-                      )}{" "}
-                      {simulationPaused && !pendulum && !wedge && (
+                      {!simulationPaused ||
+                        (simulationType != "One Weight" && (
+                          <p style={{ cursor: "default" }}>
+                            {velocityXDisplay} m/s
+                          </p>
+                        ))}{" "}
+                      {simulationPaused && simulationType == "One Weight" && (
                         <InputField
                           lowerBound={-50}
                           changeValue={setVelocityXDisplay}
@@ -2193,12 +2041,13 @@ function App() {
                       )}{" "}
                     </td>
                     <td>
-                      {(!simulationPaused || pendulum || wedge) && (
+                      {(!simulationPaused ||
+                        simulationType != "One Weight") && (
                         <p style={{ cursor: "default" }}>
                           {velocityYDisplay} m/s
                         </p>
                       )}{" "}
-                      {simulationPaused && !pendulum && !wedge && (
+                      {simulationPaused && simulationType == "One Weight" && (
                         <InputField
                           lowerBound={-50}
                           changeValue={setVelocityYDisplay}
@@ -2228,22 +2077,7 @@ function App() {
                         );
                       }}
                     >
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">
-                              Acceleration
-                            </Typography>
-                            Equation: a=F/m
-                            <br />
-                            Units: m/s
-                            <sup>2</sup>
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>Acceleration</Box>
-                      </Tooltip>
+                      <Box>Acceleration</Box>
                     </td>
                     <td style={{ cursor: "default" }}>
                       {accelerationXDisplay} m/s<sup>2</sup>
@@ -2397,22 +2231,7 @@ function App() {
                         );
                       }}
                     >
-                      <Tooltip
-                        title={
-                          <React.Fragment>
-                            <Typography color="inherit">
-                              Acceleration
-                            </Typography>
-                            Equation: a=F/m
-                            <br />
-                            Units: m/s
-                            <sup>2</sup>
-                          </React.Fragment>
-                        }
-                        followCursor
-                      >
-                        <Box>Acceleration</Box>
-                      </Tooltip>
+                      <Box>Acceleration</Box>
                     </td>
                     <td style={{ cursor: "default" }}>
                       {accelerationXDisplay2} m/s<sup>2</sup>

@@ -7,6 +7,7 @@ export interface IForce {
   description: string;
   magnitude: number;
   directionInDegrees: number;
+  component: boolean;
 }
 export interface IWeightProps {
   adjustPendulumAngle: { angle: number; length: number };
@@ -20,12 +21,10 @@ export interface IWeightProps {
   incrementTime: number;
   mass: number;
   paused: boolean;
-  pendulum: boolean;
   pendulumLength: number;
-  wedge: boolean;
   radius: number;
   reset: boolean;
-  spring: boolean;
+  simulationType: string;
   springConstant: number;
   springStartLength: number;
   springCurrentLength: number;
@@ -60,30 +59,34 @@ export interface IWeightProps {
   coefficientOfKineticFriction: number;
   wedgeWidth: number;
   wedgeHeight: number;
+  collider?: {
+    xCenter: number;
+    yCenter: number;
+    radius: number;
+    xVel: number;
+    yVel: number;
+  };
 }
 
 export const Weight = (props: IWeightProps) => {
   const {
     adjustPendulumAngle,
+    coefficientOfKineticFriction,
     color,
     displayXPosition,
-    displayYPosition,
     displayXVelocity,
+    displayYPosition,
     displayYVelocity,
     elasticCollisions,
-    startForces,
     incrementTime,
     mass,
-    paused,
-    pendulum,
-    pendulumLength,
-    wedge,
-    radius,
     mode,
     noMovement,
+    paused,
     pendulumAngle,
+    pendulumLength,
+    radius,
     reset,
-    setSketching,
     setDisplayXAcceleration,
     setDisplayXPosition,
     setDisplayXVelocity,
@@ -93,16 +96,19 @@ export const Weight = (props: IWeightProps) => {
     setPaused,
     setPendulumAngle,
     setPendulumLength,
-    setStartPendulumAngle,
-    spring,
-    springConstant,
-    springStartLength,
-    springCurrentLength,
+    setSketching,
     setSpringCurrentLength,
+    setStartPendulumAngle,
+    setUpdatedForces,
     showAcceleration,
-    showForces,
     showForceMagnitudes,
+    showForces,
     showVelocity,
+    simulationType,
+    springConstant,
+    springCurrentLength,
+    springStartLength,
+    startForces,
     startPosX,
     startPosY,
     startVelX,
@@ -110,21 +116,20 @@ export const Weight = (props: IWeightProps) => {
     timestepSize,
     updateDisplay,
     updatedForces,
-    setUpdatedForces,
     walls,
-    coefficientOfKineticFriction,
-    wedgeWidth,
     wedgeHeight,
+    wedgeWidth,
   } = props;
 
   // Constants
-  const draggable = !wedge && mode == "Freeform";
+  const draggable = simulationType != "Inclined Plane" && mode == "Freeform";
   const epsilon = 0.0001;
 
   const forceOfGravity: IForce = {
     description: "Gravity",
     magnitude: mass * 9.81,
     directionInDegrees: 270,
+    component: false,
   };
   const xMax = window.innerWidth * 0.7;
   const xMin = 0;
@@ -220,7 +225,7 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (!paused && !noMovement) {
       let collisions = false;
-      if (!pendulum && !spring) {
+      if (simulationType != "Pendulum" && simulationType != "Spring") {
         const collisionsWithGround = checkForCollisionsWithGround();
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
@@ -302,18 +307,21 @@ export const Weight = (props: IWeightProps) => {
       description: "Spring Force",
       magnitude: 0,
       directionInDegrees: 90,
+      component: false,
     };
     if (yPos - springStartLength > 0) {
       springForce = {
         description: "Spring Force",
         magnitude: springConstant * (yPos - springStartLength),
         directionInDegrees: 90,
+        component: false,
       };
     } else if (yPos - springStartLength < 0) {
       springForce = {
         description: "Spring Force",
         magnitude: springConstant * (springStartLength - yPos),
         directionInDegrees: 270,
+        component: false,
       };
     }
 
@@ -326,9 +334,6 @@ export const Weight = (props: IWeightProps) => {
     xVel: number,
     yVel: number
   ) => {
-    if (!pendulum) {
-      return updatedForces;
-    }
     const x = xMax / 2 - xPos - radius;
     const y = yPos + radius + 5;
     let angle = (Math.atan(y / x) * 180) / Math.PI;
@@ -352,6 +357,7 @@ export const Weight = (props: IWeightProps) => {
       description: "Tension",
       magnitude: mag,
       directionInDegrees: angle,
+      component: false,
     };
 
     return [forceOfGravity, forceOfTension];
@@ -420,11 +426,13 @@ export const Weight = (props: IWeightProps) => {
                 description: "Gravity",
                 magnitude: 9.81 * mass,
                 directionInDegrees: 270,
+                component: false,
               };
               const normalForce: IForce = {
                 description: "Normal force",
                 magnitude: 9.81 * mass,
                 directionInDegrees: wall.angleInDegrees + 90,
+                component: false,
               };
               setUpdatedForces([forceOfGravity, normalForce]);
             }
@@ -438,7 +446,7 @@ export const Weight = (props: IWeightProps) => {
 
   useEffect(() => {
     if (
-      wedge &&
+      simulationType == "Inclined Plane" &&
       Math.abs(xVelocity) > 0.1 &&
       mode != "Review" &&
       !kineticFriction
@@ -452,6 +460,7 @@ export const Weight = (props: IWeightProps) => {
           Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: false,
       };
       let frictionForce: IForce = {
         description: "Kinetic Friction Force",
@@ -461,6 +470,7 @@ export const Weight = (props: IWeightProps) => {
           Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: false,
       };
       // reduce magnitude of friction force if necessary such that block cannot slide up plane
       let yForce = -forceOfGravity.magnitude;
@@ -493,9 +503,9 @@ export const Weight = (props: IWeightProps) => {
     let yVel = yVelocity;
     for (let i = 0; i < 60; i++) {
       let forces1 = updatedForces;
-      if (pendulum) {
+      if (simulationType == "Pendulum") {
         forces1 = getNewPendulumForces(xPos, yPos, xVel, yVel);
-      } else if (spring) {
+      } else if (simulationType == "Spring") {
         forces1 = getNewSpringForces(yPos);
       }
       const xAcc1 = getNewAccelerationX(forces1);
@@ -508,9 +518,9 @@ export const Weight = (props: IWeightProps) => {
       let xPos2 = getNewPosition(xPos, xVel1 / 2);
       let yPos2 = getNewPosition(yPos, yVel1 / 2);
       let forces2 = updatedForces;
-      if (pendulum) {
+      if (simulationType == "Pendulum") {
         forces2 = getNewPendulumForces(xPos2, yPos2, xVel2, yVel2);
-      } else if (spring) {
+      } else if (simulationType == "Spring") {
         forces2 = getNewSpringForces(yPos2);
       }
       const xAcc2 = getNewAccelerationX(forces2);
@@ -525,9 +535,9 @@ export const Weight = (props: IWeightProps) => {
       let xPos3 = getNewPosition(xPos, xVel2 / 2);
       let yPos3 = getNewPosition(yPos, yVel2 / 2);
       let forces3 = updatedForces;
-      if (pendulum) {
+      if (simulationType == "Pendulum") {
         forces3 = getNewPendulumForces(xPos3, yPos3, xVel3, yVel3);
-      } else if (spring) {
+      } else if (simulationType == "Spring") {
         forces3 = getNewSpringForces(yPos3);
       }
       const xAcc3 = getNewAccelerationX(forces3);
@@ -542,9 +552,9 @@ export const Weight = (props: IWeightProps) => {
       let xPos4 = getNewPosition(xPos, xVel3);
       let yPos4 = getNewPosition(yPos, yVel3);
       let forces4 = updatedForces;
-      if (pendulum) {
+      if (simulationType == "Pendulum") {
         forces4 = getNewPendulumForces(xPos4, yPos4, xVel4, yVel4);
-      } else if (spring) {
+      } else if (simulationType == "Spring") {
         forces4 = getNewSpringForces(yPos4);
       }
       const xAcc4 = getNewAccelerationX(forces4);
@@ -569,9 +579,9 @@ export const Weight = (props: IWeightProps) => {
     setXPosition(xPos);
     setYPosition(yPos);
     let forces = updatedForces;
-    if (pendulum) {
+    if (simulationType == "Pendulum") {
       forces = getNewPendulumForces(xPos, yPos, xVel, yVel);
-    } else if (spring) {
+    } else if (simulationType == "Spring") {
       forces = getNewSpringForces(yPos);
     }
     setUpdatedForces(forces);
@@ -661,7 +671,7 @@ export const Weight = (props: IWeightProps) => {
         onPointerUp={(e) => {
           if (dragging) {
             e.preventDefault();
-            if (!pendulum) {
+            if (simulationType != "Pendulum") {
               resetEverything();
             }
             setDragging(false);
@@ -678,7 +688,7 @@ export const Weight = (props: IWeightProps) => {
             } else if (newX < 10) {
               newX = 10;
             }
-            if (pendulum) {
+            if (simulationType == "Pendulum") {
               const x = xMax / 2 - newX - radius;
               const y = newY + radius + 5;
               let angle = (Math.atan(y / x) * 180) / Math.PI;
@@ -698,6 +708,7 @@ export const Weight = (props: IWeightProps) => {
                 description: "Tension",
                 magnitude: mag,
                 directionInDegrees: angle,
+                component: false,
               };
 
               setKineticFriction(false);
@@ -713,7 +724,7 @@ export const Weight = (props: IWeightProps) => {
           <p className="weightLabel">{mass} kg</p>
         </div>
       </div>
-      {spring && (
+      {simulationType == "Spring" && (
         <div
           className="spring"
           style={{
@@ -755,7 +766,7 @@ export const Weight = (props: IWeightProps) => {
           </svg>
         </div>
       )}
-      {pendulum && (
+      {simulationType == "Pendulum" && (
         <div
           className="rod"
           style={{
@@ -994,15 +1005,29 @@ export const Weight = (props: IWeightProps) => {
                       <path d="M0,0 L0,6 L9,3 z" fill={color} />
                     </marker>
                   </defs>
-                  <line
-                    x1={arrowStartX}
-                    y1={arrowStartY}
-                    x2={arrowEndX}
-                    y2={arrowEndY}
-                    stroke={color}
-                    strokeWidth="5"
-                    markerEnd="url(#forceArrow)"
-                  />
+                  {force.component == true && (
+                    <line
+                      x1={arrowStartX}
+                      y1={arrowStartY}
+                      x2={arrowEndX}
+                      y2={arrowEndY}
+                      stroke={color}
+                      strokeWidth="5"
+                      strokeDasharray="10,10"
+                      markerEnd="url(#forceArrow)"
+                    />
+                  )}
+                  {force.component == false && (
+                    <line
+                      x1={arrowStartX}
+                      y1={arrowStartY}
+                      x2={arrowEndX}
+                      y2={arrowEndY}
+                      stroke={color}
+                      strokeWidth="5"
+                      markerEnd="url(#forceArrow)"
+                    />
+                  )}
                 </svg>
               </div>
               <div

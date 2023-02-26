@@ -6,8 +6,18 @@
         "description": "Forces",
         "content": "There are two forces acting on the weight: the force of gravity and the normal force.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
-          { "description": "Normal Force", "magnitude": 9.81, "directionInDegrees": 90 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Normal Force",
+            "magnitude": 9.81,
+            "directionInDegrees": 90,
+            "component": false
+          }
         ],
         "showMagnitude": false
       },
@@ -15,7 +25,12 @@
         "description": "Force of Gravity",
         "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          }
         ],
         "showMagnitude": true
       },
@@ -23,7 +38,12 @@
         "description": "Normal Force",
         "content": "The normal force acts in the positive y direction: π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
         "forces": [
-          { "description": "Normal Force", "magnitude": 9.81, "directionInDegrees": 90 }
+          {
+            "description": "Normal Force",
+            "magnitude": 9.81,
+            "directionInDegrees": 90,
+            "component": false
+          }
         ],
         "showMagnitude": true
       },
@@ -31,8 +51,18 @@
         "description": "All Forces",
         "content": "Combining all of the forces, we get the following free body diagram.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
-          { "description": "Normal Force", "magnitude": 9.81, "directionInDegrees": 90 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Normal Force",
+            "magnitude": 9.81,
+            "directionInDegrees": 90,
+            "component": false
+          }
         ],
         "showMagnitude": true
       }
@@ -45,8 +75,18 @@
         "description": "Forces",
         "content": "There are two force acting on the weight: the force of gravity and the force of tension.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
-          { "description": "Tension", "magnitude": 8.5, "directionInDegrees": 60 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Tension",
+            "magnitude": 8.5,
+            "directionInDegrees": 60,
+            "component": false
+          }
         ],
         "showMagnitude": false
       },
@@ -54,7 +94,12 @@
         "description": "Force of Gravity",
         "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          }
         ],
         "showMagnitude": true
       },
@@ -62,7 +107,18 @@
         "description": "Tension",
         "content": "The force of tension acts along the direction of the rod. The rod is 30 degrees offset from equilibrium, so the direction along the rod is 90-30=60 degrees. The tension force has two components—the component creating the centripetal force and the component canceling out the parallel component of gravity. The weight has just been released, so it has velocity 0, meaning the centripetal force is 0. Thus, the tension force only acts to cancel out the parallel component of gravity. Thus, the magnitude of tension is m*g*sin(60°)",
         "forces": [
-          { "description": "Tension", "magnitude": 8.5, "directionInDegrees": 60 }
+          {
+            "description": "Tension",
+            "magnitude": 8.5,
+            "directionInDegrees": 60,
+            "component": false
+          },
+          {
+            "description": "Gravity - Parallel Component",
+            "magnitude": 8.5,
+            "directionInDegrees": 240,
+            "component": true
+          }
         ],
         "showMagnitude": true
       },
@@ -70,8 +126,18 @@
         "description": "All Forces",
         "content": "Combining all of the forces, we get the following free body diagram.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
-          { "description": "Tension", "magnitude": 8.5, "directionInDegrees": 60 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Tension",
+            "magnitude": 8.5,
+            "directionInDegrees": 60,
+            "component": false
+          }
         ],
         "showMagnitude": true
       }
@@ -84,12 +150,23 @@
         "description": "Forces",
         "content": "There are three forces acting on the weight: the force of gravity, the normal force, and the force of static friction.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
-          { "description": "Normal Force", "magnitude": 8.817, "directionInDegrees": 64 },
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Normal Force",
+            "magnitude": 8.817,
+            "directionInDegrees": 64,
+            "component": false
+          },
           {
             "description": "Friction Force",
             "magnitude": 4.3,
-            "directionInDegrees": 154
+            "directionInDegrees": 154,
+            "component": false
           }
         ],
         "showMagnitude": false
@@ -98,7 +175,12 @@
         "description": "Force of Gravity",
         "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 }
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          }
         ],
         "showMagnitude": true
       },
@@ -106,7 +188,12 @@
         "description": "Normal Force",
         "content": "The normal force acts in the direction perpendicular to the incline plane: π/2-θ rad, where θ is the angle of the incline plane. The magnitude of the normal force is equal to m*g*cos(θ).",
         "forces": [
-          { "description": "Normal Force", "magnitude": 8.817, "directionInDegrees": 64 }
+          {
+            "description": "Normal Force",
+            "magnitude": 8.817,
+            "directionInDegrees": 64,
+            "component": false
+          }
         ],
         "showMagnitude": true
       },
@@ -117,7 +204,8 @@
           {
             "description": "Friction Force",
             "magnitude": 4.3,
-            "directionInDegrees": 154
+            "directionInDegrees": 154,
+            "component": false
           }
         ],
         "showMagnitude": false
@@ -127,14 +215,16 @@
         "content": "For the system to be in equilibrium, the sum of the x components of all forces must equal 0. The x component of the normal force is equal to m*g*cos(θ)*cos(π/2-θ), where θ is the angle of the incline plane. The x component of gravity is equal to 0. Since the net force in the x direction must be 0, we know the magnitude of the x component of the friction force is m*g*cos(θ)*cos(π/2-θ).",
         "forces": [
           {
-            "description": "X Component - Normal Force",
+            "description": "Normal Force - X Component",
             "magnitude": 3.87,
-            "directionInDegrees": 0
+            "directionInDegrees": 0,
+            "component": true
           },
           {
-            "description": "X Component - Friction Force",
+            "description": "Friction Force - X Component",
             "magnitude": 3.87,
-            "directionInDegrees": 180
+            "directionInDegrees": 180,
+            "component": true
           }
         ],
         "showMagnitude": true
@@ -144,19 +234,22 @@
         "content": "For the system to be in equilibrium, the sum of the y components of all forces must equal 0. The y component of the normal force is equal to m*g*cos(θ)*sin(π/2-θ), where θ is the angle of the incline plane. The y component of gravity is equal to m*g. Since the net force in the x direction must be 0, we know the magnitude of the y component of the friction force is m*g-m*g*cos(θ)*sin(π/2-θ).",
         "forces": [
           {
-            "description": "Y Component - Normal Force",
+            "description": "Normal Force - Y Component ",
             "magnitude": 7.92,
-            "directionInDegrees": 90
+            "directionInDegrees": 90,
+            "component": true
           },
           {
-            "description": "Y Component - Gravity",
+            "description": "Gravity - Y Component ",
             "magnitude": 9.81,
-            "directionInDegrees": 270
+            "directionInDegrees": 270,
+            "component": true
           },
           {
-            "description": "Y Component - Friction Force",
+            "description": "Friction Force - Y Component ",
             "magnitude": 1.89,
-            "directionInDegrees": 90
+            "directionInDegrees": 90,
+            "component": true
           }
         ],
         "showMagnitude": true
@@ -168,7 +261,8 @@
           {
             "description": "Friction Force",
             "magnitude": 4.3,
-            "directionInDegrees": 154
+            "directionInDegrees": 154,
+            "component": false
           }
         ],
         "showMagnitude": true
@@ -177,12 +271,23 @@
         "description": "All Forces",
         "content": "Combining all of the forces, we get the following free body diagram.",
         "forces": [
-          { "description": "Gravity", "magnitude": 9.81, "directionInDegrees": 270 },
-          { "description": "Normal Force", "magnitude": 8.817, "directionInDegrees": 64 },
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Normal Force",
+            "magnitude": 8.817,
+            "directionInDegrees": 64,
+            "component": false
+          },
           {
             "description": "Friction Force",
             "magnitude": 4.3,
-            "directionInDegrees": 154
+            "directionInDegrees": 154,
+            "component": false
           }
         ],
         "showMagnitude": true
