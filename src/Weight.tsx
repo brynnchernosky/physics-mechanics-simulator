@@ -414,7 +414,7 @@ export const Weight = (props: IWeightProps) => {
     const maxY = yPosition + 2 * radius;
     if (yVelocity > 0) {
       walls.forEach((wall) => {
-        if (wall.angleInDegrees == 0) {
+        if (wall.angleInDegrees == 0 && wall.yPos > 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
           if (maxY >= groundY) {
             if (elasticCollisions) {
@@ -422,19 +422,21 @@ export const Weight = (props: IWeightProps) => {
             } else {
               setYVelocity(0);
               setYPosition(groundY - 2 * radius + 5);
-              const forceOfGravity: IForce = {
-                description: "Gravity",
-                magnitude: 9.81 * mass,
-                directionInDegrees: 270,
-                component: false,
-              };
-              const normalForce: IForce = {
-                description: "Normal force",
-                magnitude: 9.81 * mass,
-                directionInDegrees: wall.angleInDegrees + 90,
-                component: false,
-              };
-              setUpdatedForces([forceOfGravity, normalForce]);
+              if (simulationType != "Two Weights") {
+                const forceOfGravity: IForce = {
+                  description: "Gravity",
+                  magnitude: 9.81 * mass,
+                  directionInDegrees: 270,
+                  component: false,
+                };
+                const normalForce: IForce = {
+                  description: "Normal force",
+                  magnitude: 9.81 * mass,
+                  directionInDegrees: wall.angleInDegrees + 90,
+                  component: false,
+                };
+                setUpdatedForces([forceOfGravity, normalForce]);
+              }
             }
             collision = true;
           }

@@ -856,6 +856,7 @@ function App() {
   const addWalls = () => {
     if (wallPositions.length == 0) {
       const walls: IWallProps[] = [];
+      walls.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
       walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
       walls.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
       walls.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
@@ -1673,7 +1674,8 @@ function App() {
             <div>
               <FormControl component="fieldset">
                 <FormGroup>
-                  {simulationType == "One Weight" && (
+                  {(simulationType == "One Weight" ||
+                    simulationType == "Two Weights") && (
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -1927,12 +1929,13 @@ function App() {
             </div>
           )}
           <div className="mechanicsSimulationEquation">
-            {mode == "Freeform" && twoWeights && <p>Red Weight</p>}
             {mode == "Freeform" && weight && (
               <table>
                 <tbody>
                   <tr>
-                    <td>&nbsp;</td>
+                    <td>
+                      {simulationType == "Two Weights" ? <b>Red Weight</b> : ""}
+                    </td>
                     <td>X</td>
                     <td>{simulationType == "Two Weights" ? "Z" : "Y"}</td>
                   </tr>
@@ -2056,7 +2059,7 @@ function App() {
                           upperBound={50}
                           value={velocityYDisplay}
                           effect={(value) => {
-                            setStartVelY(value);
+                            setStartVelY(-value);
                             setDisplayChange({
                               xDisplay: positionXDisplay,
                               yDisplay: positionYDisplay,
@@ -2090,13 +2093,12 @@ function App() {
               </table>
             )}
             {mode == "Freeform" && simulationType == "Two Weights" && (
-              <p>Blue Weight</p>
-            )}
-            {mode == "Freeform" && simulationType == "Two Weights" && (
               <table>
                 <tbody>
                   <tr>
-                    <td>&nbsp;</td>
+                    <td>
+                      <b>Blue Weight</b>
+                    </td>
                     <td>X</td>
                     <td>Z</td>
                   </tr>
@@ -2210,7 +2212,7 @@ function App() {
                           upperBound={50}
                           value={velocityYDisplay2}
                           effect={(value) => {
-                            setStartVelY2(value);
+                            setStartVelY2(-value);
                             setDisplayChange2({
                               xDisplay: positionXDisplay2,
                               yDisplay: positionYDisplay2,
