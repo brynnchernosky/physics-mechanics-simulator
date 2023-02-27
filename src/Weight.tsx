@@ -382,23 +382,21 @@ export const Weight = (props: IWeightProps) => {
           const wallX = (wall.xPos / 100) * window.innerWidth;
           if (wall.xPos < 0.35) {
             if (minX <= wallX) {
+              setXPosition(wallX + 6);
               if (elasticCollisions) {
                 setXVelocity(-xVelocity);
-                setXPosition(wallX + 10);
               } else {
                 setXVelocity(0);
-                setXPosition(wallX + 10);
               }
               collision = true;
             }
           } else {
             if (maxX >= wallX) {
+              setXPosition(wallX - 2 * radius - 1);
               if (elasticCollisions) {
                 setXVelocity(-xVelocity);
-                setXPosition(wallX - 2 * radius - 10);
               } else {
                 setXVelocity(0);
-                setXPosition(wallX - 2 * radius - 10);
               }
               collision = true;
             }
@@ -411,17 +409,18 @@ export const Weight = (props: IWeightProps) => {
 
   const checkForCollisionsWithGround = () => {
     let collision = false;
+    const minY = yPosition;
     const maxY = yPosition + 2 * radius;
     if (yVelocity > 0) {
       walls.forEach((wall) => {
         if (wall.angleInDegrees == 0 && wall.yPos > 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
           if (maxY >= groundY) {
+            setYPosition(groundY - 2 * radius - 6);
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {
               setYVelocity(0);
-              setYPosition(groundY - 2 * radius + 5);
               if (simulationType != "Two Weights") {
                 const forceOfGravity: IForce = {
                   description: "Gravity",
@@ -437,6 +436,22 @@ export const Weight = (props: IWeightProps) => {
                 };
                 setUpdatedForces([forceOfGravity, normalForce]);
               }
+            }
+            collision = true;
+          }
+        }
+      });
+    }
+    if (yVelocity < 0) {
+      walls.forEach((wall) => {
+        if (wall.angleInDegrees == 0 && wall.yPos < 0.4) {
+          const groundY = (wall.yPos / 100) * window.innerHeight;
+          if (minY <= groundY) {
+            setYPosition(groundY + 6);
+            if (elasticCollisions) {
+              setYVelocity(-yVelocity);
+            } else {
+              setYVelocity(0);
             }
             collision = true;
           }
