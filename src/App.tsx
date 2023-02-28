@@ -883,10 +883,14 @@ function App() {
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Two Weights") {
         addTwoWeights();
-        setStartPosY(yMax - 100);
-        setStartPosX((xMax + xMin - 200) / 2);
-        setStartPosY2(yMax - 100);
+        setStartPosY((yMax + yMin - 100) / 2);
+        setStartPosX((xMax + xMin - 300) / 2);
+        setStartPosY2((yMax + yMin - 100) / 2);
         setStartPosX2((xMax + xMin + 200) / 2);
+        setAccelerationXDisplay(0);
+        setAccelerationYDisplay(0);
+        setAccelerationXDisplay2(0);
+        setAccelerationYDisplay2(0);
         setUpdatedForces([]);
         setStartForces([]);
         addWalls();
@@ -2017,58 +2021,64 @@ function App() {
                       <Box>Velocity</Box>
                     </td>
                     <td>
-                      {!simulationPaused ||
-                        (simulationType != "One Weight" && (
-                          <p style={{ cursor: "default" }}>
-                            {velocityXDisplay} m/s
-                          </p>
-                        ))}{" "}
-                      {simulationPaused && simulationType == "One Weight" && (
-                        <InputField
-                          lowerBound={-50}
-                          changeValue={setVelocityXDisplay}
-                          step={1}
-                          unit={"m/s"}
-                          upperBound={50}
-                          value={velocityXDisplay}
-                          effect={(value) => {
-                            setStartVelX(value);
-                            setDisplayChange({
-                              xDisplay: positionXDisplay,
-                              yDisplay: positionYDisplay,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
+                      {(!simulationPaused ||
+                        (simulationType != "One Weight" &&
+                          simulationType != "Two Weights")) && (
+                        <p style={{ cursor: "default" }}>
+                          {velocityXDisplay} m/s
+                        </p>
                       )}{" "}
+                      {simulationPaused &&
+                        (simulationType == "One Weight" ||
+                          simulationType == "Two Weights") && (
+                          <InputField
+                            lowerBound={-50}
+                            changeValue={setVelocityXDisplay}
+                            step={1}
+                            unit={"m/s"}
+                            upperBound={50}
+                            value={velocityXDisplay}
+                            effect={(value) => {
+                              setStartVelX(value);
+                              setDisplayChange({
+                                xDisplay: positionXDisplay,
+                                yDisplay: positionYDisplay,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
                     </td>
                     <td>
                       {(!simulationPaused ||
-                        simulationType != "One Weight") && (
+                        (simulationType != "One Weight" &&
+                          simulationType != "Two Weights")) && (
                         <p style={{ cursor: "default" }}>
                           {velocityYDisplay} m/s
                         </p>
                       )}{" "}
-                      {simulationPaused && simulationType == "One Weight" && (
-                        <InputField
-                          lowerBound={-50}
-                          changeValue={setVelocityYDisplay}
-                          step={1}
-                          unit={"m/s"}
-                          upperBound={50}
-                          value={velocityYDisplay}
-                          effect={(value) => {
-                            setStartVelY(-value);
-                            setDisplayChange({
-                              xDisplay: positionXDisplay,
-                              yDisplay: positionYDisplay,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
+                      {simulationPaused &&
+                        (simulationType == "One Weight" ||
+                          simulationType == "Two Weights") && (
+                          <InputField
+                            lowerBound={-50}
+                            changeValue={setVelocityYDisplay}
+                            step={1}
+                            unit={"m/s"}
+                            upperBound={50}
+                            value={velocityYDisplay}
+                            effect={(value) => {
+                              setStartVelY(-value);
+                              setDisplayChange({
+                                xDisplay: positionXDisplay,
+                                yDisplay: positionYDisplay,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
                     </td>
                   </tr>
                   <tr>
@@ -2093,157 +2103,164 @@ function App() {
               </table>
             )}
             {mode == "Freeform" && simulationType == "Two Weights" && (
-              <table>
-                <tbody>
-                  <tr>
-                    <td>
-                      <b>Blue Weight</b>
-                    </td>
-                    <td>X</td>
-                    <td>Z</td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ cursor: "help" }}
-                      onClick={() => {
-                        window.open(
-                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                        );
-                      }}
-                    ></td>
-                    <td>
-                      {!simulationPaused && (
-                        <p style={{ cursor: "default" }}>
-                          {positionXDisplay2} m
-                        </p>
-                      )}{" "}
-                      {simulationPaused && (
-                        <InputField
-                          lowerBound={10}
-                          changeValue={setPositionXDisplay2}
-                          step={1}
-                          unit={"m"}
-                          upperBound={xMax - 110}
-                          value={positionXDisplay2}
-                          effect={(value) => {
-                            setDisplayChange2({
-                              xDisplay: value,
-                              yDisplay: positionYDisplay2,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
-                    </td>
-                    <td>
-                      {!simulationPaused && (
-                        <p style={{ cursor: "default" }}>
-                          {positionYDisplay2} m
-                        </p>
-                      )}{" "}
-                      {simulationPaused && (
-                        <InputField
-                          lowerBound={10}
-                          changeValue={setPositionYDisplay2}
-                          step={1}
-                          unit={"m"}
-                          upperBound={yMax - 110}
-                          value={positionYDisplay2}
-                          effect={(value) => {
-                            setDisplayChange2({
-                              xDisplay: positionXDisplay2,
-                              yDisplay: value,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ cursor: "help" }}
-                      onClick={() => {
-                        window.open(
-                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                        );
-                      }}
-                    ></td>
-                    <td>
-                      {!simulationPaused && (
-                        <p style={{ cursor: "default" }}>
-                          {velocityXDisplay2} m/s
-                        </p>
-                      )}{" "}
-                      {simulationPaused && (
-                        <InputField
-                          lowerBound={-50}
-                          changeValue={setVelocityXDisplay2}
-                          step={1}
-                          unit={"m/s"}
-                          upperBound={50}
-                          value={velocityXDisplay2}
-                          effect={(value) => {
-                            setStartVelX2(value);
-                            setDisplayChange2({
-                              xDisplay: positionXDisplay2,
-                              yDisplay: positionYDisplay2,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
-                    </td>
-                    <td>
-                      {!simulationPaused && (
-                        <p style={{ cursor: "default" }}>
-                          {velocityYDisplay2} m/s
-                        </p>
-                      )}{" "}
-                      {simulationPaused && (
-                        <InputField
-                          lowerBound={-50}
-                          changeValue={setVelocityYDisplay2}
-                          step={1}
-                          unit={"m/s"}
-                          upperBound={50}
-                          value={velocityYDisplay2}
-                          effect={(value) => {
-                            setStartVelY2(-value);
-                            setDisplayChange2({
-                              xDisplay: positionXDisplay2,
-                              yDisplay: positionYDisplay2,
-                            });
-                          }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      )}{" "}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ cursor: "help" }}
-                      onClick={() => {
-                        window.open(
-                          "https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                        );
-                      }}
-                    >
-                      <Box>Acceleration</Box>
-                    </td>
-                    <td style={{ cursor: "default" }}>
-                      {accelerationXDisplay2} m/s<sup>2</sup>
-                    </td>
-                    <td style={{ cursor: "default" }}>
-                      {accelerationYDisplay2} m/s<sup>2</sup>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div>
+                <br />
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <b>Blue Weight</b>
+                      </td>
+                      <td>X</td>
+                      <td>Z</td>
+                    </tr>
+                    <tr>
+                      <td
+                        style={{ cursor: "help" }}
+                        onClick={() => {
+                          window.open(
+                            "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                          );
+                        }}
+                      >
+                        <Box>Position</Box>
+                      </td>
+                      <td>
+                        {!simulationPaused && (
+                          <p style={{ cursor: "default" }}>
+                            {positionXDisplay2} m
+                          </p>
+                        )}{" "}
+                        {simulationPaused && (
+                          <InputField
+                            lowerBound={10}
+                            changeValue={setPositionXDisplay2}
+                            step={1}
+                            unit={"m"}
+                            upperBound={xMax - 110}
+                            value={positionXDisplay2}
+                            effect={(value) => {
+                              setDisplayChange2({
+                                xDisplay: value,
+                                yDisplay: positionYDisplay2,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
+                      </td>
+                      <td>
+                        {!simulationPaused && (
+                          <p style={{ cursor: "default" }}>
+                            {positionYDisplay2} m
+                          </p>
+                        )}{" "}
+                        {simulationPaused && (
+                          <InputField
+                            lowerBound={10}
+                            changeValue={setPositionYDisplay2}
+                            step={1}
+                            unit={"m"}
+                            upperBound={yMax - 110}
+                            value={positionYDisplay2}
+                            effect={(value) => {
+                              setDisplayChange2({
+                                xDisplay: positionXDisplay2,
+                                yDisplay: value,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style={{ cursor: "help" }}
+                        onClick={() => {
+                          window.open(
+                            "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                          );
+                        }}
+                      >
+                        <Box>Velocity</Box>
+                      </td>
+                      <td>
+                        {!simulationPaused && (
+                          <p style={{ cursor: "default" }}>
+                            {velocityXDisplay2} m/s
+                          </p>
+                        )}{" "}
+                        {simulationPaused && (
+                          <InputField
+                            lowerBound={-50}
+                            changeValue={setVelocityXDisplay2}
+                            step={1}
+                            unit={"m/s"}
+                            upperBound={50}
+                            value={velocityXDisplay2}
+                            effect={(value) => {
+                              setStartVelX2(value);
+                              setDisplayChange2({
+                                xDisplay: positionXDisplay2,
+                                yDisplay: positionYDisplay2,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
+                      </td>
+                      <td>
+                        {!simulationPaused && (
+                          <p style={{ cursor: "default" }}>
+                            {velocityYDisplay2} m/s
+                          </p>
+                        )}{" "}
+                        {simulationPaused && (
+                          <InputField
+                            lowerBound={-50}
+                            changeValue={setVelocityYDisplay2}
+                            step={1}
+                            unit={"m/s"}
+                            upperBound={50}
+                            value={velocityYDisplay2}
+                            effect={(value) => {
+                              setStartVelY2(-value);
+                              setDisplayChange2({
+                                xDisplay: positionXDisplay2,
+                                yDisplay: positionYDisplay2,
+                              });
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        )}{" "}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style={{ cursor: "help" }}
+                        onClick={() => {
+                          window.open(
+                            "https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                          );
+                        }}
+                      >
+                        <Box>Acceleration</Box>
+                      </td>
+                      <td style={{ cursor: "default" }}>
+                        {accelerationXDisplay2} m/s<sup>2</sup>
+                      </td>
+                      <td style={{ cursor: "default" }}>
+                        {accelerationYDisplay2} m/s<sup>2</sup>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
           {/* {mode == "Freeform" &&
