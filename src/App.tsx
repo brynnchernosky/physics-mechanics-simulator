@@ -1084,6 +1084,10 @@ function App() {
         setDeleteMode(false);
       }
     });
+    window.addEventListener("resize", (e) => {
+     console.log('window resized!')
+      window.location.reload();
+    });
   }, []);
 
   // Timer for animating the simulation
