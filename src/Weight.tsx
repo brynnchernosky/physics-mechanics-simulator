@@ -59,12 +59,13 @@ export interface IWeightProps {
   coefficientOfKineticFriction: number;
   wedgeWidth: number;
   wedgeHeight: number;
-  collider: {
+  collider?: {
     xCenter: number;
     yCenter: number;
     radius: number;
     xVel: number;
     yVel: number;
+    mass: number;
   };
 }
 
@@ -230,7 +231,7 @@ export const Weight = (props: IWeightProps) => {
         const collisionsWithGround = checkForCollisionsWithGround();
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
-        if (simulationType == "Two Weights") {
+        if (simulationType == "Two Weights" && collider != undefined) {
           collisions = collisions || checkForCollisionsWithCollider();
         }
       }
@@ -413,7 +414,15 @@ export const Weight = (props: IWeightProps) => {
 
   const checkForCollisionsWithCollider = () => {
     let collision = false;
-    if (yVelocity != 0 || xVelocity != 0) {
+    if (collider == undefined) {
+      return false;
+    }
+    if (
+      yVelocity != 0 ||
+      xVelocity != 0 ||
+      collider.xVel != 0 ||
+      collider.yVel != 0
+    ) {
       // get distance between circle centers
       let centerX = xPosition + radius;
       let centerY = yPosition + radius;
@@ -421,9 +430,44 @@ export const Weight = (props: IWeightProps) => {
         Math.abs(collider.xCenter - centerX) ** 2 +
         Math.abs(collider.yCenter - centerY) ** 2;
       if (squaredDistance <= (radius + collider.radius) ** 2) {
+        let phi = 0;
         //collision has occurred
         if (elasticCollisions) {
           // handle elastic collision
+          console.log("collision");
+          let theta1 =
+            Math.sqrt(yVelocity ** 2 + xVelocity ** 2) == 0
+              ? 0
+              : Math.acos(
+                  xVelocity / Math.sqrt(yVelocity ** 2 + xVelocity ** 2)
+                );
+          let theta2 =
+            Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2) == 0
+              ? 0
+              : Math.acos(
+                  collider.xVel /
+                    Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2)
+                );
+          console.log(theta1, theta2);
+          let v1Multiple =
+            (Math.sqrt(yVelocity ** 2 + xVelocity ** 2) *
+              Math.cos(theta1 - phi) *
+              (mass - collider.mass) +
+              2 * collider.mass * collider.yVel * Math.cos(theta2 - phi)) /
+            (mass + collider.mass);
+          let v1x =
+            v1Multiple * Math.cos(phi) +
+            Math.sqrt(yVelocity ** 2 + xVelocity ** 2) *
+              Math.sin(theta1 - phi) *
+              Math.cos(phi + Math.PI / 2);
+          let v1y =
+            v1Multiple * Math.sin(phi) +
+            Math.sqrt(yVelocity ** 2 + xVelocity ** 2) *
+              Math.sin(theta1 - phi) *
+              Math.sin(phi + Math.PI / 2);
+          console.log(v1x, v1y);
+          setXVelocity(v1x);
+          setYVelocity(v1y);
         } else {
           // handle inelastic collision
         }

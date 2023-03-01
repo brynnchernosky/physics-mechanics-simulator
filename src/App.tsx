@@ -1169,10 +1169,10 @@ function App() {
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
                     <option value="One Weight">One Weight</option>
-                    {/* <option value="Two Weights">Two Weights</option> */}
+                    <option value="Two Weights">Two Weights</option>
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
-                    {/* <option value="Spring">Spring</option> */}
+                    <option value="Spring">Spring</option>
                   </select>
                 </div>
               </div>
@@ -1275,6 +1275,7 @@ function App() {
                    radius: radius2,
                    xVel: velocityXDisplay2,
                    yVel: -velocityYDisplay2,
+                   mass: 1,
                  }}
                   color={"red"}
                   coefficientOfKineticFriction={Number(
@@ -1341,6 +1342,7 @@ function App() {
                     radius: radius1,
                     xVel: velocityXDisplay,
                     yVel: -velocityYDisplay,
+                    mass: 1,
                   }}
                   displayXPosition={positionXDisplay2}
                   displayXVelocity={velocityXDisplay2}
