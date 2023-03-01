@@ -59,7 +59,7 @@ export interface IWeightProps {
   coefficientOfKineticFriction: number;
   wedgeWidth: number;
   wedgeHeight: number;
-  collider?: {
+  collider: {
     xCenter: number;
     yCenter: number;
     radius: number;
@@ -72,6 +72,7 @@ export const Weight = (props: IWeightProps) => {
   const {
     adjustPendulumAngle,
     coefficientOfKineticFriction,
+    collider,
     color,
     displayXPosition,
     displayXVelocity,
@@ -229,6 +230,9 @@ export const Weight = (props: IWeightProps) => {
         const collisionsWithGround = checkForCollisionsWithGround();
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
+        if (simulationType == "Two Weights") {
+          collisions = collisions || checkForCollisionsWithCollider();
+        }
       }
       if (!collisions) {
         update();
@@ -403,6 +407,27 @@ export const Weight = (props: IWeightProps) => {
           }
         }
       });
+    }
+    return collision;
+  };
+
+  const checkForCollisionsWithCollider = () => {
+    let collision = false;
+    if (yVelocity != 0 || xVelocity != 0) {
+      // get distance between circle centers
+      let centerX = xPosition + radius;
+      let centerY = yPosition + radius;
+      let squaredDistance =
+        Math.abs(collider.xCenter - centerX) ** 2 +
+        Math.abs(collider.yCenter - centerY) ** 2;
+      if (squaredDistance <= (radius + collider.radius) ** 2) {
+        //collision has occurred
+        if (elasticCollisions) {
+          // handle elastic collision
+        } else {
+          // handle inelastic collision
+        }
+      }
     }
     return collision;
   };

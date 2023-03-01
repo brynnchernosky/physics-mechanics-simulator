@@ -115,6 +115,8 @@ function App() {
   const xMax = window.innerWidth * 0.7;
   const yMax = window.innerHeight * 0.8;
   const color = `rgba(0,0,0,0.5)`;
+  const radius1 = 50
+  const radius2 = 50
 
   // Variables
   let questionVariables: number[] = [];
@@ -1085,7 +1087,6 @@ function App() {
       }
     });
     window.addEventListener("resize", (e) => {
-     console.log('window resized!')
       window.location.reload();
     });
   }, []);
@@ -1268,6 +1269,13 @@ function App() {
               {weight && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
+                  collider={{
+                   xCenter: positionXDisplay2 + radius2,
+                   yCenter: getDisplayYPos(positionYDisplay2) + radius2,
+                   radius: radius2,
+                   xVel: velocityXDisplay2,
+                   yVel: -velocityYDisplay2,
+                 }}
                   color={"red"}
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
@@ -1284,7 +1292,7 @@ function App() {
                   paused={simulationPaused}
                   pendulumAngle={pendulumAngle}
                   pendulumLength={pendulumLength}
-                  radius={50}
+                  radius={radius1}
                   reset={simulationReset}
                   setDisplayXAcceleration={setAccelerationXDisplay}
                   setDisplayXPosition={setPositionXDisplay}
@@ -1327,6 +1335,13 @@ function App() {
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
                   )}
+                  collider={{
+                    xCenter: positionXDisplay + radius1,
+                    yCenter: getDisplayYPos(positionYDisplay) + radius1,
+                    radius: radius1,
+                    xVel: velocityXDisplay,
+                    yVel: -velocityYDisplay,
+                  }}
                   displayXPosition={positionXDisplay2}
                   displayXVelocity={velocityXDisplay2}
                   displayYPosition={positionYDisplay2}
@@ -1339,7 +1354,7 @@ function App() {
                   paused={simulationPaused}
                   pendulumAngle={pendulumAngle}
                   pendulumLength={pendulumLength}
-                  radius={50}
+                  radius={radius2}
                   reset={simulationReset}
                   setDisplayXAcceleration={setAccelerationXDisplay2}
                   setDisplayXPosition={setPositionXDisplay2}
