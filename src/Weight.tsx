@@ -430,15 +430,26 @@ export const Weight = (props: IWeightProps) => {
         Math.abs(collider.xCenter - centerX) ** 2 +
         Math.abs(collider.yCenter - centerY) ** 2;
       if (squaredDistance <= (radius + collider.radius) ** 2) {
-        let phi = 0;
         //collision has occurred
         if (elasticCollisions) {
           // handle elastic collision
-          console.log("collision");
           let v1 = Math.sqrt(yVelocity ** 2 + xVelocity ** 2);
           let v2 = Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2);
+          if (Math.abs(v1) < epsilon) {
+            v1 = 0;
+          }
+          if (Math.abs(v2) < epsilon) {
+            v2 = 0;
+          }
           let theta1 = v1 == 0 ? 0 : Math.acos(xVelocity / v1);
           let theta2 = v2 == 0 ? 0 : Math.acos(collider.xVel / v2);
+          let phi =
+            v1 == 0 || v2 == 0
+              ? 0
+              : Math.acos(
+                  (yVelocity * collider.yVel + xVelocity * collider.xVel) /
+                    (v1 * v2)
+                ); // angle of collision
           let v1Multiple =
             (v1 * Math.cos(theta1 - phi) * (mass - collider.mass) +
               2 * collider.mass * v2 * Math.cos(theta2 - phi)) /
