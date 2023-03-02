@@ -435,39 +435,30 @@ export const Weight = (props: IWeightProps) => {
         if (elasticCollisions) {
           // handle elastic collision
           console.log("collision");
-          let theta1 =
-            Math.sqrt(yVelocity ** 2 + xVelocity ** 2) == 0
-              ? 0
-              : Math.acos(
-                  xVelocity / Math.sqrt(yVelocity ** 2 + xVelocity ** 2)
-                );
-          let theta2 =
-            Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2) == 0
-              ? 0
-              : Math.acos(
-                  collider.xVel /
-                    Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2)
-                );
-          console.log(theta1, theta2);
+          let v1 = Math.sqrt(yVelocity ** 2 + xVelocity ** 2);
+          let v2 = Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2);
+          let theta1 = v1 == 0 ? 0 : Math.acos(xVelocity / v1);
+          let theta2 = v2 == 0 ? 0 : Math.acos(collider.xVel / v2);
           let v1Multiple =
-            (Math.sqrt(yVelocity ** 2 + xVelocity ** 2) *
-              Math.cos(theta1 - phi) *
-              (mass - collider.mass) +
-              2 * collider.mass * collider.yVel * Math.cos(theta2 - phi)) /
+            (v1 * Math.cos(theta1 - phi) * (mass - collider.mass) +
+              2 * collider.mass * v2 * Math.cos(theta2 - phi)) /
             (mass + collider.mass);
+          console.log(v1Multiple);
           let v1x =
             v1Multiple * Math.cos(phi) +
-            Math.sqrt(yVelocity ** 2 + xVelocity ** 2) *
-              Math.sin(theta1 - phi) *
-              Math.cos(phi + Math.PI / 2);
+            v1 * Math.sin(theta1 - phi) * Math.cos(phi + Math.PI / 2);
           let v1y =
             v1Multiple * Math.sin(phi) +
-            Math.sqrt(yVelocity ** 2 + xVelocity ** 2) *
-              Math.sin(theta1 - phi) *
-              Math.sin(phi + Math.PI / 2);
-          console.log(v1x, v1y);
+            v1 * Math.sin(theta1 - phi) * Math.sin(phi + Math.PI / 2);
           setXVelocity(v1x);
           setYVelocity(v1y);
+          if (Math.abs(v1x) > epsilon) {
+            setXPosition(xPosition + (5 * v1x) / Math.abs(v1x));
+          }
+          if (Math.abs(v1y) > epsilon) {
+            setYPosition(yPosition + (5 * v1y) / Math.abs(v1y));
+          }
+          collision = true;
         } else {
           // handle inelastic collision
         }

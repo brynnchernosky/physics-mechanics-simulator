@@ -115,8 +115,8 @@ function App() {
   const xMax = window.innerWidth * 0.7;
   const yMax = window.innerHeight * 0.8;
   const color = `rgba(0,0,0,0.5)`;
-  const radius1 = 50
-  const radius2 = 50
+  const radius1 = 50;
+  const radius2 = 50;
 
   // Variables
   let questionVariables: number[] = [];
@@ -206,8 +206,7 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] =
-    useState<string>("Inclined Plane");
+  const [simulationType, setSimulationType] = useState<string>("Two Weights");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
@@ -1270,13 +1269,13 @@ function App() {
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
                   collider={{
-                   xCenter: positionXDisplay2 + radius2,
-                   yCenter: getDisplayYPos(positionYDisplay2) + radius2,
-                   radius: radius2,
-                   xVel: velocityXDisplay2,
-                   yVel: -velocityYDisplay2,
-                   mass: 1,
-                 }}
+                    xCenter: positionXDisplay2 + radius2,
+                    yCenter: getDisplayYPos(positionYDisplay2) + radius2,
+                    radius: radius2,
+                    xVel: velocityXDisplay2,
+                    yVel: -velocityYDisplay2,
+                    mass: 1,
+                  }}
                   color={"red"}
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
