@@ -441,33 +441,19 @@ export const Weight = (props: IWeightProps) => {
           if (Math.abs(v2) < epsilon) {
             v2 = 0;
           }
-          let theta1 = v1 == 0 ? 0 : Math.acos(xVelocity / v1);
-          let theta2 = v2 == 0 ? 0 : Math.acos(collider.xVel / v2);
-          let phi =
-            v1 == 0 || v2 == 0
-              ? 0
-              : Math.acos(
-                  (yVelocity * collider.yVel + xVelocity * collider.xVel) /
-                    (v1 * v2)
-                ); // angle of collision
-          let v1Multiple =
-            (v1 * Math.cos(theta1 - phi) * (mass - collider.mass) +
-              2 * collider.mass * v2 * Math.cos(theta2 - phi)) /
-            (mass + collider.mass);
-          console.log(v1Multiple);
           let v1x =
-            v1Multiple * Math.cos(phi) +
-            v1 * Math.sin(theta1 - phi) * Math.cos(phi + Math.PI / 2);
+            ((mass - collider.mass) / (mass + collider.mass)) * xVelocity +
+            ((2 * collider.mass) / (mass + collider.mass)) * collider.xVel;
           let v1y =
-            v1Multiple * Math.sin(phi) +
-            v1 * Math.sin(theta1 - phi) * Math.sin(phi + Math.PI / 2);
+            ((mass - collider.mass) / (mass + collider.mass)) * yVelocity +
+            ((2 * collider.mass) / (mass + collider.mass)) * collider.yVel;
           setXVelocity(v1x);
           setYVelocity(v1y);
           if (Math.abs(v1x) > epsilon) {
-            setXPosition(xPosition + (5 * v1x) / Math.abs(v1x));
+            setXPosition(xPosition + (10 * v1x) / Math.abs(v1x));
           }
           if (Math.abs(v1y) > epsilon) {
-            setYPosition(yPosition + (5 * v1y) / Math.abs(v1y));
+            setYPosition(yPosition + (10 * v1y) / Math.abs(v1y));
           }
           collision = true;
         } else {

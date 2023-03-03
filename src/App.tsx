@@ -1984,7 +1984,7 @@ function App() {
                       {simulationPaused &&
                         simulationType != "Inclined Plane" && (
                           <InputField
-                            lowerBound={10}
+                            lowerBound={0}
                             changeValue={setPositionXDisplay}
                             step={1}
                             unit={"m"}
@@ -2011,7 +2011,7 @@ function App() {
                       {simulationPaused &&
                         simulationType != "Inclined Plane" && (
                           <InputField
-                            lowerBound={10}
+                            lowerBound={0}
                             changeValue={setPositionYDisplay}
                             step={1}
                             unit={"m"}
@@ -2153,7 +2153,7 @@ function App() {
                         )}{" "}
                         {simulationPaused && (
                           <InputField
-                            lowerBound={10}
+                            lowerBound={0}
                             changeValue={setPositionXDisplay2}
                             step={1}
                             unit={"m"}
@@ -2178,7 +2178,7 @@ function App() {
                         )}{" "}
                         {simulationPaused && (
                           <InputField
-                            lowerBound={10}
+                            lowerBound={0}
                             changeValue={setPositionYDisplay2}
                             step={1}
                             unit={"m"}
