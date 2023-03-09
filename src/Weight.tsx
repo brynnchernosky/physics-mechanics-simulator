@@ -442,8 +442,21 @@ export const Weight = (props: IWeightProps) => {
             v2 = 0;
           }
 
-          let velTheta1 = v1 == 0 ? 0 : Math.acos(xVelocity / v1);
-          let velTheta2 = v2 == 0 ? 0 : Math.acos(collider.xVel / v2);
+          let velTheta1 = v1 == 0 ? 0 : Math.atan(-yVelocity / xVelocity);
+          if (v1 != 0 && collider.xCenter < centerX) {
+            velTheta1 += Math.PI;
+          }
+          if (velTheta1 < 0) {
+            velTheta1 += 2 * Math.PI;
+          }
+          let velTheta2 =
+            v2 == 0 ? 0 : Math.atan(-collider.yVel / collider.xVel);
+          if (collider.xCenter > centerX) {
+            velTheta2 += Math.PI;
+          }
+          if (velTheta2 < 0) {
+            velTheta2 += 2 * Math.PI;
+          }
           let collisionAngle =
             centerX == collider.xCenter
               ? 0
@@ -460,29 +473,45 @@ export const Weight = (props: IWeightProps) => {
             collisionAngle += (3 * Math.PI) / 2;
           }
 
-          // Handle head on collisions where one weight at rest, masses the same -- works for vertical and horizontal, not angles
+          // Handle head on collisions where one weight at rest, masses the same -- works for vertical, horizontal, up left, up right
           let v1x = 0;
           let v1y = 0;
           if (centerX == collider.xCenter || centerY == collider.yCenter) {
             if (v1 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
               v1x = collider.xVel;
               v1y = collider.yVel;
+              console.log("come from axis");
             }
           } else {
-            if (
-              v1 == 0 &&
-              Math.abs(
-                velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
-              ) < epsilon
-            ) {
-              v1x = collider.xVel;
-              v1y = collider.yVel;
+            if (centerY > collider.yCenter) {
+              if (
+                v1 == 0 &&
+                Math.abs(
+                  velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
+                ) < epsilon
+              ) {
+                console.log("come from up");
+                v1x = collider.xVel;
+                v1y = collider.yVel;
+              }
+            } else {
+              if (
+                v1 == 0 &&
+                Math.abs(
+                  velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
+                ) < epsilon
+              ) {
+                console.log("come from below");
+                v1x = collider.xVel;
+                v1y = collider.yVel;
+              }
             }
           }
           if (v2 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
             v1x = 0;
             v1y = 0;
           }
+          console.log(velTheta1, velTheta2, collisionAngle, v1x, v1y);
           // todo Handle head on collisions where neither weight at rest, masses the same
           // todo Handle glancing collisions where one weight at rest, masses the same
           // todo Handle glancing collisions where neither weight at rest, masses the same
