@@ -441,29 +441,52 @@ export const Weight = (props: IWeightProps) => {
           if (Math.abs(v2) < epsilon) {
             v2 = 0;
           }
-          let theta1 = v1 == 0 ? 0 : Math.acos(xVelocity / v1);
-          let theta2 = v2 == 0 ? 0 : Math.acos(collider.xVel / v2);
-          let phi =
-            v1 == 0 || v2 == 0
-              ? Math.asin(
-                  (yPosition + radius - collider.yCenter) /
-                    (radius + collider.radius)
-                )
-              : Math.acos(
-                  (yVelocity * collider.yVel + xVelocity * collider.xVel) /
-                    (v1 * v2)
-                ); // angle of collision
-          print(phi);
-          let v1Multiple =
-            (v1 * Math.cos(theta1 - phi) * (mass - collider.mass) +
-              2 * collider.mass * v2 * Math.cos(theta2 - phi)) /
-            (mass + collider.mass);
-          let v1x =
-            v1Multiple * Math.cos(phi) +
-            v1 * Math.sin(theta1 - phi) * Math.cos(phi + Math.PI / 2);
-          let v1y =
-            v1Multiple * Math.sin(phi) +
-            v1 * Math.sin(theta1 - phi) * Math.sin(phi + Math.PI / 2);
+
+          let velTheta1 = v1 == 0 ? 0 : Math.acos(xVelocity / v1);
+          let velTheta2 = v2 == 0 ? 0 : Math.acos(collider.xVel / v2);
+          let collisionAngle =
+            centerX == collider.xCenter
+              ? 0
+              : Math.atan(
+                  Math.abs(
+                    (centerY - collider.yCenter) / (centerX - collider.xCenter)
+                  )
+                );
+          if (centerX > collider.xCenter && centerY > collider.yCenter) {
+            collisionAngle += Math.PI / 2;
+          } else if (centerX > collider.xCenter && centerY < collider.yCenter) {
+            collisionAngle += Math.PI;
+          } else if (centerX < collider.xCenter && centerY < collider.yCenter) {
+            collisionAngle += (3 * Math.PI) / 2;
+          }
+
+          // Handle head on collisions where one weight at rest, masses the same -- works for vertical and horizontal, not angles
+          let v1x = 0;
+          let v1y = 0;
+          if (centerX == collider.xCenter || centerY == collider.yCenter) {
+            if (v1 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
+              v1x = collider.xVel;
+              v1y = collider.yVel;
+            }
+          } else {
+            if (
+              v1 == 0 &&
+              Math.abs(
+                velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
+              ) < epsilon
+            ) {
+              v1x = collider.xVel;
+              v1y = collider.yVel;
+            }
+          }
+          if (v2 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
+            v1x = 0;
+            v1y = 0;
+          }
+          // todo Handle head on collisions where neither weight at rest, masses the same
+          // todo Handle glancing collisions where one weight at rest, masses the same
+          // todo Handle glancing collisions where neither weight at rest, masses the same
+
           setXVelocity(v1x);
           setYVelocity(v1y);
           if (Math.abs(v1x) > epsilon) {
