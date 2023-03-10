@@ -513,47 +513,45 @@ export const Weight = (props: IWeightProps) => {
             v1y = 0;
             handled = true;
           }
-          console.log(color, " collision angle: ", collisionAngle);
 
           // todo Handle head on collisions where neither weight at rest, masses the same
 
-          // todo Handle glancing collisions where one weight at rest, masses the same
+          // Handle glancing collisions where one weight at rest, masses the same -- works for weight coming from top left
           if (!handled) {
-            let v1angle = collisionAngle + Math.PI;
-            let v2angle = collisionAngle + Math.PI + Math.PI / 2;
             let vel = 0;
             if (v1 == 0) {
+              let phi = collisionAngle + Math.PI;
+              let theta = collisionAngle + (3 * Math.PI) / 2;
               vel =
-                (-(
-                  v2 /
-                  ((Math.cos(v2angle) / Math.cos(v1angle)) * Math.sin(v1angle) -
-                    Math.sin(v2angle))
-                ) *
-                  Math.cos(v2angle)) /
-                Math.cos(v1angle);
+                v2 /
+                ((-Math.sin(theta) / Math.sin(phi)) * Math.cos(phi) +
+                  Math.cos(theta));
+              v1x = vel * Math.cos(theta);
+              v1y = vel * Math.sin(theta);
             }
             if (v2 == 0) {
-              vel =
+              let phi = collisionAngle;
+              let theta = collisionAngle + Math.PI / 2;
+              let otherV =
                 v1 /
-                ((Math.cos(v2angle) / Math.cos(v1angle)) * Math.sin(v1angle) -
-                  Math.sin(v2angle));
+                ((-Math.sin(theta) / Math.sin(phi)) * Math.cos(phi) +
+                  Math.cos(theta));
+              vel = -otherV * (Math.sin(theta) / Math.sin(phi));
+              v1y = vel * Math.sin(phi);
+              v1x = vel * Math.cos(phi);
             }
-            v1x = -vel * Math.sin(v1angle);
-            v1y = vel * Math.cos(v1angle);
-            console.log(color, " collision angle ", collisionAngle);
-            console.log(color, " vx ", v1x);
-            console.log(color, " vy ", v1y);
           }
           // todo Handle glancing collisions where neither weight at rest, masses the same
 
           setXVelocity(v1x);
           setYVelocity(v1y);
           if (Math.abs(v1x) > epsilon) {
-            setXPosition(xPosition + (10 * v1x) / Math.abs(v1x));
+            setXPosition(xPosition + (20 * v1x) / Math.abs(v1x));
           }
           if (Math.abs(v1y) > epsilon) {
-            setYPosition(yPosition + (10 * v1y) / Math.abs(v1y));
+            setYPosition(yPosition + (20 * v1y) / Math.abs(v1y));
           }
+          console.log(color, v1x, v1y);
           collision = true;
         } else {
           // todo handle inelastic collision

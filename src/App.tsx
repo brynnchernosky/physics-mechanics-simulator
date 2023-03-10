@@ -867,9 +867,9 @@ function App() {
 
   // Use effect hook to handle mode/topic change
   useEffect(() => {
-    setStartVelX(0);
-    setStartVelY(0);
-    setElasticCollisions(false);
+    // setStartVelX(0);
+    // setStartVelY(0);
+    // setElasticCollisions(false);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
@@ -884,10 +884,16 @@ function App() {
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Two Weights") {
         addTwoWeights();
-        setStartPosY((yMax + yMin - 100) / 2);
-        setStartPosX((xMax + xMin - 300) / 2);
-        setStartPosY2((yMax + yMin - 100) / 2);
-        setStartPosX2((xMax + xMin + 200) / 2);
+        setStartPosY(100);
+        setStartPosX(200);
+        setPositionYDisplay(getDisplayYPos(100));
+        setPositionXDisplay(200);
+        setStartPosY2(150);
+        setStartPosX2(400);
+        setPositionYDisplay2(getDisplayYPos(150));
+        setPositionXDisplay2(400);
+        setVelocityXDisplay(20);
+        setVelocityXDisplay2(20);
         setAccelerationXDisplay(0);
         setAccelerationYDisplay(0);
         setAccelerationXDisplay2(0);
@@ -896,7 +902,6 @@ function App() {
         setStartForces([]);
         addWalls();
         setSimulationReset(!simulationReset);
-        // TODO
       } else if (simulationType == "Inclined Plane") {
         addWedge();
         changeWedgeBasedOnNewAngle(26);
