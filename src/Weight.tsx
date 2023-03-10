@@ -473,14 +473,15 @@ export const Weight = (props: IWeightProps) => {
             collisionAngle += (3 * Math.PI) / 2;
           }
 
-          // Handle head on collisions where one weight at rest, masses the same -- works for vertical, horizontal, up left, up right
+          // Handle head on collisions where one weight at rest, masses the same
           let v1x = 0;
           let v1y = 0;
+          let handled = false;
           if (centerX == collider.xCenter || centerY == collider.yCenter) {
             if (v1 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
               v1x = collider.xVel;
               v1y = collider.yVel;
-              console.log("come from axis");
+              handled = true;
             }
           } else {
             if (centerY > collider.yCenter) {
@@ -490,9 +491,9 @@ export const Weight = (props: IWeightProps) => {
                   velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
                 ) < epsilon
               ) {
-                console.log("come from up");
                 v1x = collider.xVel;
                 v1y = collider.yVel;
+                handled = true;
               }
             } else {
               if (
@@ -501,19 +502,48 @@ export const Weight = (props: IWeightProps) => {
                   velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
                 ) < epsilon
               ) {
-                console.log("come from below");
                 v1x = collider.xVel;
                 v1y = collider.yVel;
+                handled = true;
               }
             }
           }
           if (v2 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
             v1x = 0;
             v1y = 0;
+            handled = true;
           }
-          console.log(velTheta1, velTheta2, collisionAngle, v1x, v1y);
+          console.log(color, " collision angle: ", collisionAngle);
+
           // todo Handle head on collisions where neither weight at rest, masses the same
+
           // todo Handle glancing collisions where one weight at rest, masses the same
+          if (!handled) {
+            let v1angle = collisionAngle + Math.PI;
+            let v2angle = collisionAngle + Math.PI + Math.PI / 2;
+            let vel = 0;
+            if (v1 == 0) {
+              vel =
+                (-(
+                  v2 /
+                  ((Math.cos(v2angle) / Math.cos(v1angle)) * Math.sin(v1angle) -
+                    Math.sin(v2angle))
+                ) *
+                  Math.cos(v2angle)) /
+                Math.cos(v1angle);
+            }
+            if (v2 == 0) {
+              vel =
+                v1 /
+                ((Math.cos(v2angle) / Math.cos(v1angle)) * Math.sin(v1angle) -
+                  Math.sin(v2angle));
+            }
+            v1x = -vel * Math.sin(v1angle);
+            v1y = vel * Math.cos(v1angle);
+            console.log(color, " collision angle ", collisionAngle);
+            console.log(color, " vx ", v1x);
+            console.log(color, " vy ", v1y);
+          }
           // todo Handle glancing collisions where neither weight at rest, masses the same
 
           setXVelocity(v1x);
@@ -526,7 +556,7 @@ export const Weight = (props: IWeightProps) => {
           }
           collision = true;
         } else {
-          // handle inelastic collision
+          // todo handle inelastic collision
         }
       }
     }
