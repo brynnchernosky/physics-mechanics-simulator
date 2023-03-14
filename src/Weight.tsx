@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
 import { Wedge } from "./Wedge";
+import { Speed } from "@mui/icons-material";
 
 export interface IForce {
   description: string;
@@ -25,6 +26,7 @@ export interface IWeightProps {
   radius: number;
   reset: boolean;
   simulationType: string;
+  simulationSpeed: number;
   springConstant: number;
   springStartLength: number;
   springCurrentLength: number;
@@ -91,6 +93,7 @@ export const Weight = (props: IWeightProps) => {
     pendulumLength,
     radius,
     reset,
+    simulationSpeed,
     setDisplayXAcceleration,
     setDisplayXPosition,
     setDisplayXVelocity,
@@ -689,7 +692,7 @@ export const Weight = (props: IWeightProps) => {
     let yPos = yPosition;
     let xVel = xVelocity;
     let yVel = yVelocity;
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < simulationSpeed; i++) {
       let forces1 = updatedForces;
       if (simulationType == "Pendulum") {
         forces1 = getNewPendulumForces(xPos, yPos, xVel, yVel);
@@ -761,7 +764,6 @@ export const Weight = (props: IWeightProps) => {
       yPos +=
         timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
     }
-
     setXVelocity(xVel);
     setYVelocity(yVel);
     setXPosition(xPos);

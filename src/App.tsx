@@ -133,6 +133,7 @@ function App() {
   const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
+  const [simulationSpeed, setSimulationSpeed] = useState(2);
 
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([
     forceOfGravity,
@@ -1097,10 +1098,10 @@ function App() {
     });
   }, []);
 
-  // Timer for animating the simulation
+  // Timer for animating the simulation, update every 0.06 seconds
   setInterval(() => {
     setTimer(timer + 1);
-  }, 60);
+  }, 50);
 
   return (
     <div>
@@ -1302,6 +1303,7 @@ function App() {
                   pendulumLength={pendulumLength}
                   radius={radius1}
                   reset={simulationReset}
+                  simulationSpeed={simulationSpeed}
                   setDisplayXAcceleration={setAccelerationXDisplay}
                   setDisplayXPosition={setPositionXDisplay}
                   setDisplayXVelocity={setVelocityXDisplay}
@@ -1328,7 +1330,7 @@ function App() {
                   startPosY={startPosY}
                   startVelX={startVelX}
                   startVelY={startVelY}
-                  timestepSize={0.002}
+                  timestepSize={50 / 1000}
                   updateDisplay={displayChange}
                   updatedForces={updatedForces}
                   walls={wallPositions}
@@ -1336,7 +1338,7 @@ function App() {
                   wedgeWidth={wedgeWidth}
                 />
               )}
-              {simulationType == "Two Weights" && (
+              {/* {simulationType == "Two Weights" && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
                   collisionHappened={collision}
@@ -1392,14 +1394,14 @@ function App() {
                   startPosY={startPosY2}
                   startVelX={startVelX2}
                   startVelY={startVelY2}
-                  timestepSize={0.002}
+                  timestepSize={30/1000}
                   updateDisplay={displayChange2}
                   updatedForces={updatedForces2}
                   walls={wallPositions}
                   wedgeHeight={wedgeHeight}
                   wedgeWidth={wedgeWidth}
                 />
-              )}
+              )} */}
               {simulationType == "Inclined Plane" && (
                 <Wedge
                   startWidth={wedgeWidth}
@@ -1468,6 +1470,16 @@ function App() {
               </select>
             </div>
           </div>
+          <InputField
+            label={<Box>Speed</Box>}
+            lowerBound={1}
+            changeValue={setSimulationSpeed}
+            step={1}
+            unit={"x"}
+            upperBound={10}
+            value={simulationSpeed}
+            labelWidth={"4em"}
+          />
 
           {mode == "Review" && simulationType != "Inclined Plane" && (
             <div className="wordProblemBox">
@@ -1925,6 +1937,7 @@ function App() {
                     }}
                     radianEquivalent={true}
                     mode={"Freeform"}
+                    labelWidth={"5em"}
                   />
                   <InputField
                     label={<Box>Rod length</Box>}
@@ -1956,6 +1969,7 @@ function App() {
                     }}
                     radianEquivalent={false}
                     mode={"Freeform"}
+                    labelWidth={"5em"}
                   />
                 </div>
               )}

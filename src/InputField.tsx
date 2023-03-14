@@ -106,6 +106,7 @@ export const InputField = (props: IInputProps) => {
         display: "flex",
         lineHeight: "1.5",
         textAlign: "right",
+        alignItems: "center",
       }}
     >
       {label && (
