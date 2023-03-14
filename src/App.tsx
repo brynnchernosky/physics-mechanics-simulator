@@ -138,6 +138,8 @@ function App() {
     forceOfGravity,
   ]);
 
+  const [collision, setCollision] = useState(false);
+
   const [startPosX2, setStartPosX2] = useState(0);
   const [startPosY2, setStartPosY2] = useState(0);
   const [startVelX2, setStartVelX2] = useState(0);
@@ -206,7 +208,7 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] = useState<string>("Two Weights");
+  const [simulationType, setSimulationType] = useState<string>("Pendulum");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
@@ -1173,7 +1175,7 @@ function App() {
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
                     <option value="One Weight">One Weight</option>
-                    <option value="Two Weights">Two Weights</option>
+                    {/* <option value="Two Weights">Two Weights</option> */}
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
@@ -1273,12 +1275,13 @@ function App() {
               {weight && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
+                  collisionHappened={false}
                   collider={{
-                    xCenter: positionXDisplay2 + radius2,
-                    yCenter: getDisplayYPos(positionYDisplay2) + radius2,
+                    xPos: positionXDisplay2,
+                    yPos: getDisplayYPos(positionYDisplay2),
                     radius: radius2,
                     xVel: velocityXDisplay2,
-                    yVel: -velocityYDisplay2,
+                    yVel: velocityYDisplay2,
                     mass: 1,
                   }}
                   color={"red"}
@@ -1336,18 +1339,19 @@ function App() {
               {simulationType == "Two Weights" && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
+                  collisionHappened={collision}
+                  collider={{
+                    xPos: positionXDisplay,
+                    yPos: getDisplayYPos(positionYDisplay),
+                    radius: radius1,
+                    xVel: velocityXDisplay,
+                    yVel: velocityYDisplay,
+                    mass: 1,
+                  }}
                   color={"blue"}
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
                   )}
-                  collider={{
-                    xCenter: positionXDisplay + radius1,
-                    yCenter: getDisplayYPos(positionYDisplay) + radius1,
-                    radius: radius1,
-                    xVel: velocityXDisplay,
-                    yVel: -velocityYDisplay,
-                    mass: 1,
-                  }}
                   displayXPosition={positionXDisplay2}
                   displayXVelocity={velocityXDisplay2}
                   displayYPosition={positionYDisplay2}
@@ -2288,6 +2292,70 @@ function App() {
               </div>
             )}
           </div>
+          {simulationType != "Pendulum" && simulationType != "Spring" && (
+            <div>
+              <p>Kinematic Equations</p>
+              <ul>
+                <li>
+                  Position: x<sub>1</sub>=x<sub>0</sub>+v<sub>0</sub>t+
+                  <sup>1</sup>&frasl;
+                  <sub>2</sub>at
+                  <sup>2</sup>
+                </li>
+                <li>
+                  Velocity: v<sub>1</sub>=v<sub>0</sub>+at
+                </li>
+                <li>Acceleration: a = F/m</li>
+              </ul>
+            </div>
+          )}
+          {simulationType == "Spring" && (
+            <div>
+              <p>Harmonic Motion Equations: Spring</p>
+              <ul>
+                <li>
+                  Spring force: F<sub>s</sub>=kd
+                </li>
+                <li>
+                  Spring period: T<sub>s</sub>=2&pi;&#8730;<sup>m</sup>&frasl;
+                  <sub>k</sub>
+                </li>
+                <li>Equilibrium displacement for vertical spring: d = mg/k</li>
+                <li>
+                  Elastic potential energy: U<sub>s</sub>=<sup>1</sup>&frasl;
+                  <sub>2</sub>kd<sup>2</sup>
+                </li>
+                <ul>
+                  <li>
+                    Maximum when system is at maximum displacement, 0 when
+                    system is at 0 displacement
+                  </li>
+                </ul>
+                <li>
+                  Translational kinetic energy: K=<sup>1</sup>&frasl;
+                  <sub>2</sub>mv<sup>2</sup>
+                </li>
+                <ul>
+                  <li>
+                    Maximum when system is at maximum/minimum velocity (at 0
+                    displacement), 0 when velocity is 0 (at maximum
+                    displacement)
+                  </li>
+                </ul>
+              </ul>
+            </div>
+          )}
+          {simulationType == "Pendulum" && (
+            <div>
+              <p>Harmonic Motion Equations: Pendulum</p>
+              <ul>
+                <li>
+                  Pendulum period: T<sub>p</sub>=2&pi;&#8730;<sup>l</sup>&frasl;
+                  <sub>g</sub>
+                </li>
+              </ul>
+            </div>
+          )}
           {/* {mode == "Freeform" &&
             simulationElements.length > 0 &&
             simulationElements[0].pendulum && (

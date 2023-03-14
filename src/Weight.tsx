@@ -60,13 +60,14 @@ export interface IWeightProps {
   wedgeWidth: number;
   wedgeHeight: number;
   collider?: {
-    xCenter: number;
-    yCenter: number;
+    xPos: number;
+    yPos: number;
     radius: number;
     xVel: number;
     yVel: number;
     mass: number;
   };
+  collisionHappened: boolean;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -74,6 +75,7 @@ export const Weight = (props: IWeightProps) => {
     adjustPendulumAngle,
     coefficientOfKineticFriction,
     collider,
+    collisionHappened,
     color,
     displayXPosition,
     displayXVelocity,
@@ -426,9 +428,11 @@ export const Weight = (props: IWeightProps) => {
       // get distance between circle centers
       let centerX = xPosition + radius;
       let centerY = yPosition + radius;
+      let colliderCenterX = collider.xPos + collider.radius;
+      let colliderCenterY = collider.yPos + collider.radius;
       let squaredDistance =
-        Math.abs(collider.xCenter - centerX) ** 2 +
-        Math.abs(collider.yCenter - centerY) ** 2;
+        Math.abs(colliderCenterX - centerX) ** 2 +
+        Math.abs(colliderCenterY - centerY) ** 2;
       if (squaredDistance <= (radius + collider.radius) ** 2) {
         //collision has occurred
         collision = true;
@@ -443,7 +447,7 @@ export const Weight = (props: IWeightProps) => {
           }
 
           let velTheta1 = v1 == 0 ? 0 : Math.atan(-yVelocity / xVelocity);
-          if (v1 != 0 && collider.xCenter < centerX) {
+          if (v1 != 0 && colliderCenterX < centerX) {
             velTheta1 += Math.PI;
           }
           if (velTheta1 < 0) {
@@ -451,46 +455,52 @@ export const Weight = (props: IWeightProps) => {
           }
           let velTheta2 =
             v2 == 0 ? 0 : Math.atan(-collider.yVel / collider.xVel);
-          if (collider.xCenter > centerX) {
+          if (colliderCenterX > centerX) {
             velTheta2 += Math.PI;
           }
           if (velTheta2 < 0) {
             velTheta2 += 2 * Math.PI;
           }
           let collisionAngle =
-            centerX == collider.xCenter
+            centerX == colliderCenterX
               ? 0
               : Math.atan(
                   Math.abs(
-                    (centerY - collider.yCenter) / (centerX - collider.xCenter)
+                    (centerY - colliderCenterY) / (centerX - colliderCenterX)
                   )
                 );
-          if (centerX > collider.xCenter && centerY > collider.yCenter) {
+          if (centerX > colliderCenterX && centerY > colliderCenterY) {
             collisionAngle += Math.PI / 2;
-          } else if (centerX > collider.xCenter && centerY < collider.yCenter) {
+          } else if (centerX > colliderCenterX && centerY < colliderCenterY) {
             collisionAngle += Math.PI;
-          } else if (centerX < collider.xCenter && centerY < collider.yCenter) {
+          } else if (centerX < colliderCenterX && centerY < colliderCenterY) {
             collisionAngle += (3 * Math.PI) / 2;
           }
-
-          // Handle head on collisions where one weight at rest, masses the same
           let v1x = 0;
           let v1y = 0;
+          let v2x = 0;
+          let v2y = 0;
           let handled = false;
-          if (centerX == collider.xCenter || centerY == collider.yCenter) {
+
+          // Handle head on collisions where one weight at rest, masses the same
+          if (centerX == colliderCenterX || centerY == colliderCenterY) {
             if (v1 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
               v1x = collider.xVel;
               v1y = collider.yVel;
+              v2x = 0;
+              v2y = 0;
               handled = true;
             }
           } else {
-            if (centerY > collider.yCenter) {
+            if (centerY > colliderCenterY) {
               if (
                 v1 == 0 &&
                 Math.abs(
                   velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
                 ) < epsilon
               ) {
+                v1x = 0;
+                v1y = 0;
                 v1x = collider.xVel;
                 v1y = collider.yVel;
                 handled = true;
@@ -504,6 +514,8 @@ export const Weight = (props: IWeightProps) => {
               ) {
                 v1x = collider.xVel;
                 v1y = collider.yVel;
+                v2x = 0;
+                v2y = 0;
                 handled = true;
               }
             }
@@ -511,6 +523,8 @@ export const Weight = (props: IWeightProps) => {
           if (v2 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
             v1x = 0;
             v1y = 0;
+            v2x = xVelocity;
+            v2y = yVelocity;
             handled = true;
           }
 
@@ -518,30 +532,34 @@ export const Weight = (props: IWeightProps) => {
 
           // Handle glancing collisions where one weight at rest, masses the same -- works for weight coming from top left
           if (!handled) {
-            let vel = 0;
+            let restWeightFinalAngle = collisionAngle - Math.PI / 2;
             if (v1 == 0) {
-              let phi = collisionAngle + Math.PI;
-              let theta = collisionAngle + (3 * Math.PI) / 2;
-              vel =
-                v2 /
-                ((-Math.sin(theta) / Math.sin(phi)) * Math.cos(phi) +
-                  Math.cos(theta));
-              v1x = vel * Math.cos(theta);
-              v1y = vel * Math.sin(theta);
+              let alpha = restWeightFinalAngle - velTheta2;
+              let restWeightFinalVelocity = v2 * Math.tan(alpha);
+              v1x = restWeightFinalVelocity * Math.cos(restWeightFinalAngle);
+              v1y = restWeightFinalVelocity * Math.sin(restWeightFinalAngle);
+              console.log(color, "rest weight", restWeightFinalAngle, v1x, v1y);
             }
             if (v2 == 0) {
-              let phi = collisionAngle;
-              let theta = collisionAngle + Math.PI / 2;
-              let otherV =
-                v1 /
-                ((-Math.sin(theta) / Math.sin(phi)) * Math.cos(phi) +
-                  Math.cos(theta));
-              vel = -otherV * (Math.sin(theta) / Math.sin(phi));
-              v1y = vel * Math.sin(phi);
-              v1x = vel * Math.cos(phi);
+              let alpha = collisionAngle - velTheta1;
+              let movingWeightFinalAngle = collisionAngle + Math.PI;
+              let movingWeightFinalVelocity = v1 * Math.sin(alpha);
+              v1x =
+                movingWeightFinalVelocity * Math.cos(movingWeightFinalAngle);
+              v1y =
+                movingWeightFinalVelocity * Math.sin(movingWeightFinalAngle);
+              console.log(
+                color,
+                "moving weight",
+                movingWeightFinalAngle,
+                collisionAngle,
+                velTheta1,
+                alpha,
+                v1x,
+                v1y
+              );
             }
           }
-          // todo Handle glancing collisions where neither weight at rest, masses the same
 
           setXVelocity(v1x);
           setYVelocity(v1y);
@@ -551,7 +569,6 @@ export const Weight = (props: IWeightProps) => {
           if (Math.abs(v1y) > epsilon) {
             setYPosition(yPosition + (20 * v1y) / Math.abs(v1y));
           }
-          console.log(color, v1x, v1y);
           collision = true;
         } else {
           // todo handle inelastic collision
