@@ -1997,15 +1997,21 @@ function App() {
                     >
                       <Box>Position</Box>
                     </td>
-                    <td>
-                      {(!simulationPaused ||
-                        simulationType == "Inclined Plane") && (
-                        <p style={{ cursor: "default" }}>
-                          {positionXDisplay} m
-                        </p>
-                      )}{" "}
-                      {simulationPaused &&
-                        simulationType != "Inclined Plane" && (
+                    {(!simulationPaused ||
+                      simulationType == "Inclined Plane") && (
+                      <td style={{ cursor: "default" }}>
+                        {positionXDisplay} m
+                      </td>
+                    )}{" "}
+                    {simulationPaused &&
+                      simulationType != "Inclined Plane" && (
+                        <td
+                          style={{
+                            cursor: "default",
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
                           <InputField
                             lowerBound={0}
                             changeValue={setPositionXDisplay}
@@ -2022,17 +2028,23 @@ function App() {
                             small={true}
                             mode={"Freeform"}
                           />
-                        )}{" "}
-                    </td>
-                    <td>
-                      {(!simulationPaused ||
-                        simulationType == "Inclined Plane") && (
-                        <p style={{ cursor: "default" }}>
-                          {positionYDisplay} m
-                        </p>
+                        </td>
                       )}{" "}
-                      {simulationPaused &&
-                        simulationType != "Inclined Plane" && (
+                    {(!simulationPaused ||
+                      simulationType == "Inclined Plane") && (
+                      <td style={{ cursor: "default" }}>
+                        {positionYDisplay} m
+                      </td>
+                    )}{" "}
+                    {simulationPaused &&
+                      simulationType != "Inclined Plane" && (
+                        <td
+                          style={{
+                            cursor: "default",
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
                           <InputField
                             lowerBound={0}
                             changeValue={setPositionYDisplay}
@@ -2049,8 +2061,8 @@ function App() {
                             small={true}
                             mode={"Freeform"}
                           />
-                        )}{" "}
-                    </td>
+                        </td>
+                      )}{" "}
                   </tr>
                   <tr>
                     <td
@@ -2063,17 +2075,23 @@ function App() {
                     >
                       <Box>Velocity</Box>
                     </td>
-                    <td>
-                      {(!simulationPaused ||
-                        (simulationType != "One Weight" &&
-                          simulationType != "Two Weights")) && (
-                        <p style={{ cursor: "default" }}>
-                          {velocityXDisplay} m/s
-                        </p>
-                      )}{" "}
-                      {simulationPaused &&
-                        (simulationType == "One Weight" ||
-                          simulationType == "Two Weights") && (
+                    {(!simulationPaused ||
+                      (simulationType != "One Weight" &&
+                        simulationType != "Two Weights")) && (
+                      <td style={{ cursor: "default" }}>
+                        {velocityXDisplay} m/s
+                      </td>
+                    )}{" "}
+                    {simulationPaused &&
+                      (simulationType == "One Weight" ||
+                        simulationType == "Two Weights") && (
+                        <td
+                          style={{
+                            cursor: "default",
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
                           <InputField
                             lowerBound={-50}
                             changeValue={setVelocityXDisplay}
@@ -2091,19 +2109,25 @@ function App() {
                             small={true}
                             mode={"Freeform"}
                           />
-                        )}{" "}
-                    </td>
-                    <td>
-                      {(!simulationPaused ||
-                        (simulationType != "One Weight" &&
-                          simulationType != "Two Weights")) && (
-                        <p style={{ cursor: "default" }}>
-                          {velocityYDisplay} m/s
-                        </p>
+                        </td>
                       )}{" "}
-                      {simulationPaused &&
-                        (simulationType == "One Weight" ||
-                          simulationType == "Two Weights") && (
+                    {(!simulationPaused ||
+                      (simulationType != "One Weight" &&
+                        simulationType != "Two Weights")) && (
+                      <td style={{ cursor: "default" }}>
+                        {velocityYDisplay} m/s
+                      </td>
+                    )}{" "}
+                    {simulationPaused &&
+                      (simulationType == "One Weight" ||
+                        simulationType == "Two Weights") && (
+                        <td
+                          style={{
+                            cursor: "default",
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
                           <InputField
                             lowerBound={-50}
                             changeValue={setVelocityYDisplay}
@@ -2121,8 +2145,8 @@ function App() {
                             small={true}
                             mode={"Freeform"}
                           />
-                        )}{" "}
-                    </td>
+                        </td>
+                      )}{" "}
                   </tr>
                   <tr>
                     <td
@@ -2145,7 +2169,7 @@ function App() {
                 </tbody>
               </table>
             )}
-            {mode == "Freeform" && simulationType == "Two Weights" && (
+            {/* {mode == "Freeform" && simulationType == "Two Weights" && (
               <div>
                 <br />
                 <table>
@@ -2170,9 +2194,7 @@ function App() {
                       </td>
                       <td>
                         {!simulationPaused && (
-                          <p style={{ cursor: "default" }}>
-                            {positionXDisplay2} m
-                          </p>
+                          {positionXDisplay2} m
                         )}{" "}
                         {simulationPaused && (
                           <InputField
@@ -2195,9 +2217,7 @@ function App() {
                       </td>
                       <td>
                         {!simulationPaused && (
-                          <p style={{ cursor: "default" }}>
-                            {positionYDisplay2} m
-                          </p>
+                          {positionYDisplay2} m
                         )}{" "}
                         {simulationPaused && (
                           <InputField
@@ -2232,9 +2252,7 @@ function App() {
                       </td>
                       <td>
                         {!simulationPaused && (
-                          <p style={{ cursor: "default" }}>
-                            {velocityXDisplay2} m/s
-                          </p>
+                          {velocityXDisplay2} m/s
                         )}{" "}
                         {simulationPaused && (
                           <InputField
@@ -2258,9 +2276,7 @@ function App() {
                       </td>
                       <td>
                         {!simulationPaused && (
-                          <p style={{ cursor: "default" }}>
-                            {velocityYDisplay2} m/s
-                          </p>
+                          {velocityYDisplay2} m/s
                         )}{" "}
                         {simulationPaused && (
                           <InputField
@@ -2304,7 +2320,7 @@ function App() {
                   </tbody>
                 </table>
               </div>
-            )}
+            )} */}
           </div>
           {simulationType != "Pendulum" && simulationType != "Spring" && (
             <div>
