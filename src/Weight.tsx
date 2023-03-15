@@ -28,9 +28,8 @@ export interface IWeightProps {
   simulationType: string;
   simulationSpeed: number;
   springConstant: number;
+  springRestLength: number;
   springStartLength: number;
-  springCurrentLength: number;
-  setSpringCurrentLength: (val: number) => any;
   setDisplayXAcceleration: (val: number) => any;
   setDisplayXPosition: (val: number) => any;
   setDisplayXVelocity: (val: number) => any;
@@ -104,7 +103,6 @@ export const Weight = (props: IWeightProps) => {
     setPendulumAngle,
     setPendulumLength,
     setSketching,
-    setSpringCurrentLength,
     setStartPendulumAngle,
     setUpdatedForces,
     showAcceleration,
@@ -113,8 +111,8 @@ export const Weight = (props: IWeightProps) => {
     showVelocity,
     simulationType,
     springConstant,
-    springCurrentLength,
     springStartLength,
+    springRestLength,
     startForces,
     startPosX,
     startPosY,
@@ -319,17 +317,17 @@ export const Weight = (props: IWeightProps) => {
       directionInDegrees: 90,
       component: false,
     };
-    if (yPos - springStartLength > 0) {
+    if (yPos - springRestLength > 0) {
       springForce = {
         description: "Spring Force",
-        magnitude: springConstant * (yPos - springStartLength),
+        magnitude: springConstant * (yPos - springRestLength),
         directionInDegrees: 90,
         component: false,
       };
-    } else if (yPos - springStartLength < 0) {
+    } else if (yPos - springRestLength < 0) {
       springForce = {
         description: "Spring Force",
-        magnitude: springConstant * (springStartLength - yPos),
+        magnitude: springConstant * (springRestLength - yPos),
         directionInDegrees: 270,
         component: false,
       };
@@ -688,6 +686,7 @@ export const Weight = (props: IWeightProps) => {
 
   const update = () => {
     // RK4 update
+    let startYVel = yVelocity;
     let xPos = xPosition;
     let yPos = yPosition;
     let xVel = xVelocity;
@@ -764,6 +763,17 @@ export const Weight = (props: IWeightProps) => {
       yPos +=
         timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
     }
+    // no damping
+    // if (simulationType == "Spring") {
+    let equilibriumPos = springRestLength + mass * 9.81/springConstant
+    let amplitude = equilibriumPos - springStartLength
+     if (startYVel < 0 && yVel > 0 && yPos < springRestLength) {
+       yPos = equilibriumPos - amplitude
+       console.log("peak");
+     } else if (startYVel > 0 && yVel < 0 && yPos > springRestLength) {
+       yPos =equilibriumPos + amplitude
+       console.log("trough");
+     }
     setXVelocity(xVel);
     setYVelocity(yVel);
     setXPosition(xPos);
