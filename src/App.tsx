@@ -186,8 +186,8 @@ function App() {
   const [pendulumAngle, setPendulumAngle] = useState(0);
   const [pendulumLength, setPendulumLength] = useState(300);
   const [springConstant, setSpringConstant] = useState(0.5);
-  const [springRestLength, setspringRestLength] = useState(200);
-  const [springStartLength, setspringStartLength] = useState(200);
+  const [springRestLength, setSpringRestLength] = useState(200);
+  const [springStartLength, setSpringStartLength] = useState(200);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
   const [reviewGravityMagnitude, setReviewGravityMagnitude] =
@@ -947,8 +947,8 @@ function App() {
         setStartPosX(xMax / 2 - 50);
         setStartPosY(200);
         setSpringConstant(0.5);
-        setspringRestLength(200);
-        setspringStartLength(200);
+        setSpringRestLength(200);
+        setSpringStartLength(200);
         removeWalls();
       }
     } else if (mode == "Review") {
@@ -1314,6 +1314,7 @@ function App() {
                   setPendulumAngle={setPendulumAngle}
                   setPendulumLength={setPendulumLength}
                   setSketching={setSketching}
+                  startPendulumAngle={startPendulumAngle}
                   setStartPendulumAngle={setStartPendulumAngle}
                   setUpdatedForces={setUpdatedForces}
                   showAcceleration={showAcceleration}
@@ -1323,6 +1324,7 @@ function App() {
                   simulationType={simulationType}
                   springConstant={springConstant}
                   springStartLength={springStartLength}
+                  setSpringStartLength={setSpringStartLength}
                   springRestLength={springRestLength}
                   startForces={startForces}
                   startPosX={startPosX}
@@ -1377,7 +1379,7 @@ function App() {
                   setPendulumAngle={setPendulumAngle}
                   setPendulumLength={setPendulumLength}
                   setSketching={setSketching}
-                  setspringStartLength={setspringStartLength}
+                  setSpringStartLength={setSpringStartLength}
                   setStartPendulumAngle={setStartPendulumAngle}
                   setUpdatedForces={setUpdatedForces2}
                   showAcceleration={showAcceleration}
@@ -1788,7 +1790,7 @@ function App() {
                   <InputField
                     label={<Typography color="inherit">Rest length</Typography>}
                     lowerBound={10}
-                    changeValue={setspringRestLength}
+                    changeValue={setSpringRestLength}
                     step={100}
                     unit={""}
                     upperBound={500}
@@ -1814,7 +1816,7 @@ function App() {
                     value={springStartLength - springRestLength}
                     effect={(val: number) => {
                       setStartPosY(springRestLength + val);
-                      setspringStartLength(springRestLength + val);
+                      setSpringStartLength(springRestLength + val);
                       setSimulationReset(!simulationReset);
                     }}
                     radianEquivalent={false}

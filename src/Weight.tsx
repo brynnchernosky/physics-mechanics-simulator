@@ -30,6 +30,7 @@ export interface IWeightProps {
   springConstant: number;
   springRestLength: number;
   springStartLength: number;
+  startPendulumAngle: number;
   setDisplayXAcceleration: (val: number) => any;
   setDisplayXPosition: (val: number) => any;
   setDisplayXVelocity: (val: number) => any;
@@ -44,6 +45,7 @@ export interface IWeightProps {
   mode: string;
   noMovement: boolean;
   pendulumAngle: number;
+  setSpringStartLength: (val: number) => any;
   setSketching: (val: boolean) => any;
   showForces: boolean;
   showForceMagnitudes: boolean;
@@ -97,6 +99,7 @@ export const Weight = (props: IWeightProps) => {
     setDisplayXPosition,
     setDisplayXVelocity,
     setDisplayYAcceleration,
+    startPendulumAngle,
     setDisplayYPosition,
     setDisplayYVelocity,
     setPaused,
@@ -112,6 +115,7 @@ export const Weight = (props: IWeightProps) => {
     simulationType,
     springConstant,
     springStartLength,
+    setSpringStartLength,
     springRestLength,
     startForces,
     startPosX,
@@ -355,7 +359,6 @@ export const Weight = (props: IWeightProps) => {
 
     const pendulumLength = Math.sqrt(x * x + y * y);
     setPendulumAngle(oppositeAngle);
-    setPendulumLength(Math.sqrt(x * x + y * y));
 
     const mag =
       mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
@@ -687,6 +690,7 @@ export const Weight = (props: IWeightProps) => {
   const update = () => {
     // RK4 update
     let startYVel = yVelocity;
+    let startXVel = xVelocity;
     let xPos = xPosition;
     let yPos = yPosition;
     let xVel = xVelocity;
@@ -764,16 +768,33 @@ export const Weight = (props: IWeightProps) => {
         timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
     }
     // no damping
-    // if (simulationType == "Spring") {
-    let equilibriumPos = springRestLength + mass * 9.81/springConstant
-    let amplitude = equilibriumPos - springStartLength
-     if (startYVel < 0 && yVel > 0 && yPos < springRestLength) {
-       yPos = equilibriumPos - amplitude
-       console.log("peak");
-     } else if (startYVel > 0 && yVel < 0 && yPos > springRestLength) {
-       yPos =equilibriumPos + amplitude
-       console.log("trough");
-     }
+    if (simulationType == "Spring") {
+      if (startYVel < 0 && yVel > 0 && yPos < springRestLength) {
+        let equilibriumPos = springRestLength + (mass * 9.81) / springConstant;
+        let amplitude = Math.abs(equilibriumPos - springStartLength);
+        yPos = equilibriumPos - amplitude;
+      } else if (startYVel > 0 && yVel < 0 && yPos > springRestLength) {
+        let equilibriumPos = springRestLength + (mass * 9.81) / springConstant;
+        let amplitude = Math.abs(equilibriumPos - springStartLength);
+        yPos = equilibriumPos + amplitude;
+      }
+    }
+    if (simulationType == "Pendulum") {
+      let startX = updatedStartPosX;
+      if (startXVel <= 0 && xVel > 0) {
+        xPos = updatedStartPosX;
+        if (updatedStartPosX > xMax / 2) {
+          xPos = xMax / 2 + (xMax / 2 - startX) - 2 * radius;
+        }
+        yPos = startPosY;
+      } else if (startXVel >= 0 && xVel < 0) {
+        xPos = updatedStartPosX;
+        if (updatedStartPosX < xMax / 2) {
+          xPos = xMax / 2 + (xMax / 2 - startX) - 2 * radius;
+        }
+        yPos = startPosY;
+      }
+    }
     setXVelocity(xVel);
     setYVelocity(yVel);
     setXPosition(xPos);
@@ -888,6 +909,9 @@ export const Weight = (props: IWeightProps) => {
             } else if (newX < 10) {
               newX = 10;
             }
+            if (simulationType == "Spring") {
+              setSpringStartLength(newY);
+            }
             if (simulationType == "Pendulum") {
               const x = xMax / 2 - newX - radius;
               const y = newY + radius + 5;
@@ -902,7 +926,6 @@ export const Weight = (props: IWeightProps) => {
 
               const pendulumLength = Math.sqrt(x * x + y * y);
               setPendulumAngle(oppositeAngle);
-              setPendulumLength(Math.sqrt(x * x + y * y));
               const mag = 9.81 * Math.cos((oppositeAngle * Math.PI) / 180);
               const forceOfTension: IForce = {
                 description: "Tension",
