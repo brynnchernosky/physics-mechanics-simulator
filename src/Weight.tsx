@@ -239,6 +239,7 @@ export const Weight = (props: IWeightProps) => {
   // Check for collisions and update
   useEffect(() => {
     if (!paused && !noMovement) {
+      console.log("before update", yPosition);
       let collisions = false;
       if (simulationType != "Pendulum" && simulationType != "Spring") {
         const collisionsWithGround = checkForCollisionsWithGround();
@@ -252,6 +253,7 @@ export const Weight = (props: IWeightProps) => {
         update();
       }
       setDisplayValues();
+      console.log("after update", yPosition);
     }
   }, [incrementTime]);
 
@@ -896,16 +898,21 @@ export const Weight = (props: IWeightProps) => {
 
   // Update x start position
   useEffect(() => {
-    setUpdatedStartPosX(startPosX);
-    setXPosition(startPosX);
-    setXPosDisplay(startPosX);
+    if (paused) {
+      setUpdatedStartPosX(startPosX);
+      setXPosition(startPosX);
+      setXPosDisplay(startPosX);
+    }
   }, [startPosX]);
 
   // Update y start position
   useEffect(() => {
-    setUpdatedStartPosY(startPosY);
-    setYPosition(startPosY);
-    setYPosDisplay(startPosY);
+    if (paused) {
+      setUpdatedStartPosY(startPosY);
+      setYPosition(startPosY);
+      setYPosDisplay(startPosY);
+      console.log("update start pos y", startPosY);
+    }
   }, [startPosY]);
 
   return (

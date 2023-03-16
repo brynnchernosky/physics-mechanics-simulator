@@ -1009,14 +1009,12 @@ function App() {
         setSpringRestLength(200);
         setSpringStartLength(200);
         removeWalls();
+      } else if (simulationType == "Circular Motion") {
+        // TODO
       }
     } else if (mode == "Review") {
       setShowForceMagnitudes(true);
-      if (simulationType == "Two Weights") {
-        // TODO
-      } else if (simulationType == "Spring") {
-        // TODO
-      } else if (simulationType == "Inclined Plane") {
+      if (simulationType == "Inclined Plane") {
         addWedge();
         setUpdatedForces([]);
         setStartForces([]);
@@ -1026,6 +1024,7 @@ function App() {
       setShowVelocity(false);
       setShowForces(true);
       generateNewQuestion();
+      // TODO - all others
     } else if (mode == "Tutorial") {
       setStepNumber(0);
       setShowVelocity(false);
@@ -1071,6 +1070,8 @@ function App() {
         );
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
         addWalls();
+      } else if (simulationType == "Circular Motion") {
+       // TODO
       }
       setSimulationReset(!simulationReset);
     }
@@ -1239,6 +1240,7 @@ function App() {
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
+                    <option value="Circular Motion">Circular Motion</option>
                   </select>
                 </div>
               </div>
@@ -2027,6 +2029,16 @@ function App() {
                           directionInDegrees: -value,
                           component: true,
                         };
+
+                        const length = pendulumLength;
+                        const x =
+                          length * Math.cos(((90 - value) * Math.PI) / 180);
+                        const y =
+                          length * Math.sin(((90 - value) * Math.PI) / 180);
+                        const xPos = xMax / 2 - x - radius1;
+                        const yPos = y - 50 - 5;
+                        setStartPosX(xPos);
+                        setStartPosY(yPos);
 
                         setStartForces([forceOfGravity, forceOfTension]);
                         setUpdatedForces([forceOfGravity, forceOfTension]);
