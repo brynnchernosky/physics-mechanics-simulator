@@ -989,6 +989,7 @@ export const Weight = (props: IWeightProps) => {
 
               const pendulumLength = Math.sqrt(x * x + y * y);
               setPendulumAngle(oppositeAngle);
+              setPendulumLength(pendulumLength);
               const mag = 9.81 * Math.cos((oppositeAngle * Math.PI) / 180);
               const forceOfTension: IForce = {
                 description: "Tension",

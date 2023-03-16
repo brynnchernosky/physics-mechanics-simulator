@@ -1,37 +1,23 @@
-import AddIcon from "@mui/icons-material/Add";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ClearIcon from "@mui/icons-material/Clear";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { SelectChangeEvent } from "@mui/material/Select";
 import {
-  Alert,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
-  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
   IconButton,
-  InputAdornment,
-  InputLabel,
   LinearProgress,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   MenuItem,
   Popover,
   Select,
@@ -976,6 +962,31 @@ function App() {
           directionInDegrees: 90 - angle,
           component: false,
         };
+
+        const tensionComponent: IForce = {
+          description: "Tension",
+          magnitude: mag,
+          directionInDegrees: 90 - angle,
+          component: true,
+        };
+        const gravityParallel: IForce = {
+          description: "Gravity Parallel Component",
+          magnitude: forceOfGravity.magnitude * Math.sin(angle),
+          directionInDegrees: -angle - 90,
+          component: true,
+        };
+        const gravityPerpendicular: IForce = {
+          description: "Gravity Perpendicular Component",
+          magnitude: forceOfGravity.magnitude * Math.cos(angle),
+          directionInDegrees: -angle,
+          component: true,
+        };
+
+        setComponentForces([
+          tensionComponent,
+          gravityParallel,
+          gravityPerpendicular,
+        ]);
         setUpdatedForces([forceOfGravity, forceOfTension]);
         setStartForces([forceOfGravity, forceOfTension]);
         setPendulumAngle(30);
@@ -1797,20 +1808,21 @@ function App() {
                     label="Show force vectors"
                     labelPlacement="start"
                   />
-                  {simulationType == "Inclined Plane" && (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          value={showForces}
-                          onChange={() =>
-                            setShowComponentForces(!showComponentForces)
-                          }
-                        />
-                      }
-                      label="Show component force vectors"
-                      labelPlacement="start"
-                    />
-                  )}
+                  {simulationType == "Inclined Plane" ||
+                    (simulationType == "Pendulum" && (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            value={showForces}
+                            onChange={() =>
+                              setShowComponentForces(!showComponentForces)
+                            }
+                          />
+                        }
+                        label="Show component force vectors"
+                        labelPlacement="start"
+                      />
+                    ))}
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -1992,8 +2004,37 @@ function App() {
                           directionInDegrees: 90 - value,
                           component: false,
                         };
+
+                        const tensionComponent: IForce = {
+                          description: "Tension",
+                          magnitude: mag,
+                          directionInDegrees: 90 - value,
+                          component: true,
+                        };
+                        const gravityParallel: IForce = {
+                          description: "Gravity Parallel Component",
+                          magnitude:
+                            forceOfGravity.magnitude *
+                            Math.cos((value * Math.PI) / 180),
+                          directionInDegrees: 270 - value,
+                          component: true,
+                        };
+                        const gravityPerpendicular: IForce = {
+                          description: "Gravity Perpendicular Component",
+                          magnitude:
+                            forceOfGravity.magnitude *
+                            Math.sin((value * Math.PI) / 180),
+                          directionInDegrees: -value,
+                          component: true,
+                        };
+
                         setStartForces([forceOfGravity, forceOfTension]);
                         setUpdatedForces([forceOfGravity, forceOfTension]);
+                        setComponentForces([
+                          tensionComponent,
+                          gravityParallel,
+                          gravityPerpendicular,
+                        ]);
                         setAdjustPendulumAngle({
                           angle: value,
                           length: pendulumLength,
@@ -2015,17 +2056,6 @@ function App() {
                     value={Math.round(pendulumLength)}
                     effect={(value) => {
                       if (simulationType == "Pendulum") {
-                        const mag =
-                          1 * 9.81 * Math.cos((pendulumAngle * Math.PI) / 180);
-
-                        const forceOfTension: IForce = {
-                          description: "Tension",
-                          magnitude: mag,
-                          directionInDegrees: 90 - pendulumAngle,
-                          component: false,
-                        };
-                        setStartForces([forceOfGravity, forceOfTension]);
-                        setUpdatedForces([forceOfGravity, forceOfTension]);
                         setAdjustPendulumAngle({
                           angle: pendulumAngle,
                           length: value,
