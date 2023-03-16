@@ -1100,6 +1100,29 @@ export const Weight = (props: IWeightProps) => {
           </svg>
         </div>
       )}
+      {simulationType == "Circular Motion" && (
+        <div
+          className="rod"
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+            <line
+              x1={xPosition + radius}
+              y1={yPosition + radius}
+              x2={(xMin + xMax) / 2}
+              y2={(yMin + yMax) / 2}
+              stroke={"#deb887"}
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+      )}
       {simulationType == "Pendulum" && (
         <div
           className="rod"

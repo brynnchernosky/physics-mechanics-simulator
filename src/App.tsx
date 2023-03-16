@@ -977,7 +977,8 @@ function App() {
         };
         const gravityParallel: IForce = {
           description: "Gravity Parallel Component",
-          magnitude: forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180),
+          magnitude:
+            forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle - 90,
           component: true,
         };
@@ -1022,16 +1023,17 @@ function App() {
         removeWalls();
       } else if (simulationType == "Circular Motion") {
         addWeight();
-        setStartPosY(yMax - 200);
-        setStartPosX((xMax + xMin - 150) / 2);
-        setPositionYDisplay(getDisplayYPos(yMax - 200));
-        setPositionXDisplay((xMax + xMin - 150) / 2);
+        setStartPosY(yMax - 125);
+        setStartPosX((xMin + xMax) / 2 - 50);
+        setPositionYDisplay(getDisplayYPos(yMax - 125));
+        setPositionXDisplay((xMin + xMax) / 2 - 50);
         setUpdatedForces([]);
         setStartForces([]);
-        setStartVelX(0);
+        setStartVelX(20);
         setStartVelY(0);
         addWalls();
         setSimulationReset(!simulationReset);
+        removeWalls();
         // TODO
       }
     } else if (mode == "Review") {
