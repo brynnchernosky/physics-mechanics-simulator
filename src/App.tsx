@@ -903,13 +903,13 @@ function App() {
 
   // Use effect hook to handle mode/topic change
   useEffect(() => {
-    setStartVelX(0);
-    setStartVelY(0);
     setElasticCollisions(false);
     setShowComponentForces(false);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
+        setStartVelX(0);
+        setStartVelY(0);
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
@@ -920,6 +920,8 @@ function App() {
         addWalls();
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Two Weights") {
+        setStartVelX(0);
+        setStartVelY(0);
         addTwoWeights();
         setStartPosY(100);
         setStartPosX(200);
@@ -940,12 +942,16 @@ function App() {
         addWalls();
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Inclined Plane") {
+        setStartVelX(0);
+        setStartVelY(0);
         addWedge();
         changeWedgeBasedOnNewAngle(26);
         addWalls();
         setStartForces([forceOfGravity]);
         updateForcesWithFriction(Number(coefficientOfStaticFriction));
       } else if (simulationType == "Pendulum") {
+        setStartVelX(0);
+        setStartVelY(0);
         const length = 300;
         const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
@@ -971,16 +977,19 @@ function App() {
         };
         const gravityParallel: IForce = {
           description: "Gravity Parallel Component",
-          magnitude: forceOfGravity.magnitude * Math.sin(angle),
+          magnitude: forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle - 90,
           component: true,
         };
         const gravityPerpendicular: IForce = {
           description: "Gravity Perpendicular Component",
-          magnitude: forceOfGravity.magnitude * Math.cos(angle),
+          magnitude:
+            forceOfGravity.magnitude * Math.cos(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle,
           component: true,
         };
+
+        console.log(gravityParallel);
 
         setComponentForces([
           tensionComponent,
@@ -994,6 +1003,8 @@ function App() {
         setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
       } else if (simulationType == "Spring") {
+        setStartVelX(0);
+        setStartVelY(0);
         const springForce: IForce = {
           description: "Spring force",
           magnitude: 0,
@@ -1010,9 +1021,22 @@ function App() {
         setSpringStartLength(200);
         removeWalls();
       } else if (simulationType == "Circular Motion") {
+        addWeight();
+        setStartPosY(yMax - 200);
+        setStartPosX((xMax + xMin - 150) / 2);
+        setPositionYDisplay(getDisplayYPos(yMax - 200));
+        setPositionXDisplay((xMax + xMin - 150) / 2);
+        setUpdatedForces([]);
+        setStartForces([]);
+        setStartVelX(0);
+        setStartVelY(0);
+        addWalls();
+        setSimulationReset(!simulationReset);
         // TODO
       }
     } else if (mode == "Review") {
+      setStartVelX(0);
+      setStartVelY(0);
       setShowForceMagnitudes(true);
       if (simulationType == "Inclined Plane") {
         addWedge();
@@ -1026,6 +1050,8 @@ function App() {
       generateNewQuestion();
       // TODO - all others
     } else if (mode == "Tutorial") {
+      setStartVelX(0);
+      setStartVelY(0);
       setStepNumber(0);
       setShowVelocity(false);
       setShowAcceleration(false);
@@ -1071,7 +1097,7 @@ function App() {
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
         addWalls();
       } else if (simulationType == "Circular Motion") {
-       // TODO
+        // TODO
       }
       setSimulationReset(!simulationReset);
     }

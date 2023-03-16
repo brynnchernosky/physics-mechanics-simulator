@@ -239,7 +239,6 @@ export const Weight = (props: IWeightProps) => {
   // Check for collisions and update
   useEffect(() => {
     if (!paused && !noMovement) {
-      console.log("before update", yPosition);
       let collisions = false;
       if (simulationType != "Pendulum" && simulationType != "Spring") {
         const collisionsWithGround = checkForCollisionsWithGround();
@@ -253,7 +252,6 @@ export const Weight = (props: IWeightProps) => {
         update();
       }
       setDisplayValues();
-      console.log("after update", yPosition);
     }
   }, [incrementTime]);
 
@@ -554,7 +552,6 @@ export const Weight = (props: IWeightProps) => {
               let restWeightFinalVelocity = v2 * Math.tan(alpha);
               v1x = restWeightFinalVelocity * Math.cos(restWeightFinalAngle);
               v1y = restWeightFinalVelocity * Math.sin(restWeightFinalAngle);
-              console.log(color, "rest weight", restWeightFinalAngle, v1x, v1y);
             }
             if (v2 == 0) {
               let alpha = collisionAngle - velTheta1;
@@ -564,16 +561,6 @@ export const Weight = (props: IWeightProps) => {
                 movingWeightFinalVelocity * Math.cos(movingWeightFinalAngle);
               v1y =
                 movingWeightFinalVelocity * Math.sin(movingWeightFinalAngle);
-              console.log(
-                color,
-                "moving weight",
-                movingWeightFinalAngle,
-                collisionAngle,
-                velTheta1,
-                alpha,
-                v1x,
-                v1y
-              );
             }
           }
 
@@ -871,6 +858,60 @@ export const Weight = (props: IWeightProps) => {
       forces = getNewSpringForces(yPos);
     }
     setUpdatedForces(forces);
+    // component forces
+    if (simulationType == "Pendulum") {
+      let x = xMax / 2 - xPos - radius;
+      let y = yPos + radius + 5;
+      let angle = (Math.atan(y / x) * 180) / Math.PI;
+      if (angle < 0) {
+        angle += 180;
+      }
+      let oppositeAngle = 90 - angle;
+      if (oppositeAngle < 0) {
+        oppositeAngle = 90 - (180 - angle);
+      }
+
+      const pendulumLength = Math.sqrt(x * x + y * y);
+
+      const mag =
+        mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
+        (mass * (xVel * xVel + yVel * yVel)) / pendulumLength;
+
+      const tensionComponent: IForce = {
+        description: "Tension",
+        magnitude: mag,
+        directionInDegrees: angle,
+        component: true,
+      };
+      const gravityParallel: IForce = {
+        description: "Gravity Parallel Component",
+        magnitude:
+          forceOfGravity.magnitude * Math.cos(((90 - angle) * Math.PI) / 180),
+        directionInDegrees: 270 - (90 - angle),
+        component: true,
+      };
+      const gravityPerpendicular: IForce = {
+        description: "Gravity Perpendicular Component",
+        magnitude:
+          forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180),
+        directionInDegrees: -(90 - angle),
+        component: true,
+      };
+      if (
+        forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180) <
+        0
+      ) {
+        gravityPerpendicular.magnitude = Math.abs(
+          forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180)
+        );
+        gravityPerpendicular.directionInDegrees = 180 - (90 - angle);
+      }
+      setComponentForces([
+        tensionComponent,
+        gravityParallel,
+        gravityPerpendicular,
+      ]);
+    }
   };
 
   let weightStyle = {
@@ -911,7 +952,6 @@ export const Weight = (props: IWeightProps) => {
       setUpdatedStartPosY(startPosY);
       setYPosition(startPosY);
       setYPosDisplay(startPosY);
-      console.log("update start pos y", startPosY);
     }
   }, [startPosY]);
 
