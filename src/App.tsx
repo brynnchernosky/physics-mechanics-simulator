@@ -206,12 +206,15 @@ function App() {
   const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [showForces, setShowForces] = useState<boolean>(true);
+  const [showComponentForces, setShowComponentForces] =
+    useState<boolean>(false);
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
   const [simulationType, setSimulationType] = useState<string>("Pendulum");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
+  const [componentForces, setComponentForces] = useState<IForce[]>([]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [stepNumber, setStepNumber] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
@@ -293,12 +296,56 @@ function App() {
           forceOfGravity.magnitude) /
         Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
     }
+    const frictionForceComponent: IForce = {
+      description: "Static Friction Force",
+      magnitude:
+        coefficient *
+        forceOfGravity.magnitude *
+        Math.cos(Math.atan(height / width)),
+      directionInDegrees: 180 - (Math.atan(height / width) * 180) / Math.PI,
+      component: true,
+    };
+    const normalForceComponent: IForce = {
+      description: "Normal Force",
+      magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
+      directionInDegrees:
+        180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
+      component: true,
+    };
+    const gravityParallel: IForce = {
+      description: "Gravity Parallel Component",
+      magnitude:
+        forceOfGravity.magnitude *
+        Math.sin(Math.PI / 2 - Math.atan(height / width)),
+      directionInDegrees:
+        180 - 90 - (Math.atan(height / width) * 180) / Math.PI + 180,
+      component: true,
+    };
+    const gravityPerpendicular: IForce = {
+      description: "Gravity Perpendicular Component",
+      magnitude:
+        forceOfGravity.magnitude *
+        Math.cos(Math.PI / 2 - Math.atan(height / width)),
+      directionInDegrees: 360 - (Math.atan(height / width) * 180) / Math.PI,
+      component: true,
+    };
     if (coefficient != 0) {
       setStartForces([forceOfGravity, normalForce, frictionForce]);
       setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+      setComponentForces([
+        frictionForceComponent,
+        normalForceComponent,
+        gravityParallel,
+        gravityPerpendicular,
+      ]);
     } else {
       setStartForces([forceOfGravity, normalForce]);
       setUpdatedForces([forceOfGravity, normalForce]);
+      setComponentForces([
+        normalForceComponent,
+        gravityParallel,
+        gravityPerpendicular,
+      ]);
     }
   };
 
@@ -870,9 +917,10 @@ function App() {
 
   // Use effect hook to handle mode/topic change
   useEffect(() => {
-    // setStartVelX(0);
-    // setStartVelY(0);
-    // setElasticCollisions(false);
+    setStartVelX(0);
+    setStartVelY(0);
+    setElasticCollisions(false);
+    setShowComponentForces(false);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
@@ -1285,6 +1333,9 @@ function App() {
                     yVel: velocityYDisplay2,
                     mass: 1,
                   }}
+                  componentForces={componentForces}
+                  setComponentForces={setComponentForces}
+                  showComponentForces={showComponentForces}
                   color={"red"}
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
@@ -1746,6 +1797,20 @@ function App() {
                     label="Show force vectors"
                     labelPlacement="start"
                   />
+                  {simulationType == "Inclined Plane" && (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value={showForces}
+                          onChange={() =>
+                            setShowComponentForces(!showComponentForces)
+                          }
+                        />
+                      }
+                      label="Show component force vectors"
+                      labelPlacement="start"
+                    />
+                  )}
                   <FormControlLabel
                     control={
                       <Checkbox

@@ -12,56 +12,7 @@ export interface IForce {
 }
 export interface IWeightProps {
   adjustPendulumAngle: { angle: number; length: number };
-  color: string;
-  displayXPosition: number;
-  displayYPosition: number;
-  displayXVelocity: number;
-  displayYVelocity: number;
-  elasticCollisions: boolean;
-  startForces: IForce[];
-  incrementTime: number;
-  mass: number;
-  paused: boolean;
-  pendulumLength: number;
-  radius: number;
-  reset: boolean;
-  simulationType: string;
-  simulationSpeed: number;
-  springConstant: number;
-  springRestLength: number;
-  springStartLength: number;
-  startPendulumAngle: number;
-  setDisplayXAcceleration: (val: number) => any;
-  setDisplayXPosition: (val: number) => any;
-  setDisplayXVelocity: (val: number) => any;
-  setDisplayYAcceleration: (val: number) => any;
-  setDisplayYPosition: (val: number) => any;
-  setDisplayYVelocity: (val: number) => any;
-  setPaused: (bool: boolean) => any;
-  setPendulumAngle: (val: number) => any;
-  setPendulumLength: (val: number) => any;
-  setStartPendulumAngle: (val: number) => any;
-  showAcceleration: boolean;
-  mode: string;
-  noMovement: boolean;
-  pendulumAngle: number;
-  setSpringStartLength: (val: number) => any;
-  setSketching: (val: boolean) => any;
-  showForces: boolean;
-  showForceMagnitudes: boolean;
-  showVelocity: boolean;
-  startPosX: number;
-  startPosY: number;
-  startVelX?: number;
-  startVelY?: number;
-  timestepSize: number;
-  updateDisplay: { xDisplay: number; yDisplay: number };
-  updatedForces: IForce[];
-  setUpdatedForces: (val: IForce[]) => any;
-  walls: IWallProps[];
   coefficientOfKineticFriction: number;
-  wedgeWidth: number;
-  wedgeHeight: number;
   collider?: {
     xPos: number;
     yPos: number;
@@ -71,6 +22,58 @@ export interface IWeightProps {
     mass: number;
   };
   collisionHappened: boolean;
+  color: string;
+  componentForces: IForce[];
+  displayXPosition: number;
+  displayXVelocity: number;
+  displayYPosition: number;
+  displayYVelocity: number;
+  elasticCollisions: boolean;
+  incrementTime: number;
+  mass: number;
+  mode: string;
+  noMovement: boolean;
+  paused: boolean;
+  pendulumAngle: number;
+  pendulumLength: number;
+  radius: number;
+  reset: boolean;
+  setComponentForces: (val: IForce[]) => any;
+  setDisplayXAcceleration: (val: number) => any;
+  setDisplayXPosition: (val: number) => any;
+  setDisplayXVelocity: (val: number) => any;
+  setDisplayYAcceleration: (val: number) => any;
+  setDisplayYPosition: (val: number) => any;
+  setDisplayYVelocity: (val: number) => any;
+  setPaused: (bool: boolean) => any;
+  setPendulumAngle: (val: number) => any;
+  setPendulumLength: (val: number) => any;
+  setSketching: (val: boolean) => any;
+  setSpringStartLength: (val: number) => any;
+  setStartPendulumAngle: (val: number) => any;
+  setUpdatedForces: (val: IForce[]) => any;
+  showAcceleration: boolean;
+  showComponentForces: boolean;
+  showForceMagnitudes: boolean;
+  showForces: boolean;
+  showVelocity: boolean;
+  simulationSpeed: number;
+  simulationType: string;
+  springConstant: number;
+  springRestLength: number;
+  springStartLength: number;
+  startForces: IForce[];
+  startPendulumAngle: number;
+  startPosX: number;
+  startPosY: number;
+  startVelX?: number;
+  startVelY?: number;
+  timestepSize: number;
+  updateDisplay: { xDisplay: number; yDisplay: number };
+  updatedForces: IForce[];
+  walls: IWallProps[];
+  wedgeHeight: number;
+  wedgeWidth: number;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -80,6 +83,7 @@ export const Weight = (props: IWeightProps) => {
     collider,
     collisionHappened,
     color,
+    componentForces,
     displayXPosition,
     displayXVelocity,
     displayYPosition,
@@ -94,30 +98,32 @@ export const Weight = (props: IWeightProps) => {
     pendulumLength,
     radius,
     reset,
-    simulationSpeed,
+    setComponentForces,
     setDisplayXAcceleration,
     setDisplayXPosition,
     setDisplayXVelocity,
     setDisplayYAcceleration,
-    startPendulumAngle,
     setDisplayYPosition,
     setDisplayYVelocity,
     setPaused,
     setPendulumAngle,
     setPendulumLength,
     setSketching,
+    setSpringStartLength,
     setStartPendulumAngle,
     setUpdatedForces,
     showAcceleration,
+    showComponentForces,
     showForceMagnitudes,
     showForces,
     showVelocity,
+    simulationSpeed,
     simulationType,
     springConstant,
-    springStartLength,
-    setSpringStartLength,
     springRestLength,
+    springStartLength,
     startForces,
+    startPendulumAngle,
     startPosX,
     startPosY,
     startVelX,
@@ -294,10 +300,12 @@ export const Weight = (props: IWeightProps) => {
   const getNewAccelerationX = (forceList: IForce[]) => {
     let newXAcc = 0;
     forceList.forEach((force) => {
-      newXAcc +=
-        (force.magnitude *
-          Math.cos((force.directionInDegrees * Math.PI) / 180)) /
-        mass;
+      if (force.component == false) {
+        newXAcc +=
+          (force.magnitude *
+            Math.cos((force.directionInDegrees * Math.PI) / 180)) /
+          mass;
+      }
     });
     return newXAcc;
   };
@@ -305,11 +313,13 @@ export const Weight = (props: IWeightProps) => {
   const getNewAccelerationY = (forceList: IForce[]) => {
     let newYAcc = 0;
     forceList.forEach((force) => {
-      newYAcc +=
-        (-1 *
-          (force.magnitude *
-            Math.sin((force.directionInDegrees * Math.PI) / 180))) /
-        mass;
+      if (force.component == false) {
+        newYAcc +=
+          (-1 *
+            (force.magnitude *
+              Math.sin((force.directionInDegrees * Math.PI) / 180))) /
+          mass;
+      }
     });
     return newYAcc;
   };
@@ -591,7 +601,7 @@ export const Weight = (props: IWeightProps) => {
         if (wall.angleInDegrees == 0 && wall.yPos > 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
           if (maxY >= groundY) {
-            setYPosition(groundY - 2 * radius - 6);
+            setYPosition(groundY - 2 * radius - 1);
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {
@@ -679,10 +689,63 @@ export const Weight = (props: IWeightProps) => {
             forceOfGravity.magnitude) /
           Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
       }
+
+      const frictionForceComponent: IForce = {
+        description: "Kinetic Friction Force",
+
+        magnitude:
+          coefficientOfKineticFriction *
+          forceOfGravity.magnitude *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: true,
+      };
+      const normalForceComponent: IForce = {
+        description: "Normal Force",
+        magnitude:
+          forceOfGravity.magnitude *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: true,
+      };
+      const gravityParallel: IForce = {
+        description: "Gravity Parallel Component",
+        magnitude:
+          forceOfGravity.magnitude *
+          Math.sin(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 -
+          90 -
+          (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI +
+          180,
+        component: true,
+      };
+      const gravityPerpendicular: IForce = {
+        description: "Gravity Perpendicular Component",
+        magnitude:
+          forceOfGravity.magnitude *
+          Math.cos(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          360 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: true,
+      };
       if (coefficientOfKineticFriction != 0) {
         setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+        setComponentForces([
+          frictionForceComponent,
+          normalForceComponent,
+          gravityParallel,
+          gravityPerpendicular,
+        ]);
       } else {
         setUpdatedForces([forceOfGravity, normalForce]);
+        setComponentForces([
+          normalForceComponent,
+          gravityParallel,
+          gravityPerpendicular,
+        ]);
       }
     }
   }, [xVelocity]);
@@ -1162,6 +1225,117 @@ export const Weight = (props: IWeightProps) => {
           </div>
         </div>
       )}
+      {!dragging &&
+        showComponentForces &&
+        componentForces.map((force, index) => {
+          if (force.magnitude < epsilon) {
+            return;
+          }
+          let arrowStartY: number = yPosition + radius;
+          const arrowStartX: number = xPosition + radius;
+          let arrowEndY: number =
+            arrowStartY -
+            Math.abs(force.magnitude) *
+              20 *
+              Math.sin((force.directionInDegrees * Math.PI) / 180);
+          const arrowEndX: number =
+            arrowStartX +
+            Math.abs(force.magnitude) *
+              20 *
+              Math.cos((force.directionInDegrees * Math.PI) / 180);
+
+          let color = "#0d0d0d";
+
+          let labelTop = arrowEndY;
+          let labelLeft = arrowEndX;
+          if (force.directionInDegrees > 90 && force.directionInDegrees < 270) {
+            labelLeft -= 120;
+          } else {
+            labelLeft += 30;
+          }
+          if (force.directionInDegrees >= 0 && force.directionInDegrees < 180) {
+            labelTop += 40;
+          } else {
+            labelTop -= 40;
+          }
+          labelTop = Math.min(labelTop, yMax + 50);
+          labelTop = Math.max(labelTop, yMin);
+          labelLeft = Math.min(labelLeft, xMax - 60);
+          labelLeft = Math.max(labelLeft, xMin);
+
+          return (
+            <div key={index}>
+              <div
+                style={{
+                  pointerEvents: "none",
+                  position: "absolute",
+                  zIndex: -1,
+                  left: xMin,
+                  top: yMin,
+                }}
+              >
+                <svg
+                  width={xMax - xMin + "px"}
+                  height={window.innerHeight + "px"}
+                >
+                  <defs>
+                    <marker
+                      id="forceArrow"
+                      markerWidth="10"
+                      markerHeight="10"
+                      refX="0"
+                      refY="3"
+                      orient="auto"
+                      markerUnits="strokeWidth"
+                    >
+                      <path d="M0,0 L0,6 L9,3 z" fill={color} />
+                    </marker>
+                  </defs>
+                  {force.component == true && (
+                    <line
+                      x1={arrowStartX}
+                      y1={arrowStartY}
+                      x2={arrowEndX}
+                      y2={arrowEndY}
+                      stroke={color}
+                      strokeWidth="5"
+                      strokeDasharray="10,10"
+                      markerEnd="url(#forceArrow)"
+                    />
+                  )}
+                  {force.component == false && (
+                    <line
+                      x1={arrowStartX}
+                      y1={arrowStartY}
+                      x2={arrowEndX}
+                      y2={arrowEndY}
+                      stroke={color}
+                      strokeWidth="5"
+                      markerEnd="url(#forceArrow)"
+                    />
+                  )}
+                </svg>
+              </div>
+              <div
+                style={{
+                  pointerEvents: "none",
+                  position: "absolute",
+                  left: labelLeft + "px",
+                  top: labelTop + "px",
+                  // zIndex: -1,
+                  lineHeight: 0.5,
+                  backgroundColor: labelBackgroundColor,
+                }}
+              >
+                {force.description && <p>{force.description}</p>}
+                {!force.description && <p>Force</p>}
+                {showForceMagnitudes && (
+                  <p>{Math.round(100 * force.magnitude) / 100} N</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
       {!dragging &&
         showForces &&
         updatedForces.map((force, index) => {
