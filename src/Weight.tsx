@@ -66,8 +66,8 @@ export interface IWeightProps {
   startPendulumAngle: number;
   startPosX: number;
   startPosY: number;
-  startVelX?: number;
-  startVelY?: number;
+  startVelX: number;
+  startVelY: number;
   timestepSize: number;
   updateDisplay: { xDisplay: number; yDisplay: number };
   updatedForces: IForce[];
@@ -332,15 +332,20 @@ export const Weight = (props: IWeightProps) => {
   ) => {
     let deltaX = xPos + radius - (xMin + xMax) / 2;
     let deltaY = yPos + radius - (yMin + yMax) / 2;
-    let dir = (Math.atan(deltaX / deltaY) * 180) / Math.PI;
+    let dir = 0;
+    if (Math.abs(deltaY) > epsilon) {
+      dir = (Math.atan(deltaX / deltaY) * 180) / Math.PI;
+    }
     if (yPos + radius > (yMin + yMax) / 2) {
       dir += 90;
-    } else {
+    } else if (yPos + radius < (yMin + yMax) / 2) {
       dir += 270;
+    } else if (xPos < (xMin + xMax) / 2) {
+      dir = 180;
     }
     const tensionForce: IForce = {
       description: "Tension",
-      magnitude: (xVel ** 2 + yVel ** 2) / Math.sqrt(deltaX ** 2 + deltaY ** 2),
+      magnitude: startVelX ** 2 / (startPosY - (yMin + yMax) / 2),
       directionInDegrees: dir,
       component: false,
     };
@@ -880,19 +885,19 @@ export const Weight = (props: IWeightProps) => {
     }
     if (simulationType == "Circular Motion") {
       let startY = updatedStartPosY;
-      let radius = startY - (yMax + yMin) / 2;
-      if (startXVel <= 0 && xVel > 0) {
+      let rad = startY - (yMax + yMin) / 2;
+      if (startYVel > 0 && yVel < 0) {
+        xPos = (xMax + xMin) / 2 - radius;
+        yPos = (yMax + yMin) / 2 + rad;
+      } else if (startYVel < 0 && yVel > 0) {
+        xPos = (xMax + xMin) / 2 - radius;
+        yPos = (yMax + yMin) / 2 - rad - 2 * radius;
+      } else if (startXVel <= 0 && xVel > 0) {
         xPos = (xMax + xMin) / 2 + radius;
         yPos = (yMax + yMin) / 2;
       } else if (startXVel >= 0 && xVel < 0) {
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2;
-      } else if (startYVel >= 0 && yVel < 0) {
-        xPos = (xMax + xMin) / 2;
-        yPos = (yMax + yMin) / 2 + radius;
-      } else if (startYVel <= 0 && yVel > 0) {
-        xPos = (xMax + xMin) / 2;
-        yPos = (yMax + yMin) / 2 - radius;
       }
     }
     setXVelocity(xVel);
