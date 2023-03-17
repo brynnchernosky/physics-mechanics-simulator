@@ -324,6 +324,29 @@ export const Weight = (props: IWeightProps) => {
     return newYAcc;
   };
 
+  const getNewCircularMotionForces = (
+    xPos: number,
+    yPos: number,
+    xVel: number,
+    yVel: number
+  ) => {
+    let deltaX = xPos + radius - (xMin + xMax) / 2;
+    let deltaY = yPos + radius - (yMin + yMax) / 2;
+    let dir = (Math.atan(deltaX / deltaY) * 180) / Math.PI;
+    if (yPos + radius > (yMin + yMax) / 2) {
+      dir += 90;
+    } else {
+      dir += 270;
+    }
+    const tensionForce: IForce = {
+      description: "Tension",
+      magnitude: (xVel ** 2 + yVel ** 2) / Math.sqrt(deltaX ** 2 + deltaY ** 2),
+      directionInDegrees: dir,
+      component: false,
+    };
+    return [tensionForce];
+  };
+
   const getNewSpringForces = (yPos: number) => {
     let springForce: IForce = {
       description: "Spring Force",
@@ -753,6 +776,8 @@ export const Weight = (props: IWeightProps) => {
         forces1 = getNewPendulumForces(xPos, yPos, xVel, yVel);
       } else if (simulationType == "Spring") {
         forces1 = getNewSpringForces(yPos);
+      } else if (simulationType == "Circular Motion") {
+        forces1 = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
       }
       const xAcc1 = getNewAccelerationX(forces1);
       const yAcc1 = getNewAccelerationY(forces1);
@@ -768,6 +793,8 @@ export const Weight = (props: IWeightProps) => {
         forces2 = getNewPendulumForces(xPos2, yPos2, xVel2, yVel2);
       } else if (simulationType == "Spring") {
         forces2 = getNewSpringForces(yPos2);
+      } else if (simulationType == "Circular Motion") {
+        forces2 = getNewCircularMotionForces(xPos2, yPos2, xVel2, yVel2);
       }
       const xAcc2 = getNewAccelerationX(forces2);
       const yAcc2 = getNewAccelerationY(forces2);
@@ -785,6 +812,8 @@ export const Weight = (props: IWeightProps) => {
         forces3 = getNewPendulumForces(xPos3, yPos3, xVel3, yVel3);
       } else if (simulationType == "Spring") {
         forces3 = getNewSpringForces(yPos3);
+      } else if (simulationType == "Circular Motion") {
+        forces3 = getNewCircularMotionForces(xPos3, yPos3, xVel3, yVel3);
       }
       const xAcc3 = getNewAccelerationX(forces3);
       const yAcc3 = getNewAccelerationY(forces3);
@@ -802,6 +831,8 @@ export const Weight = (props: IWeightProps) => {
         forces4 = getNewPendulumForces(xPos4, yPos4, xVel4, yVel4);
       } else if (simulationType == "Spring") {
         forces4 = getNewSpringForces(yPos4);
+      } else if (simulationType == "Circular Motion") {
+        forces1 = getNewCircularMotionForces(xPos4, yPos4, xVel4, yVel4);
       }
       const xAcc4 = getNewAccelerationX(forces4);
       const yAcc4 = getNewAccelerationY(forces4);
@@ -819,7 +850,7 @@ export const Weight = (props: IWeightProps) => {
       yPos +=
         timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
     }
-    // no damping
+    // make sure harmonic motion maintained and errors don't propagate
     if (simulationType == "Spring") {
       if (startYVel < 0 && yVel > 0 && yPos < springRestLength) {
         let equilibriumPos = springRestLength + (mass * 9.81) / springConstant;
@@ -847,6 +878,23 @@ export const Weight = (props: IWeightProps) => {
         yPos = startPosY;
       }
     }
+    if (simulationType == "Circular Motion") {
+      let startY = updatedStartPosY;
+      let radius = startY - (yMax + yMin) / 2;
+      if (startXVel <= 0 && xVel > 0) {
+        xPos = (xMax + xMin) / 2 + radius;
+        yPos = (yMax + yMin) / 2;
+      } else if (startXVel >= 0 && xVel < 0) {
+        xPos = (xMax + xMin) / 2 - radius;
+        yPos = (yMax + yMin) / 2;
+      } else if (startYVel >= 0 && yVel < 0) {
+        xPos = (xMax + xMin) / 2;
+        yPos = (yMax + yMin) / 2 + radius;
+      } else if (startYVel <= 0 && yVel > 0) {
+        xPos = (xMax + xMin) / 2;
+        yPos = (yMax + yMin) / 2 - radius;
+      }
+    }
     setXVelocity(xVel);
     setYVelocity(yVel);
     setXPosition(xPos);
@@ -856,9 +904,12 @@ export const Weight = (props: IWeightProps) => {
       forces = getNewPendulumForces(xPos, yPos, xVel, yVel);
     } else if (simulationType == "Spring") {
       forces = getNewSpringForces(yPos);
+    } else if (simulationType == "Circular Motion") {
+      forces = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
     }
     setUpdatedForces(forces);
-    // component forces
+
+    // set component forces if they change
     if (simulationType == "Pendulum") {
       let x = xMax / 2 - xPos - radius;
       let y = yPos + radius + 5;

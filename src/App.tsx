@@ -197,7 +197,8 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] = useState<string>("Pendulum");
+  const [simulationType, setSimulationType] =
+    useState<string>("Circular Motion");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
   const [componentForces, setComponentForces] = useState<IForce[]>([]);
@@ -1007,7 +1008,7 @@ function App() {
         setStartVelX(0);
         setStartVelY(0);
         const springForce: IForce = {
-          description: "Spring force",
+          description: "Spring Force",
           magnitude: 0,
           directionInDegrees: 90,
           component: false,
@@ -1023,12 +1024,18 @@ function App() {
         removeWalls();
       } else if (simulationType == "Circular Motion") {
         addWeight();
-        setStartPosY(yMax - 125);
+        setStartPosY(yMax - 100);
         setStartPosX((xMin + xMax) / 2 - 50);
         setPositionYDisplay(getDisplayYPos(yMax - 125));
         setPositionXDisplay((xMin + xMax) / 2 - 50);
-        setUpdatedForces([]);
-        setStartForces([]);
+        const tensionForce: IForce = {
+          description: "Tension",
+          magnitude: (20 ** 2) / Math.sqrt(((yMax - 100)-(yMin+yMax)/2) ** 2),
+      directionInDegrees: 90,
+      component: false,
+        };
+        setUpdatedForces([tensionForce]);
+        setStartForces([tensionForce]);
         setStartVelX(20);
         setStartVelY(0);
         addWalls();
@@ -2580,7 +2587,7 @@ function App() {
         </div>
       </div>
       <CoordinateSystem
-        upAxis={simulationType == "Two Weights" ? "Z" : "Y"}
+        upAxis={simulationType == "Circular Motion" ? "Z" : "Y"}
         top={window.innerHeight - 120}
         right={xMin + 90}
       />
