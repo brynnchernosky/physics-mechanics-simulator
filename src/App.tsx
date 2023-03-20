@@ -78,13 +78,6 @@ interface TutorialTemplate {
 
 function App() {
   // Constants
-  const gravityMagnitude = 9.81;
-  const forceOfGravity: IForce = {
-    description: "Gravity",
-    magnitude: gravityMagnitude,
-    directionInDegrees: 270,
-    component: false,
-  };
   const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
   ))(({ theme }) => ({
@@ -121,26 +114,18 @@ function App() {
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
   const [simulationSpeed, setSimulationSpeed] = useState(2);
 
+  const [gravity, setGravity] = useState(-9.81);
+
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([
-    forceOfGravity,
+    {
+      description: "Gravity",
+      magnitude: Math.abs(gravity),
+      directionInDegrees: 270,
+      component: false,
+    },
   ]);
 
   const [collision, setCollision] = useState(false);
-
-  const [startPosX2, setStartPosX2] = useState(0);
-  const [startPosY2, setStartPosY2] = useState(0);
-  const [startVelX2, setStartVelX2] = useState(0);
-  const [startVelY2, setStartVelY2] = useState(0);
-  const [accelerationXDisplay2, setAccelerationXDisplay2] = useState(0);
-  const [accelerationYDisplay2, setAccelerationYDisplay2] = useState(0);
-  const [positionXDisplay2, setPositionXDisplay2] = useState(0);
-  const [positionYDisplay2, setPositionYDisplay2] = useState(0);
-  const [velocityXDisplay2, setVelocityXDisplay2] = useState(0);
-  const [velocityYDisplay2, setVelocityYDisplay2] = useState(0);
-
-  const [updatedForces2, setUpdatedForces2] = useState<IForce[]>([
-    forceOfGravity,
-  ]);
 
   const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
     angle: number;
@@ -200,7 +185,14 @@ function App() {
   const [simulationType, setSimulationType] =
     useState<string>("Circular Motion");
   const [sketching, setSketching] = useState(false);
-  const [startForces, setStartForces] = useState<IForce[]>([forceOfGravity]);
+  const [startForces, setStartForces] = useState<IForce[]>([
+    {
+      description: "Gravity",
+      magnitude: Math.abs(gravity),
+      directionInDegrees: 270,
+      component: false,
+    },
+  ]);
   const [componentForces, setComponentForces] = useState<IForce[]>([]);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [stepNumber, setStepNumber] = useState<number>(0);
@@ -254,7 +246,7 @@ function App() {
   ) => {
     const normalForce: IForce = {
       description: "Normal Force",
-      magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
+      magnitude: Math.abs(gravity) * Math.cos(Math.atan(height / width)),
       directionInDegrees:
         180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
       component: false,
@@ -262,14 +254,12 @@ function App() {
     let frictionForce: IForce = {
       description: "Static Friction Force",
       magnitude:
-        coefficient *
-        forceOfGravity.magnitude *
-        Math.cos(Math.atan(height / width)),
+        coefficient * Math.abs(gravity) * Math.cos(Math.atan(height / width)),
       directionInDegrees: 180 - (Math.atan(height / width) * 180) / Math.PI,
       component: false,
     };
     // reduce magnitude of friction force if necessary such that block cannot slide up plane
-    let yForce = -forceOfGravity.magnitude;
+    let yForce = -Math.abs(gravity);
     yForce +=
       normalForce.magnitude *
       Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
@@ -280,21 +270,19 @@ function App() {
       frictionForce.magnitude =
         (-normalForce.magnitude *
           Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
-          forceOfGravity.magnitude) /
+          Math.abs(gravity)) /
         Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
     }
     const frictionForceComponent: IForce = {
       description: "Static Friction Force",
       magnitude:
-        coefficient *
-        forceOfGravity.magnitude *
-        Math.cos(Math.atan(height / width)),
+        coefficient * Math.abs(gravity) * Math.cos(Math.atan(height / width)),
       directionInDegrees: 180 - (Math.atan(height / width) * 180) / Math.PI,
       component: true,
     };
     const normalForceComponent: IForce = {
       description: "Normal Force",
-      magnitude: forceOfGravity.magnitude * Math.cos(Math.atan(height / width)),
+      magnitude: Math.abs(gravity) * Math.cos(Math.atan(height / width)),
       directionInDegrees:
         180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
       component: true,
@@ -302,8 +290,7 @@ function App() {
     const gravityParallel: IForce = {
       description: "Gravity Parallel Component",
       magnitude:
-        forceOfGravity.magnitude *
-        Math.sin(Math.PI / 2 - Math.atan(height / width)),
+        Math.abs(gravity) * Math.sin(Math.PI / 2 - Math.atan(height / width)),
       directionInDegrees:
         180 - 90 - (Math.atan(height / width) * 180) / Math.PI + 180,
       component: true,
@@ -311,14 +298,31 @@ function App() {
     const gravityPerpendicular: IForce = {
       description: "Gravity Perpendicular Component",
       magnitude:
-        forceOfGravity.magnitude *
-        Math.cos(Math.PI / 2 - Math.atan(height / width)),
+        Math.abs(gravity) * Math.cos(Math.PI / 2 - Math.atan(height / width)),
       directionInDegrees: 360 - (Math.atan(height / width) * 180) / Math.PI,
       component: true,
     };
     if (coefficient != 0) {
-      setStartForces([forceOfGravity, normalForce, frictionForce]);
-      setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+      setStartForces([
+        {
+          description: "Gravity",
+          magnitude: Math.abs(gravity),
+          directionInDegrees: 270,
+          component: false,
+        },
+        normalForce,
+        frictionForce,
+      ]);
+      setUpdatedForces([
+        {
+          description: "Gravity",
+          magnitude: Math.abs(gravity),
+          directionInDegrees: 270,
+          component: false,
+        },
+        normalForce,
+        frictionForce,
+      ]);
       setComponentForces([
         frictionForceComponent,
         normalForceComponent,
@@ -326,8 +330,24 @@ function App() {
         gravityPerpendicular,
       ]);
     } else {
-      setStartForces([forceOfGravity, normalForce]);
-      setUpdatedForces([forceOfGravity, normalForce]);
+      setStartForces([
+        {
+          description: "Gravity",
+          magnitude: Math.abs(gravity),
+          directionInDegrees: 270,
+          component: false,
+        },
+        normalForce,
+      ]);
+      setUpdatedForces([
+        {
+          description: "Gravity",
+          magnitude: Math.abs(gravity),
+          directionInDegrees: 270,
+          component: false,
+        },
+        normalForce,
+      ]);
       setComponentForces([
         normalForceComponent,
         gravityParallel,
@@ -406,28 +426,29 @@ function App() {
     if (isNaN(theta)) {
       return;
     }
-    setReviewGravityMagnitude(forceOfGravity.magnitude);
+    setReviewGravityMagnitude(Math.abs(gravity));
     setReviewGravityAngle(270);
     setReviewNormalMagnitude(
-      forceOfGravity.magnitude * Math.cos((theta * Math.PI) / 180)
+      Math.abs(gravity) * Math.cos((theta * Math.PI) / 180)
     );
     setReviewNormalAngle(90 - theta);
-    let yForce = -forceOfGravity.magnitude;
+    let yForce = -Math.abs(gravity);
     yForce +=
-      9.81 *
+      Math.abs(gravity) *
       Math.cos((theta * Math.PI) / 180) *
       Math.sin(((90 - theta) * Math.PI) / 180);
     yForce +=
       coefficient *
-      9.81 *
+      Math.abs(gravity) *
       Math.cos((theta * Math.PI) / 180) *
       Math.sin(((180 - theta) * Math.PI) / 180);
-    let friction = coefficient * 9.81 * Math.cos((theta * Math.PI) / 180);
+    let friction =
+      coefficient * Math.abs(gravity) * Math.cos((theta * Math.PI) / 180);
     if (yForce > 0) {
       friction =
-        (-(forceOfGravity.magnitude * Math.cos((theta * Math.PI) / 180)) *
+        (-(Math.abs(gravity) * Math.cos((theta * Math.PI) / 180)) *
           Math.sin(((90 - theta) * Math.PI) / 180) +
-          forceOfGravity.magnitude) /
+          Math.abs(gravity)) /
         Math.sin(((180 - theta) * Math.PI) / 180);
     }
     setReviewStaticMagnitude(friction);
@@ -436,27 +457,31 @@ function App() {
 
   // In review mode, update forces when wedge angle changed
   const updateReviewForcesBasedOnAngle = (angle: number) => {
-    setReviewGravityMagnitude(9.81);
+    setReviewGravityMagnitude(Math.abs(gravity));
     setReviewGravityAngle(270);
-    setReviewNormalMagnitude(9.81 * Math.cos((Number(angle) * Math.PI) / 180));
+    setReviewNormalMagnitude(
+      Math.abs(gravity) * Math.cos((Number(angle) * Math.PI) / 180)
+    );
     setReviewNormalAngle(90 - angle);
-    let yForce = -forceOfGravity.magnitude;
+    let yForce = -Math.abs(gravity);
     yForce +=
-      9.81 *
+      Math.abs(gravity) *
       Math.cos((Number(angle) * Math.PI) / 180) *
       Math.sin(((90 - Number(angle)) * Math.PI) / 180);
     yForce +=
       reviewCoefficient *
-      9.81 *
+      Math.abs(gravity) *
       Math.cos((Number(angle) * Math.PI) / 180) *
       Math.sin(((180 - Number(angle)) * Math.PI) / 180);
     let friction =
-      reviewCoefficient * 9.81 * Math.cos((Number(angle) * Math.PI) / 180);
+      reviewCoefficient *
+      Math.abs(gravity) *
+      Math.cos((Number(angle) * Math.PI) / 180);
     if (yForce > 0) {
       friction =
-        (-(9.81 * Math.cos((Number(angle) * Math.PI) / 180)) *
+        (-(Math.abs(gravity) * Math.cos((Number(angle) * Math.PI) / 180)) *
           Math.sin(((90 - Number(angle)) * Math.PI) / 180) +
-          forceOfGravity.magnitude) /
+          Math.abs(gravity)) /
         Math.sin(((180 - Number(angle)) * Math.PI) / 180);
     }
     setReviewStaticMagnitude(friction);
@@ -492,21 +517,19 @@ function App() {
       } else if (
         description == "solve normal force magnitude from wedge angle"
       ) {
-        solutions.push(
-          forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI)
-        );
+        solutions.push(Math.abs(gravity) * Math.cos((theta / 180) * Math.PI));
       } else if (
         description ==
         "solve static force magnitude from wedge angle given equilibrium"
       ) {
         let normalForceMagnitude =
-          forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
+          Math.abs(gravity) * Math.cos((theta / 180) * Math.PI);
         let normalForceAngle = 90 - theta;
         let frictionForceAngle = 180 - theta;
         let frictionForceMagnitude =
           (-normalForceMagnitude *
             Math.sin((normalForceAngle * Math.PI) / 180) +
-            9.81) /
+            Math.abs(gravity)) /
           Math.sin((frictionForceAngle * Math.PI) / 180);
         solutions.push(frictionForceMagnitude);
       } else if (
@@ -519,13 +542,13 @@ function App() {
         "solve minimum static coefficient from wedge angle given equilibrium"
       ) {
         let normalForceMagnitude =
-          forceOfGravity.magnitude * Math.cos((theta / 180) * Math.PI);
+          Math.abs(gravity) * Math.cos((theta / 180) * Math.PI);
         let normalForceAngle = 90 - theta;
         let frictionForceAngle = 180 - theta;
         let frictionForceMagnitude =
           (-normalForceMagnitude *
             Math.sin((normalForceAngle * Math.PI) / 180) +
-            9.81) /
+            Math.abs(gravity)) /
           Math.sin((frictionForceAngle * Math.PI) / 180);
         let frictionCoefficient = frictionForceMagnitude / normalForceMagnitude;
         solutions.push(frictionCoefficient);
@@ -916,30 +939,22 @@ function App() {
         setStartPosX((xMax + xMin - 50) / 2);
         setPositionYDisplay(getDisplayYPos(yMin + 50));
         setPositionXDisplay((xMax + xMin - 50) / 2);
-        setUpdatedForces([forceOfGravity]);
-        setStartForces([forceOfGravity]);
-        addWalls();
-        setSimulationReset(!simulationReset);
-      } else if (simulationType == "Two Weights") {
-        setStartVelX(0);
-        setStartVelY(0);
-        addTwoWeights();
-        setStartPosY(100);
-        setStartPosX(200);
-        setPositionYDisplay(getDisplayYPos(100));
-        setPositionXDisplay(200);
-        setStartPosY2(150);
-        setStartPosX2(400);
-        setPositionYDisplay2(getDisplayYPos(150));
-        setPositionXDisplay2(400);
-        setVelocityXDisplay(20);
-        setVelocityXDisplay2(20);
-        setAccelerationXDisplay(0);
-        setAccelerationYDisplay(0);
-        setAccelerationXDisplay2(0);
-        setAccelerationYDisplay2(0);
-        setUpdatedForces([]);
-        setStartForces([]);
+        setUpdatedForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+        ]);
+        setStartForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+        ]);
         addWalls();
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Inclined Plane") {
@@ -948,7 +963,14 @@ function App() {
         addWedge();
         changeWedgeBasedOnNewAngle(26);
         addWalls();
-        setStartForces([forceOfGravity]);
+        setStartForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+        ]);
         updateForcesWithFriction(Number(coefficientOfStaticFriction));
       } else if (simulationType == "Pendulum") {
         setStartVelX(0);
@@ -962,7 +984,7 @@ function App() {
         addPendulum();
         setStartPosX(xPos);
         setStartPosY(yPos);
-        const mag = 9.81 * Math.sin((60 * Math.PI) / 180);
+        const mag = Math.abs(gravity) * Math.sin((60 * Math.PI) / 180);
         const forceOfTension: IForce = {
           description: "Tension",
           magnitude: mag,
@@ -979,14 +1001,14 @@ function App() {
         const gravityParallel: IForce = {
           description: "Gravity Parallel Component",
           magnitude:
-            forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180),
+            Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle - 90,
           component: true,
         };
         const gravityPerpendicular: IForce = {
           description: "Gravity Perpendicular Component",
           magnitude:
-            forceOfGravity.magnitude * Math.cos(((90 - angle) * Math.PI) / 180),
+            Math.abs(gravity) * Math.cos(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle,
           component: true,
         };
@@ -998,8 +1020,24 @@ function App() {
           gravityParallel,
           gravityPerpendicular,
         ]);
-        setUpdatedForces([forceOfGravity, forceOfTension]);
-        setStartForces([forceOfGravity, forceOfTension]);
+        setUpdatedForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+          forceOfTension,
+        ]);
+        setStartForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+          forceOfTension,
+        ]);
         setPendulumAngle(30);
         setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 30, length: 300 });
@@ -1014,8 +1052,24 @@ function App() {
           component: false,
         };
         addSpring();
-        setUpdatedForces([forceOfGravity, springForce]);
-        setStartForces([forceOfGravity, springForce]);
+        setUpdatedForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+          springForce,
+        ]);
+        setStartForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+          springForce,
+        ]);
         setStartPosX(xMax / 2 - 50);
         setStartPosY(200);
         setSpringConstant(0.5);
@@ -1030,9 +1084,9 @@ function App() {
         setPositionXDisplay((xMin + xMax) / 2 - 50);
         const tensionForce: IForce = {
           description: "Tension",
-          magnitude: (20 ** 2) / Math.sqrt(((yMax - 100)-(yMin+yMax)/2) ** 2),
-      directionInDegrees: 90,
-      component: false,
+          magnitude: 20 ** 2 / Math.sqrt((yMax - 100 - (yMin + yMax) / 2) ** 2),
+          directionInDegrees: 90,
+          component: false,
         };
         setUpdatedForces([tensionForce]);
         setStartForces([tensionForce]);
@@ -1074,8 +1128,6 @@ function App() {
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
         addWalls();
-      } else if (simulationType == "Two Weights") {
-        // TODO
       } else if (simulationType == "Spring") {
         // TODO
       } else if (simulationType == "Pendulum") {
@@ -1271,7 +1323,6 @@ function App() {
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
                     <option value="One Weight">One Weight</option>
-                    {/* <option value="Two Weights">Two Weights</option> */}
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
@@ -1372,15 +1423,7 @@ function App() {
               {weight && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
-                  collisionHappened={false}
-                  collider={{
-                    xPos: positionXDisplay2,
-                    yPos: getDisplayYPos(positionYDisplay2),
-                    radius: radius2,
-                    xVel: velocityXDisplay2,
-                    yVel: velocityYDisplay2,
-                    mass: 1,
-                  }}
+                  gravity={gravity}
                   componentForces={componentForces}
                   setComponentForces={setComponentForces}
                   showComponentForces={showComponentForces}
@@ -1438,70 +1481,6 @@ function App() {
                   wedgeWidth={wedgeWidth}
                 />
               )}
-              {/* {simulationType == "Two Weights" && (
-                <Weight
-                  adjustPendulumAngle={adjustPendulumAngle}
-                  collisionHappened={collision}
-                  collider={{
-                    xPos: positionXDisplay,
-                    yPos: getDisplayYPos(positionYDisplay),
-                    radius: radius1,
-                    xVel: velocityXDisplay,
-                    yVel: velocityYDisplay,
-                    mass: 1,
-                  }}
-                  color={"blue"}
-                  coefficientOfKineticFriction={Number(
-                    coefficientOfKineticFriction
-                  )}
-                  displayXPosition={positionXDisplay2}
-                  displayXVelocity={velocityXDisplay2}
-                  displayYPosition={positionYDisplay2}
-                  displayYVelocity={velocityYDisplay2}
-                  elasticCollisions={elasticCollisions}
-                  incrementTime={timer}
-                  mass={1}
-                  mode={mode}
-                  noMovement={noMovement}
-                  paused={simulationPaused}
-                  pendulumAngle={pendulumAngle}
-                  pendulumLength={pendulumLength}
-                  radius={radius2}
-                  reset={simulationReset}
-                  setDisplayXAcceleration={setAccelerationXDisplay2}
-                  setDisplayXPosition={setPositionXDisplay2}
-                  setDisplayXVelocity={setVelocityXDisplay2}
-                  setDisplayYAcceleration={setAccelerationYDisplay2}
-                  setDisplayYPosition={setPositionYDisplay2}
-                  setDisplayYVelocity={setVelocityYDisplay2}
-                  setPaused={setSimulationPaused}
-                  setPendulumAngle={setPendulumAngle}
-                  setPendulumLength={setPendulumLength}
-                  setSketching={setSketching}
-                  setSpringStartLength={setSpringStartLength}
-                  setStartPendulumAngle={setStartPendulumAngle}
-                  setUpdatedForces={setUpdatedForces2}
-                  showAcceleration={showAcceleration}
-                  showForceMagnitudes={showForceMagnitudes}
-                  showForces={showForces}
-                  showVelocity={showVelocity}
-                  simulationType={simulationType}
-                  springConstant={springConstant}
-                  springStartLength={springStartLength}
-                  springRestLength={springRestLength}
-                  startForces={startForces}
-                  startPosX={startPosX2}
-                  startPosY={startPosY2}
-                  startVelX={startVelX2}
-                  startVelY={startVelY2}
-                  timestepSize={30/1000}
-                  updateDisplay={displayChange2}
-                  updatedForces={updatedForces2}
-                  walls={wallPositions}
-                  wedgeHeight={wedgeHeight}
-                  wedgeWidth={wedgeWidth}
-                />
-              )} */}
               {simulationType == "Inclined Plane" && (
                 <Wedge
                   startWidth={wedgeWidth}
@@ -1819,8 +1798,7 @@ function App() {
             <div>
               <FormControl component="fieldset">
                 <FormGroup>
-                  {(simulationType == "One Weight" ||
-                    simulationType == "Two Weights") && (
+                  {simulationType == "One Weight" && (
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -2033,7 +2011,9 @@ function App() {
                     effect={(value) => {
                       if (simulationType == "Pendulum") {
                         const mag =
-                          1 * 9.81 * Math.cos((value * Math.PI) / 180);
+                          1 *
+                          Math.abs(gravity) *
+                          Math.cos((value * Math.PI) / 180);
 
                         const forceOfTension: IForce = {
                           description: "Tension",
@@ -2051,7 +2031,7 @@ function App() {
                         const gravityParallel: IForce = {
                           description: "Gravity Parallel Component",
                           magnitude:
-                            forceOfGravity.magnitude *
+                            Math.abs(gravity) *
                             Math.cos((value * Math.PI) / 180),
                           directionInDegrees: 270 - value,
                           component: true,
@@ -2059,7 +2039,7 @@ function App() {
                         const gravityPerpendicular: IForce = {
                           description: "Gravity Perpendicular Component",
                           magnitude:
-                            forceOfGravity.magnitude *
+                            Math.abs(gravity) *
                             Math.sin((value * Math.PI) / 180),
                           directionInDegrees: -value,
                           component: true,
@@ -2075,8 +2055,24 @@ function App() {
                         setStartPosX(xPos);
                         setStartPosY(yPos);
 
-                        setStartForces([forceOfGravity, forceOfTension]);
-                        setUpdatedForces([forceOfGravity, forceOfTension]);
+                        setStartForces([
+                          {
+                            description: "Gravity",
+                            magnitude: Math.abs(gravity),
+                            directionInDegrees: 270,
+                            component: false,
+                          },
+                          forceOfTension,
+                        ]);
+                        setUpdatedForces([
+                          {
+                            description: "Gravity",
+                            magnitude: Math.abs(gravity),
+                            directionInDegrees: 270,
+                            component: false,
+                          },
+                          forceOfTension,
+                        ]);
                         setComponentForces([
                           tensionComponent,
                           gravityParallel,
@@ -2123,11 +2119,9 @@ function App() {
               <table>
                 <tbody>
                   <tr>
-                    <td>
-                      {simulationType == "Two Weights" ? <b>Red Weight</b> : ""}
-                    </td>
+                    <td></td>
                     <td>X</td>
-                    <td>{simulationType == "Two Weights" ? "Z" : "Y"}</td>
+                    <td>Y</td>
                   </tr>
                   <tr>
                     <td
@@ -2214,74 +2208,66 @@ function App() {
                     >
                       <Box>Velocity</Box>
                     </td>
-                    {(!simulationPaused ||
-                      (simulationType != "One Weight" &&
-                        simulationType != "Two Weights")) && (
+                    {(!simulationPaused || simulationType != "One Weight") && (
                       <td style={{ cursor: "default" }}>
                         {velocityXDisplay} m/s
                       </td>
                     )}{" "}
-                    {simulationPaused &&
-                      (simulationType == "One Weight" ||
-                        simulationType == "Two Weights") && (
-                        <td
-                          style={{
-                            cursor: "default",
+                    {simulationPaused && simulationType == "One Weight" && (
+                      <td
+                        style={{
+                          cursor: "default",
+                        }}
+                      >
+                        <InputField
+                          lowerBound={-50}
+                          changeValue={setVelocityXDisplay}
+                          step={1}
+                          unit={"m/s"}
+                          upperBound={50}
+                          value={velocityXDisplay}
+                          effect={(value) => {
+                            setStartVelX(value);
+                            setDisplayChange({
+                              xDisplay: positionXDisplay,
+                              yDisplay: positionYDisplay,
+                            });
                           }}
-                        >
-                          <InputField
-                            lowerBound={-50}
-                            changeValue={setVelocityXDisplay}
-                            step={1}
-                            unit={"m/s"}
-                            upperBound={50}
-                            value={velocityXDisplay}
-                            effect={(value) => {
-                              setStartVelX(value);
-                              setDisplayChange({
-                                xDisplay: positionXDisplay,
-                                yDisplay: positionYDisplay,
-                              });
-                            }}
-                            small={true}
-                            mode={"Freeform"}
-                          />
-                        </td>
-                      )}{" "}
-                    {(!simulationPaused ||
-                      (simulationType != "One Weight" &&
-                        simulationType != "Two Weights")) && (
+                          small={true}
+                          mode={"Freeform"}
+                        />
+                      </td>
+                    )}{" "}
+                    {(!simulationPaused || simulationType != "One Weight") && (
                       <td style={{ cursor: "default" }}>
                         {velocityYDisplay} m/s
                       </td>
                     )}{" "}
-                    {simulationPaused &&
-                      (simulationType == "One Weight" ||
-                        simulationType == "Two Weights") && (
-                        <td
-                          style={{
-                            cursor: "default",
+                    {simulationPaused && simulationType == "One Weight" && (
+                      <td
+                        style={{
+                          cursor: "default",
+                        }}
+                      >
+                        <InputField
+                          lowerBound={-50}
+                          changeValue={setVelocityYDisplay}
+                          step={1}
+                          unit={"m/s"}
+                          upperBound={50}
+                          value={velocityYDisplay}
+                          effect={(value) => {
+                            setStartVelY(-value);
+                            setDisplayChange({
+                              xDisplay: positionXDisplay,
+                              yDisplay: positionYDisplay,
+                            });
                           }}
-                        >
-                          <InputField
-                            lowerBound={-50}
-                            changeValue={setVelocityYDisplay}
-                            step={1}
-                            unit={"m/s"}
-                            upperBound={50}
-                            value={velocityYDisplay}
-                            effect={(value) => {
-                              setStartVelY(-value);
-                              setDisplayChange({
-                                xDisplay: positionXDisplay,
-                                yDisplay: positionYDisplay,
-                              });
-                            }}
-                            small={true}
-                            mode={"Freeform"}
-                          />
-                        </td>
-                      )}{" "}
+                          small={true}
+                          mode={"Freeform"}
+                        />
+                      </td>
+                    )}{" "}
                   </tr>
                   <tr>
                     <td
@@ -2304,158 +2290,6 @@ function App() {
                 </tbody>
               </table>
             )}
-            {/* {mode == "Freeform" && simulationType == "Two Weights" && (
-              <div>
-                <br />
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <b>Blue Weight</b>
-                      </td>
-                      <td>X</td>
-                      <td>Z</td>
-                    </tr>
-                    <tr>
-                      <td
-                        style={{ cursor: "help" }}
-                        onClick={() => {
-                          window.open(
-                            "https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                          );
-                        }}
-                      >
-                        <Box>Position</Box>
-                      </td>
-                      <td>
-                        {!simulationPaused && (
-                          {positionXDisplay2} m
-                        )}{" "}
-                        {simulationPaused && (
-                          <InputField
-                            lowerBound={0}
-                            changeValue={setPositionXDisplay2}
-                            step={1}
-                            unit={"m"}
-                            upperBound={xMax - 110}
-                            value={positionXDisplay2}
-                            effect={(value) => {
-                              setDisplayChange2({
-                                xDisplay: value,
-                                yDisplay: positionYDisplay2,
-                              });
-                            }}
-                            small={true}
-                            mode={"Freeform"}
-                          />
-                        )}{" "}
-                      </td>
-                      <td>
-                        {!simulationPaused && (
-                          {positionYDisplay2} m
-                        )}{" "}
-                        {simulationPaused && (
-                          <InputField
-                            lowerBound={0}
-                            changeValue={setPositionYDisplay2}
-                            step={1}
-                            unit={"m"}
-                            upperBound={yMax - 110}
-                            value={positionYDisplay2}
-                            effect={(value) => {
-                              setDisplayChange2({
-                                xDisplay: positionXDisplay2,
-                                yDisplay: value,
-                              });
-                            }}
-                            small={true}
-                            mode={"Freeform"}
-                          />
-                        )}{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        style={{ cursor: "help" }}
-                        onClick={() => {
-                          window.open(
-                            "https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                          );
-                        }}
-                      >
-                        <Box>Velocity</Box>
-                      </td>
-                      <td>
-                        {!simulationPaused && (
-                          {velocityXDisplay2} m/s
-                        )}{" "}
-                        {simulationPaused && (
-                          <InputField
-                            lowerBound={-50}
-                            changeValue={setVelocityXDisplay2}
-                            step={1}
-                            unit={"m/s"}
-                            upperBound={50}
-                            value={velocityXDisplay2}
-                            effect={(value) => {
-                              setStartVelX2(value);
-                              setDisplayChange2({
-                                xDisplay: positionXDisplay2,
-                                yDisplay: positionYDisplay2,
-                              });
-                            }}
-                            small={true}
-                            mode={"Freeform"}
-                          />
-                        )}{" "}
-                      </td>
-                      <td>
-                        {!simulationPaused && (
-                          {velocityYDisplay2} m/s
-                        )}{" "}
-                        {simulationPaused && (
-                          <InputField
-                            lowerBound={-50}
-                            changeValue={setVelocityYDisplay2}
-                            step={1}
-                            unit={"m/s"}
-                            upperBound={50}
-                            value={velocityYDisplay2}
-                            effect={(value) => {
-                              setStartVelY2(-value);
-                              setDisplayChange2({
-                                xDisplay: positionXDisplay2,
-                                yDisplay: positionYDisplay2,
-                              });
-                            }}
-                            small={true}
-                            mode={"Freeform"}
-                          />
-                        )}{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td
-                        style={{ cursor: "help" }}
-                        onClick={() => {
-                          window.open(
-                            "https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                          );
-                        }}
-                      >
-                        <Box>Acceleration</Box>
-                      </td>
-                      <td style={{ cursor: "default" }}>
-                        {accelerationXDisplay2} m/s<sup>2</sup>
-                      </td>
-                      <td style={{ cursor: "default" }}>
-                        {accelerationYDisplay2} m/s<sup>2</sup>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )} */}
           </div>
           {simulationType != "Pendulum" && simulationType != "Spring" && (
             <div>
@@ -2537,7 +2371,7 @@ function App() {
                         {Math.round(
                           pendulumLength *
                             (1 - Math.cos(pendulumAngle)) *
-                            9.81 *
+                            Math.abs(gravity) *
                             10
                         ) / 10}{" "}
                         J
@@ -2550,14 +2384,14 @@ function App() {
                           (Math.round(
                             pendulumLength *
                               (1 - Math.cos(startPendulumAngle)) *
-                              9.81 *
+                              Math.abs(gravity) *
                               10
                           ) /
                             10 -
                             Math.round(
                               pendulumLength *
                                 (1 - Math.cos(pendulumAngle)) *
-                                9.81 *
+                                Math.abs(gravity) *
                                 10
                             ) /
                               10) *
@@ -2574,7 +2408,7 @@ function App() {
                         {Math.round(
                           pendulumLength *
                             (1 - Math.cos(startPendulumAngle)) *
-                            9.81 *
+                            Math.abs(gravity) *
                             10
                         ) / 10}{" "}
                         J

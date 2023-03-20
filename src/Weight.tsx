@@ -13,15 +13,7 @@ export interface IForce {
 export interface IWeightProps {
   adjustPendulumAngle: { angle: number; length: number };
   coefficientOfKineticFriction: number;
-  collider?: {
-    xPos: number;
-    yPos: number;
-    radius: number;
-    xVel: number;
-    yVel: number;
-    mass: number;
-  };
-  collisionHappened: boolean;
+  gravity: number;
   color: string;
   componentForces: IForce[];
   displayXPosition: number;
@@ -80,8 +72,6 @@ export const Weight = (props: IWeightProps) => {
   const {
     adjustPendulumAngle,
     coefficientOfKineticFriction,
-    collider,
-    collisionHappened,
     color,
     componentForces,
     displayXPosition,
@@ -89,6 +79,7 @@ export const Weight = (props: IWeightProps) => {
     displayYPosition,
     displayYVelocity,
     elasticCollisions,
+    gravity,
     incrementTime,
     mass,
     mode,
@@ -140,12 +131,6 @@ export const Weight = (props: IWeightProps) => {
   const draggable = simulationType != "Inclined Plane" && mode == "Freeform";
   const epsilon = 0.0001;
 
-  const forceOfGravity: IForce = {
-    description: "Gravity",
-    magnitude: mass * 9.81,
-    directionInDegrees: 270,
-    component: false,
-  };
   const xMax = window.innerWidth * 0.7;
   const xMin = 0;
   const yMax = window.innerHeight * 0.8;
@@ -244,9 +229,6 @@ export const Weight = (props: IWeightProps) => {
         const collisionsWithGround = checkForCollisionsWithGround();
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
-        if (simulationType == "Two Weights" && collider != undefined) {
-          collisions = collisions || checkForCollisionsWithCollider();
-        }
       }
       if (!collisions) {
         update();
@@ -377,7 +359,15 @@ export const Weight = (props: IWeightProps) => {
       };
     }
 
-    return [forceOfGravity, springForce];
+    return [
+      {
+        description: "Gravity",
+        magnitude: Math.abs(gravity),
+        directionInDegrees: 270,
+        component: false,
+      },
+      springForce,
+    ];
   };
 
   const getNewPendulumForces = (
@@ -401,7 +391,7 @@ export const Weight = (props: IWeightProps) => {
     setPendulumAngle(oppositeAngle);
 
     const mag =
-      mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
+      mass * Math.abs(gravity) * Math.cos((oppositeAngle * Math.PI) / 180) +
       (mass * (xVel * xVel + yVel * yVel)) / pendulumLength;
 
     const forceOfTension: IForce = {
@@ -411,7 +401,15 @@ export const Weight = (props: IWeightProps) => {
       component: false,
     };
 
-    return [forceOfGravity, forceOfTension];
+    return [
+      {
+        description: "Gravity",
+        magnitude: Math.abs(gravity),
+        directionInDegrees: 270,
+        component: false,
+      },
+      forceOfTension,
+    ];
   };
 
   const getNewPosition = (pos: number, vel: number) => {
@@ -458,159 +456,6 @@ export const Weight = (props: IWeightProps) => {
     return collision;
   };
 
-  const checkForCollisionsWithCollider = () => {
-    let collision = false;
-    if (collider == undefined) {
-      return false;
-    }
-    if (
-      yVelocity != 0 ||
-      xVelocity != 0 ||
-      collider.xVel != 0 ||
-      collider.yVel != 0
-    ) {
-      // get distance between circle centers
-      let centerX = xPosition + radius;
-      let centerY = yPosition + radius;
-      let colliderCenterX = collider.xPos + collider.radius;
-      let colliderCenterY = collider.yPos + collider.radius;
-      let squaredDistance =
-        Math.abs(colliderCenterX - centerX) ** 2 +
-        Math.abs(colliderCenterY - centerY) ** 2;
-      if (squaredDistance <= (radius + collider.radius) ** 2) {
-        //collision has occurred
-        collision = true;
-        if (elasticCollisions) {
-          let v1 = Math.sqrt(yVelocity ** 2 + xVelocity ** 2);
-          let v2 = Math.sqrt(collider.yVel ** 2 + collider.xVel ** 2);
-          if (Math.abs(v1) < epsilon) {
-            v1 = 0;
-          }
-          if (Math.abs(v2) < epsilon) {
-            v2 = 0;
-          }
-
-          let velTheta1 = v1 == 0 ? 0 : Math.atan(-yVelocity / xVelocity);
-          if (v1 != 0 && colliderCenterX < centerX) {
-            velTheta1 += Math.PI;
-          }
-          if (velTheta1 < 0) {
-            velTheta1 += 2 * Math.PI;
-          }
-          let velTheta2 =
-            v2 == 0 ? 0 : Math.atan(-collider.yVel / collider.xVel);
-          if (colliderCenterX > centerX) {
-            velTheta2 += Math.PI;
-          }
-          if (velTheta2 < 0) {
-            velTheta2 += 2 * Math.PI;
-          }
-          let collisionAngle =
-            centerX == colliderCenterX
-              ? 0
-              : Math.atan(
-                  Math.abs(
-                    (centerY - colliderCenterY) / (centerX - colliderCenterX)
-                  )
-                );
-          if (centerX > colliderCenterX && centerY > colliderCenterY) {
-            collisionAngle += Math.PI / 2;
-          } else if (centerX > colliderCenterX && centerY < colliderCenterY) {
-            collisionAngle += Math.PI;
-          } else if (centerX < colliderCenterX && centerY < colliderCenterY) {
-            collisionAngle += (3 * Math.PI) / 2;
-          }
-          let v1x = 0;
-          let v1y = 0;
-          let v2x = 0;
-          let v2y = 0;
-          let handled = false;
-
-          // Handle head on collisions where one weight at rest, masses the same
-          if (centerX == colliderCenterX || centerY == colliderCenterY) {
-            if (v1 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
-              v1x = collider.xVel;
-              v1y = collider.yVel;
-              v2x = 0;
-              v2y = 0;
-              handled = true;
-            }
-          } else {
-            if (centerY > colliderCenterY) {
-              if (
-                v1 == 0 &&
-                Math.abs(
-                  velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
-                ) < epsilon
-              ) {
-                v1x = 0;
-                v1y = 0;
-                v1x = collider.xVel;
-                v1y = collider.yVel;
-                handled = true;
-              }
-            } else {
-              if (
-                v1 == 0 &&
-                Math.abs(
-                  velTheta2 - ((collisionAngle + Math.PI) % (2 * Math.PI))
-                ) < epsilon
-              ) {
-                v1x = collider.xVel;
-                v1y = collider.yVel;
-                v2x = 0;
-                v2y = 0;
-                handled = true;
-              }
-            }
-          }
-          if (v2 == 0 && Math.abs(velTheta1 - collisionAngle) < epsilon) {
-            v1x = 0;
-            v1y = 0;
-            v2x = xVelocity;
-            v2y = yVelocity;
-            handled = true;
-          }
-
-          // todo Handle head on collisions where neither weight at rest, masses the same
-
-          // Handle glancing collisions where one weight at rest, masses the same -- works for weight coming from top left
-          if (!handled) {
-            let restWeightFinalAngle = collisionAngle - Math.PI / 2;
-            if (v1 == 0) {
-              let alpha = restWeightFinalAngle - velTheta2;
-              let restWeightFinalVelocity = v2 * Math.tan(alpha);
-              v1x = restWeightFinalVelocity * Math.cos(restWeightFinalAngle);
-              v1y = restWeightFinalVelocity * Math.sin(restWeightFinalAngle);
-            }
-            if (v2 == 0) {
-              let alpha = collisionAngle - velTheta1;
-              let movingWeightFinalAngle = collisionAngle + Math.PI;
-              let movingWeightFinalVelocity = v1 * Math.sin(alpha);
-              v1x =
-                movingWeightFinalVelocity * Math.cos(movingWeightFinalAngle);
-              v1y =
-                movingWeightFinalVelocity * Math.sin(movingWeightFinalAngle);
-            }
-          }
-
-          setXVelocity(v1x);
-          setYVelocity(v1y);
-          if (Math.abs(v1x) > epsilon) {
-            setXPosition(xPosition + (20 * v1x) / Math.abs(v1x));
-          }
-          if (Math.abs(v1y) > epsilon) {
-            setYPosition(yPosition + (20 * v1y) / Math.abs(v1y));
-          }
-          collision = true;
-        } else {
-          // todo handle inelastic collision
-        }
-      }
-    }
-    return collision;
-  };
-
   const checkForCollisionsWithGround = () => {
     let collision = false;
     const minY = yPosition;
@@ -628,17 +473,25 @@ export const Weight = (props: IWeightProps) => {
               if (simulationType != "Two Weights") {
                 const forceOfGravity: IForce = {
                   description: "Gravity",
-                  magnitude: 9.81 * mass,
+                  magnitude: Math.abs(gravity) * mass,
                   directionInDegrees: 270,
                   component: false,
                 };
                 const normalForce: IForce = {
                   description: "Normal force",
-                  magnitude: 9.81 * mass,
+                  magnitude: Math.abs(gravity) * mass,
                   directionInDegrees: wall.angleInDegrees + 90,
                   component: false,
                 };
-                setUpdatedForces([forceOfGravity, normalForce]);
+                setUpdatedForces([
+                  {
+                    description: "Gravity",
+                    magnitude: Math.abs(gravity),
+                    directionInDegrees: 270,
+                    component: false,
+                  },
+                  normalForce,
+                ]);
               }
             }
             collision = true;
@@ -677,8 +530,7 @@ export const Weight = (props: IWeightProps) => {
       const normalForce: IForce = {
         description: "Normal Force",
         magnitude:
-          forceOfGravity.magnitude *
-          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+          Math.abs(gravity) * Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: false,
@@ -687,14 +539,14 @@ export const Weight = (props: IWeightProps) => {
         description: "Kinetic Friction Force",
         magnitude:
           coefficientOfKineticFriction *
-          forceOfGravity.magnitude *
+          Math.abs(gravity) *
           Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: false,
       };
       // reduce magnitude of friction force if necessary such that block cannot slide up plane
-      let yForce = -forceOfGravity.magnitude;
+      let yForce = -Math.abs(gravity);
       yForce +=
         normalForce.magnitude *
         Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
@@ -705,7 +557,7 @@ export const Weight = (props: IWeightProps) => {
         frictionForce.magnitude =
           (-normalForce.magnitude *
             Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
-            forceOfGravity.magnitude) /
+            Math.abs(gravity)) /
           Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
       }
 
@@ -714,7 +566,7 @@ export const Weight = (props: IWeightProps) => {
 
         magnitude:
           coefficientOfKineticFriction *
-          forceOfGravity.magnitude *
+          Math.abs(gravity) *
           Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
@@ -723,8 +575,7 @@ export const Weight = (props: IWeightProps) => {
       const normalForceComponent: IForce = {
         description: "Normal Force",
         magnitude:
-          forceOfGravity.magnitude *
-          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+          Math.abs(gravity) * Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: true,
@@ -732,7 +583,7 @@ export const Weight = (props: IWeightProps) => {
       const gravityParallel: IForce = {
         description: "Gravity Parallel Component",
         magnitude:
-          forceOfGravity.magnitude *
+          Math.abs(gravity) *
           Math.sin(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 -
@@ -744,14 +595,23 @@ export const Weight = (props: IWeightProps) => {
       const gravityPerpendicular: IForce = {
         description: "Gravity Perpendicular Component",
         magnitude:
-          forceOfGravity.magnitude *
+          Math.abs(gravity) *
           Math.cos(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           360 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: true,
       };
       if (coefficientOfKineticFriction != 0) {
-        setUpdatedForces([forceOfGravity, normalForce, frictionForce]);
+        setUpdatedForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+          normalForce,
+          frictionForce,
+        ]);
         setComponentForces([
           frictionForceComponent,
           normalForceComponent,
@@ -759,7 +619,15 @@ export const Weight = (props: IWeightProps) => {
           gravityPerpendicular,
         ]);
       } else {
-        setUpdatedForces([forceOfGravity, normalForce]);
+        setUpdatedForces([
+          {
+            description: "Gravity",
+            magnitude: Math.abs(gravity),
+            directionInDegrees: 270,
+            component: false,
+          },
+          normalForce,
+        ]);
         setComponentForces([
           normalForceComponent,
           gravityParallel,
@@ -860,11 +728,11 @@ export const Weight = (props: IWeightProps) => {
     // make sure harmonic motion maintained and errors don't propagate
     if (simulationType == "Spring") {
       if (startYVel < 0 && yVel > 0 && yPos < springRestLength) {
-        let equilibriumPos = springRestLength + (mass * 9.81) / springConstant;
+        let equilibriumPos = springRestLength + (mass * Math.abs(gravity)) / springConstant;
         let amplitude = Math.abs(equilibriumPos - springStartLength);
         yPos = equilibriumPos - amplitude;
       } else if (startYVel > 0 && yVel < 0 && yPos > springRestLength) {
-        let equilibriumPos = springRestLength + (mass * 9.81) / springConstant;
+        let equilibriumPos = springRestLength + (mass * Math.abs(gravity)) / springConstant;
         let amplitude = Math.abs(equilibriumPos - springStartLength);
         yPos = equilibriumPos + amplitude;
       }
@@ -932,7 +800,7 @@ export const Weight = (props: IWeightProps) => {
       const pendulumLength = Math.sqrt(x * x + y * y);
 
       const mag =
-        mass * 9.81 * Math.cos((oppositeAngle * Math.PI) / 180) +
+        mass * Math.abs(gravity) * Math.cos((oppositeAngle * Math.PI) / 180) +
         (mass * (xVel * xVel + yVel * yVel)) / pendulumLength;
 
       const tensionComponent: IForce = {
@@ -943,24 +811,19 @@ export const Weight = (props: IWeightProps) => {
       };
       const gravityParallel: IForce = {
         description: "Gravity Parallel Component",
-        magnitude:
-          forceOfGravity.magnitude * Math.cos(((90 - angle) * Math.PI) / 180),
+        magnitude: Math.abs(gravity) * Math.cos(((90 - angle) * Math.PI) / 180),
         directionInDegrees: 270 - (90 - angle),
         component: true,
       };
       const gravityPerpendicular: IForce = {
         description: "Gravity Perpendicular Component",
-        magnitude:
-          forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180),
+        magnitude: Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180),
         directionInDegrees: -(90 - angle),
         component: true,
       };
-      if (
-        forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180) <
-        0
-      ) {
+      if (Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180) < 0) {
         gravityPerpendicular.magnitude = Math.abs(
-          forceOfGravity.magnitude * Math.sin(((90 - angle) * Math.PI) / 180)
+          Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180)
         );
         gravityPerpendicular.directionInDegrees = 180 - (90 - angle);
       }
@@ -1095,7 +958,7 @@ export const Weight = (props: IWeightProps) => {
               const pendulumLength = Math.sqrt(x * x + y * y);
               setPendulumAngle(oppositeAngle);
               setPendulumLength(pendulumLength);
-              const mag = 9.81 * Math.cos((oppositeAngle * Math.PI) / 180);
+              const mag = Math.abs(gravity) * Math.cos((oppositeAngle * Math.PI) / 180);
               const forceOfTension: IForce = {
                 description: "Tension",
                 magnitude: mag,
@@ -1107,7 +970,15 @@ export const Weight = (props: IWeightProps) => {
               setXVelocity(startVelX ?? 0);
               setYVelocity(startVelY ?? 0);
               setDisplayValues();
-              setUpdatedForces([forceOfGravity, forceOfTension]);
+              setUpdatedForces([
+                {
+                  description: "Gravity",
+                  magnitude: Math.abs(gravity),
+                  directionInDegrees: 270,
+                  component: false,
+                },
+                forceOfTension,
+              ]);
             }
           }
         }}
