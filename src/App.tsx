@@ -940,6 +940,8 @@ function App() {
       if (simulationType == "One Weight") {
         setStartVelX(0);
         setStartVelY(0);
+        setVelocityXDisplay(0);
+        setVelocityYDisplay(0);
         addWeight();
         setStartPosY(yMin + 50);
         setStartPosX((xMax + xMin - 50) / 2);
@@ -966,6 +968,8 @@ function App() {
       } else if (simulationType == "Inclined Plane") {
         setStartVelX(0);
         setStartVelY(0);
+        setVelocityXDisplay(0);
+        setVelocityYDisplay(0);
         addWedge();
         changeWedgeBasedOnNewAngle(26);
         addWalls();
@@ -981,6 +985,8 @@ function App() {
       } else if (simulationType == "Pendulum") {
         setStartVelX(0);
         setStartVelY(0);
+        setVelocityXDisplay(0);
+        setVelocityYDisplay(0);
         const length = 300;
         const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
@@ -1051,6 +1057,8 @@ function App() {
       } else if (simulationType == "Spring") {
         setStartVelX(0);
         setStartVelY(0);
+        setVelocityXDisplay(0);
+        setVelocityYDisplay(0);
         const springForce: IForce = {
           description: "Spring Force",
           magnitude: 0,
@@ -1106,6 +1114,8 @@ function App() {
     } else if (mode == "Review") {
       setStartVelX(0);
       setStartVelY(0);
+      setVelocityXDisplay(0);
+      setVelocityYDisplay(0);
       setShowForceMagnitudes(true);
       if (simulationType == "Inclined Plane") {
         addWedge();
@@ -1121,6 +1131,8 @@ function App() {
     } else if (mode == "Tutorial") {
       setStartVelX(0);
       setStartVelY(0);
+      setVelocityXDisplay(0);
+      setVelocityYDisplay(0);
       setStepNumber(0);
       setShowVelocity(false);
       setShowAcceleration(false);
@@ -1291,34 +1303,27 @@ function App() {
           }}
           onPointerDown={(e) => {
             if (sketching && currentForceSketch) {
-             if (mode == "Review") {
-              setSketching(false);
-              const sketches = forceSketches;
-              sketches.push(currentForceSketch);
-              setForceSketches(sketches);
-              setCurrentForceSketch(null);
+              if (mode == "Review") {
+                setSketching(false);
+                const sketches = forceSketches;
+                sketches.push(currentForceSketch);
+                setForceSketches(sketches);
+                setCurrentForceSketch(null);
+              } else {
+                const x1 = positionXDisplay + 50;
+                const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
+                const x2 = e.clientX;
+                const y2 = e.clientY;
+                let deltaX = x1 - x2;
+                let deltaY = y1 - y2;
+                setStartVelX(deltaX);
+                setStartVelY(deltaY);
+                setSketching(false);
+                setForceSketches([]);
+                setCurrentForceSketch(null);
+                console.log("here! :)");
+              }
             }
-           } else {
-            const x1 = positionXDisplay + 50;
-              const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
-              const x2 = e.clientX;
-              const y2 = e.clientY;
-              const height = Math.abs(y1 - y2) + 120;
-              const width = Math.abs(x1 - x2) + 120;
-              const top = Math.min(y1, y2) - 60;
-              const left = Math.min(x1, x2) - 60;
-              const x1Updated = x1 - left;
-              const x2Updated = x2 - left;
-              const y1Updated = y1 - top;
-              const y2Updated = y2 - top;
-            let deltaX = x1-x2
-            let deltaY = y1-y2
-            setStartVelX(deltaX)
-            setStartVelY(deltaY)
-            setSketching(false);
-            setForceSketches([]);
-            setCurrentForceSketch(null);
-           }
           }}
         >
           <div className="mechanicsSimulationButtonsAndElements">
@@ -1583,7 +1588,7 @@ function App() {
                     onClick={() => {
                       setSketching(false);
                       setForceSketches([]);
-            setCurrentForceSketch(null);
+                      setCurrentForceSketch(null);
                     }}
                   >
                     <EditOffIcon />
