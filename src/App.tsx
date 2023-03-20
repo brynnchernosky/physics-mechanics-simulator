@@ -1549,16 +1549,6 @@ function App() {
               </select>
             </div>
           </div>
-          <InputField
-            label={<Box>Speed</Box>}
-            lowerBound={1}
-            changeValue={setSimulationSpeed}
-            step={1}
-            unit={"x"}
-            upperBound={10}
-            value={simulationSpeed}
-            labelWidth={"4em"}
-          />
 
           {mode == "Review" && simulationType != "Inclined Plane" && (
             <div className="wordProblemBox">
@@ -1857,6 +1847,27 @@ function App() {
                     }
                     label="Show velocity vector"
                     labelPlacement="start"
+                  />
+
+                  <InputField
+                    label={<Box>Speed</Box>}
+                    lowerBound={1}
+                    changeValue={setSimulationSpeed}
+                    step={1}
+                    unit={"x"}
+                    upperBound={10}
+                    value={simulationSpeed}
+                    labelWidth={"4em"}
+                  />
+                  <InputField
+                    label={<Box>Gravity</Box>}
+                    lowerBound={-30}
+                    changeValue={setGravity}
+                    step={0.01}
+                    unit={"m/s^2"}
+                    upperBound={0}
+                    value={gravity}
+                    labelWidth={"4em"}
                   />
                 </FormGroup>
               </FormControl>
