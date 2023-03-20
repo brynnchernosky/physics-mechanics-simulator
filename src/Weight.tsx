@@ -341,6 +341,8 @@ export const Weight = (props: IWeightProps) => {
     } else if (yPos + radius < (yMin + yMax) / 2) {
       dir += 270;
     } else if (xPos < (xMin + xMax) / 2) {
+      dir = 0;
+    } else if (xPos > (xMin + xMax) / 2) {
       dir = 180;
     }
     const tensionForce: IForce = {
@@ -892,12 +894,12 @@ export const Weight = (props: IWeightProps) => {
       } else if (startYVel < 0 && yVel > 0) {
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2 - rad - 2 * radius;
-      } else if (startXVel <= 0 && xVel > 0) {
-        xPos = (xMax + xMin) / 2 + radius;
-        yPos = (yMax + yMin) / 2;
-      } else if (startXVel >= 0 && xVel < 0) {
-        xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2;
+      } else if (startXVel < 0 && xVel > 0) {
+        xPos = (xMax + xMin) / 2 - rad - 2 * radius;
+        yPos = (yMax + yMin) / 2 - radius;
+      } else if (startXVel > 0 && xVel < 0) {
+        xPos = (xMax + xMin) / 2 + rad;
+        yPos = (yMax + yMin) / 2 - radius;
       }
     }
     setXVelocity(xVel);
