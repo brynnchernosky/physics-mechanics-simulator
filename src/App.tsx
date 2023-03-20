@@ -20,9 +20,6 @@ import {
   FormGroup,
   IconButton,
   LinearProgress,
-  MenuItem,
-  Popover,
-  Select,
   Stack,
   TextField,
   Tooltip,
@@ -1314,14 +1311,14 @@ function App() {
                 const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
                 const x2 = e.clientX;
                 const y2 = e.clientY;
-                let deltaX = x1 - x2;
-                let deltaY = y1 - y2;
-                setStartVelX(deltaX);
-                setStartVelY(deltaY);
+                let deltaX = x2 - x1;
+                let deltaY = y2 - y1;
+                setStartVelX(deltaX / 3);
+                setStartVelY(deltaY / 3);
+                setSimulationReset(!simulationReset);
                 setSketching(false);
                 setForceSketches([]);
                 setCurrentForceSketch(null);
-                console.log("here! :)");
               }
             }
           }}
@@ -1575,6 +1572,7 @@ function App() {
                   <IconButton
                     onClick={() => {
                       setSketching(true);
+                      setSimulationReset(!simulationReset);
                     }}
                   >
                     <EditIcon />
