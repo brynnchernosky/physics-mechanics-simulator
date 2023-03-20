@@ -4,6 +4,8 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import EditIcon from "@mui/icons-material/Edit";
+import EditOffIcon from "@mui/icons-material/EditOff";
 import {
   Box,
   Button,
@@ -657,19 +659,23 @@ function App() {
 
   // In review mode, edit force arrow sketch on mouse movement
   const editForce = (element: VectorTemplate) => {
-    if (!sketching) {
-      const sketches = forceSketches.filter((sketch) => sketch != element);
-      setForceSketches(sketches);
-      setCurrentForceSketch(element);
-      setSketching(true);
+    if (mode == "Review") {
+      if (!sketching) {
+        const sketches = forceSketches.filter((sketch) => sketch != element);
+        setForceSketches(sketches);
+        setCurrentForceSketch(element);
+        setSketching(true);
+      }
     }
   };
 
   // In review mode, used to delete force arrow sketch on SHIFT+click
   const deleteForce = (element: VectorTemplate) => {
-    if (!sketching) {
-      const sketches = forceSketches.filter((sketch) => sketch != element);
-      setForceSketches(sketches);
+    if (mode == "Review") {
+      if (!sketching) {
+        const sketches = forceSketches.filter((sketch) => sketch != element);
+        setForceSketches(sketches);
+      }
     }
   };
 
@@ -1285,12 +1291,34 @@ function App() {
           }}
           onPointerDown={(e) => {
             if (sketching && currentForceSketch) {
+             if (mode == "Review") {
               setSketching(false);
               const sketches = forceSketches;
               sketches.push(currentForceSketch);
               setForceSketches(sketches);
               setCurrentForceSketch(null);
             }
+           } else {
+            const x1 = positionXDisplay + 50;
+              const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
+              const x2 = e.clientX;
+              const y2 = e.clientY;
+              const height = Math.abs(y1 - y2) + 120;
+              const width = Math.abs(x1 - x2) + 120;
+              const top = Math.min(y1, y2) - 60;
+              const left = Math.min(x1, x2) - 60;
+              const x1Updated = x1 - left;
+              const x2Updated = x2 - left;
+              const y1Updated = y1 - top;
+              const y2Updated = y2 - top;
+            let deltaX = x1-x2
+            let deltaY = y1-y2
+            setStartVelX(deltaX)
+            setStartVelY(deltaY)
+            setSketching(false);
+            setForceSketches([]);
+            setCurrentForceSketch(null);
+           }
           }}
         >
           <div className="mechanicsSimulationButtonsAndElements">
@@ -1525,6 +1553,7 @@ function App() {
                   <PauseIcon />
                 </IconButton>
               )}
+
               {simulationPaused && mode != "Tutorial" && (
                 <IconButton
                   onClick={() => {
@@ -1534,6 +1563,32 @@ function App() {
                   <ReplayIcon />
                 </IconButton>
               )}
+              {simulationPaused &&
+                !sketching &&
+                simulationType == "One Weight" &&
+                mode != "Tutorial" && (
+                  <IconButton
+                    onClick={() => {
+                      setSketching(true);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
+              {simulationPaused &&
+                sketching &&
+                simulationType == "One Weight" &&
+                mode != "Tutorial" && (
+                  <IconButton
+                    onClick={() => {
+                      setSketching(false);
+                      setForceSketches([]);
+            setCurrentForceSketch(null);
+                    }}
+                  >
+                    <EditOffIcon />
+                  </IconButton>
+                )}
             </Stack>
             <div className="dropdownMenu">
               <select
