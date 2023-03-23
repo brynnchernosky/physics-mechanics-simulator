@@ -225,13 +225,17 @@ export const Weight = (props: IWeightProps) => {
 
   useEffect(() => {
     if (simulationType == "One Weight") {
-      let maxYPos = startPosY;
+      let maxYPos = updatedStartPosY;
       console.log("start pos y ", maxYPos);
-      if (yVelocity < 0) {
-        maxYPos - (yVelocity * yVelocity) / (2 * Math.abs(gravity));
+      if (startVelY < 0) {
+        console.log(
+          "negative y vel",
+          (startVelY * startVelY) / (2 * Math.abs(gravity))
+        );
+        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
       }
-      if (yVelocity > 0) {
-        maxYPos - (yVelocity * yVelocity) / (2 * Math.abs(gravity));
+      if (startVelY > 0) {
+        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
       }
       console.log("after adding velocity", maxYPos);
       if (maxYPos < 0) {
@@ -240,7 +244,7 @@ export const Weight = (props: IWeightProps) => {
       console.log("after setting 0", maxYPos);
       setMaxPosY(maxYPos);
     }
-  }, [startPosY, startVelY]);
+  }, [updatedStartPosY, startVelY]);
 
   // Check for collisions and update
   useEffect(() => {
