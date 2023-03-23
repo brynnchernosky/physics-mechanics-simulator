@@ -226,22 +226,15 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (simulationType == "One Weight") {
       let maxYPos = updatedStartPosY;
-      console.log("start pos y ", maxYPos);
       if (startVelY < 0) {
-        console.log(
-          "negative y vel",
-          (startVelY * startVelY) / (2 * Math.abs(gravity))
-        );
         maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
       }
       if (startVelY > 0) {
         maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
       }
-      console.log("after adding velocity", maxYPos);
       if (maxYPos < 0) {
         maxYPos = 0;
       }
-      console.log("after setting 0", maxYPos);
       setMaxPosY(maxYPos);
     }
   }, [updatedStartPosY, startVelY]);
@@ -508,15 +501,22 @@ export const Weight = (props: IWeightProps) => {
                   directionInDegrees: wall.angleInDegrees + 90,
                   component: false,
                 };
-                setUpdatedForces([
-                  {
+                setUpdatedForces([forceOfGravity, normalForce]);
+                if (simulationType == "Inclined Plane") {
+                  const forceOfGravityC: IForce = {
                     description: "Gravity",
-                    magnitude: Math.abs(gravity),
+                    magnitude: Math.abs(gravity) * mass,
                     directionInDegrees: 270,
-                    component: false,
-                  },
-                  normalForce,
-                ]);
+                    component: true,
+                  };
+                  const normalForceC: IForce = {
+                    description: "Normal force",
+                    magnitude: Math.abs(gravity) * mass,
+                    directionInDegrees: wall.angleInDegrees + 90,
+                    component: true,
+                  };
+                  setComponentForces([forceOfGravityC, normalForceC]);
+                }
               }
             }
             collision = true;

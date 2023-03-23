@@ -177,7 +177,8 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] = useState<string>("Pendulum");
+  const [simulationType, setSimulationType] =
+    useState<string>("Inclined Plane");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([
     {
@@ -926,10 +927,11 @@ function App() {
   // Use effect hook to handle mode/topic change
   useEffect(() => {
     setElasticCollisions(false);
-    setShowComponentForces(false);
+    setSimulationPaused(true);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
+        setShowComponentForces(false);
         setStartVelX(0);
         setStartVelY(0);
         setVelocityXDisplay(0);
@@ -1047,6 +1049,7 @@ function App() {
         setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
       } else if (simulationType == "Spring") {
+        setShowComponentForces(false);
         setStartVelX(0);
         setStartVelY(0);
         setVelocityXDisplay(0);
@@ -1083,6 +1086,7 @@ function App() {
         setSpringStartLength(200);
         removeWalls();
       } else if (simulationType == "Circular Motion") {
+        setShowComponentForces(false);
         addWeight();
         setStartPosY(yMax - 100);
         setStartPosX((xMin + xMax) / 2 - 50);
@@ -1104,6 +1108,7 @@ function App() {
         // TODO
       }
     } else if (mode == "Review") {
+      setShowComponentForces(false);
       setStartVelX(0);
       setStartVelY(0);
       setVelocityXDisplay(0);
@@ -1121,6 +1126,7 @@ function App() {
       generateNewQuestion();
       // TODO - all others
     } else if (mode == "Tutorial") {
+      setShowComponentForces(false);
       setStartVelX(0);
       setStartVelY(0);
       setVelocityXDisplay(0);
@@ -1128,8 +1134,9 @@ function App() {
       setStepNumber(0);
       setShowVelocity(false);
       setShowAcceleration(false);
-      setShowForces(true);
+
       if (simulationType == "One Weight") {
+        setShowForces(true);
         addWeight();
         setStartPosY(yMax - 100);
         setStartPosX((xMax + xMin - 50) / 2);
@@ -1139,8 +1146,10 @@ function App() {
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
         addWalls();
       } else if (simulationType == "Spring") {
+        setShowForces(false);
         // TODO
       } else if (simulationType == "Pendulum") {
+        setShowForces(true);
         const length = 300;
         const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
@@ -1158,6 +1167,7 @@ function App() {
         setAdjustPendulumAngle({ angle: 30, length: 300 });
         removeWalls();
       } else if (simulationType == "Inclined Plane") {
+        setShowForces(true);
         addWedge();
         setWedgeAngle(26);
         changeWedgeBasedOnNewAngle(26);
@@ -1669,7 +1679,14 @@ function App() {
               </div>
             </div>
           )}
-          {mode == "Tutorial" && (
+
+          {mode == "Tutorial" && simulationType == "Spring" && (
+            <div className="wordProblemBox">
+              <p>{simulationType} tutorial in progress!</p>
+            </div>
+          )}
+
+          {mode == "Tutorial" && simulationType != "Spring" && (
             <div className="wordProblemBox">
               <div className="question">
                 <h2>Problem</h2>
@@ -1739,7 +1756,10 @@ function App() {
                         href="https://www.khanacademy.org/science/physics/one-dimensional-motion"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "blue", textDecoration: "underline" }}
+                        style={{
+                          color: "blue",
+                          textDecoration: "underline",
+                        }}
                       >
                         Khan Academy - One Dimensional Motion
                       </a>
@@ -1749,7 +1769,10 @@ function App() {
                         href="https://www.khanacademy.org/science/physics/two-dimensional-motion"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "blue", textDecoration: "underline" }}
+                        style={{
+                          color: "blue",
+                          textDecoration: "underline",
+                        }}
                       >
                         Khan Academy - Two Dimensional Motion
                       </a>
@@ -1763,7 +1786,10 @@ function App() {
                         href="https://www.khanacademy.org/science/physics/forces-newtons-laws#normal-contact-force"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "blue", textDecoration: "underline" }}
+                        style={{
+                          color: "blue",
+                          textDecoration: "underline",
+                        }}
                       >
                         Khan Academy - Normal Force
                       </a>
@@ -1773,7 +1799,10 @@ function App() {
                         href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "blue", textDecoration: "underline" }}
+                        style={{
+                          color: "blue",
+                          textDecoration: "underline",
+                        }}
                       >
                         Khan Academy - Inclined Planes
                       </a>
@@ -1787,7 +1816,10 @@ function App() {
                         href="https://www.khanacademy.org/science/physics/forces-newtons-laws#tension-tutorial"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "blue", textDecoration: "underline" }}
+                        style={{
+                          color: "blue",
+                          textDecoration: "underline",
+                        }}
                       >
                         Khan Academy - Tension
                       </a>
@@ -1866,21 +1898,21 @@ function App() {
                     label="Show force vectors"
                     labelPlacement="start"
                   />
-                  {simulationType == "Inclined Plane" ||
-                    (simulationType == "Pendulum" && (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value={showForces}
-                            onChange={() =>
-                              setShowComponentForces(!showComponentForces)
-                            }
-                          />
-                        }
-                        label="Show component force vectors"
-                        labelPlacement="start"
-                      />
-                    ))}
+                  {(simulationType == "Inclined Plane" ||
+                    simulationType == "Pendulum") && (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value={showForces}
+                          onChange={() =>
+                            setShowComponentForces(!showComponentForces)
+                          }
+                        />
+                      }
+                      label="Show component force vectors"
+                      labelPlacement="start"
+                    />
+                  )}
                   <FormControlLabel
                     control={
                       <Checkbox
