@@ -146,6 +146,8 @@ export const Weight = (props: IWeightProps) => {
   const [yPosition, setYPosition] = useState(startPosY);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
 
+  const [maxPosY, setMaxPosY] = useState(0);
+
   // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
     return yMax - yPos - 2 * radius + 5;
@@ -218,6 +220,17 @@ export const Weight = (props: IWeightProps) => {
       let y = displayYVelocity;
       setYVelocity(-y);
       setDisplayYVelocity(y);
+    }
+
+    if (simulationType == "One Weight") {
+      let maxYPos = startPosY;
+      if (yVelocity < 0) {
+        maxYPos + (yVelocity * yVelocity) / (2 * Math.abs(gravity));
+      }
+      if (maxYPos < 0) {
+        maxYPos = 0;
+      }
+      setMaxPosY(maxYPos);
     }
   }, [updateDisplay]);
 
@@ -790,7 +803,7 @@ export const Weight = (props: IWeightProps) => {
         yPos = (yMax + yMin) / 2 - radius;
       }
     }
-    setXVelocity(xVel);
+    if (simulationType == "") setXVelocity(xVel);
     setYVelocity(yVel);
     setXPosition(xPos);
     setYPosition(yPos);
