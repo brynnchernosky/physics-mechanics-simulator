@@ -1498,7 +1498,7 @@ function App() {
                   startPosY={startPosY}
                   startVelX={startVelX}
                   startVelY={startVelY}
-                  timestepSize={50 / 1000}
+                  timestepSize={20 / 1000}
                   updateDisplay={displayChange}
                   updatedForces={updatedForces}
                   walls={wallPositions}
