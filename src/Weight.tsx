@@ -637,6 +637,26 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [xVelocity]);
 
+  const evaluate = (currentXPos: number, currentYPos: number, currentXVel: number, currentYVel: number, deltaXPos: number, deltaYPos: number,deltaXVel: number, deltaYVel: number, dt: number) => {
+   const newXPos = currentXPos + deltaXPos * dt;
+   const newYPos = currentYPos + deltaYPos * dt;
+   const newXVel = currentXVel + deltaXVel * dt;
+   const newYVel = currentYVel + deltaYVel * dt;
+   const newDeltaXPos = newXVel;
+   const newDeltaYPos = newYVel;
+   let forces = updatedForces;
+   if (simulationType == "Pendulum") {
+     forces = getNewPendulumForces(newXPos, newYPos, newXVel, newYVel);
+   } else if (simulationType == "Spring") {
+     forces = getNewSpringForces(newYPos);
+   } else if (simulationType == "Circular Motion") {
+     forces = getNewCircularMotionForces(newXPos, newYPos, newXVel, newYVel);
+   }
+   const newDeltaXVel = getNewAccelerationX(forces);
+   const newDeltaYVel = getNewAccelerationY(forces);
+   return [newXPos, newYPos, newXVel, newYVel, newDeltaXPos, newDeltaYPos, newDeltaXVel, newDeltaYVel]
+  };
+
   const update = () => {
     // RK4 update
     let startYVel = yVelocity;
@@ -645,94 +665,38 @@ export const Weight = (props: IWeightProps) => {
     let yPos = yPosition;
     let xVel = xVelocity;
     let yVel = yVelocity;
+    let forces = updatedForces;
+   if (simulationType == "Pendulum") {
+     forces = getNewPendulumForces(xPos, yPos, xVel, yVel);
+   } else if (simulationType == "Spring") {
+     forces = getNewSpringForces(yPos);
+   } else if (simulationType == "Circular Motion") {
+     forces = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
+   }
+   const newDeltaXVel = getNewAccelerationX(forces);
+   const newDeltaYVel = getNewAccelerationY(forces);
     for (let i = 0; i < simulationSpeed; i++) {
-      let forces1 = updatedForces;
-      if (simulationType == "Pendulum") {
-        forces1 = getNewPendulumForces(xPos, yPos, xVel, yVel);
-      } else if (simulationType == "Spring") {
-        forces1 = getNewSpringForces(yPos);
-      } else if (simulationType == "Circular Motion") {
-        forces1 = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
-      }
-      const xAcc1 = getNewAccelerationX(forces1);
-      const yAcc1 = getNewAccelerationY(forces1);
-      const xVel1 = getNewVelocity(xVel, xAcc1);
-      const yVel1 = getNewVelocity(yVel, yAcc1);
+      auto k1 = evaluate(xPos, yPos, xVel, yVel, xVel, yVel, deltaXVel: number, deltaYVel: number, 0)
 
-      let xVel2 = getNewVelocity(xVel, xAcc1 / 2);
-      let yVel2 = getNewVelocity(yVel, yAcc1 / 2);
-      let xPos2 = getNewPosition(xPos, xVel1 / 2);
-      let yPos2 = getNewPosition(yPos, yVel1 / 2);
-      let forces2 = updatedForces;
-      if (simulationType == "Pendulum") {
-        forces2 = getNewPendulumForces(xPos2, yPos2, xVel2, yVel2);
-      } else if (simulationType == "Spring") {
-        forces2 = getNewSpringForces(yPos2);
-      } else if (simulationType == "Circular Motion") {
-        forces2 = getNewCircularMotionForces(xPos2, yPos2, xVel2, yVel2);
-      }
-      const xAcc2 = getNewAccelerationX(forces2);
-      const yAcc2 = getNewAccelerationY(forces2);
-      xVel2 = getNewVelocity(xVel2, xAcc2);
-      yVel2 = getNewVelocity(yVel2, yAcc2);
-      xPos2 = getNewPosition(xPos2, xVel2);
-      yPos2 = getNewPosition(yPos2, yVel2);
-
-      let xVel3 = getNewVelocity(xVel, xAcc2 / 2);
-      let yVel3 = getNewVelocity(yVel, yAcc2 / 2);
-      let xPos3 = getNewPosition(xPos, xVel2 / 2);
-      let yPos3 = getNewPosition(yPos, yVel2 / 2);
-      let forces3 = updatedForces;
-      if (simulationType == "Pendulum") {
-        forces3 = getNewPendulumForces(xPos3, yPos3, xVel3, yVel3);
-      } else if (simulationType == "Spring") {
-        forces3 = getNewSpringForces(yPos3);
-      } else if (simulationType == "Circular Motion") {
-        forces3 = getNewCircularMotionForces(xPos3, yPos3, xVel3, yVel3);
-      }
-      const xAcc3 = getNewAccelerationX(forces3);
-      const yAcc3 = getNewAccelerationY(forces3);
-      xVel3 = getNewVelocity(xVel3, xAcc3);
-      yVel3 = getNewVelocity(yVel3, yAcc3);
-      xPos3 = getNewPosition(xPos3, xVel3);
-      yPos3 = getNewPosition(yPos3, yVel3);
-
-      let xVel4 = getNewVelocity(xVel, xAcc3);
-      let yVel4 = getNewVelocity(yVel, yAcc3);
-      let xPos4 = getNewPosition(xPos, xVel3);
-      let yPos4 = getNewPosition(yPos, yVel3);
-      let forces4 = updatedForces;
-      if (simulationType == "Pendulum") {
-        forces4 = getNewPendulumForces(xPos4, yPos4, xVel4, yVel4);
-      } else if (simulationType == "Spring") {
-        forces4 = getNewSpringForces(yPos4);
-      } else if (simulationType == "Circular Motion") {
-        forces1 = getNewCircularMotionForces(xPos4, yPos4, xVel4, yVel4);
-      }
-      const xAcc4 = getNewAccelerationX(forces4);
-      const yAcc4 = getNewAccelerationY(forces4);
-      xVel4 = getNewVelocity(xVel4, xAcc4);
-      yVel4 = getNewVelocity(yVel4, yAcc4);
-      xPos4 = getNewPosition(xPos4, xVel4);
-      yPos4 = getNewPosition(yPos4, yVel4);
-
-      xVel +=
-        timestepSize * (xAcc1 / 6.0 + xAcc2 / 3.0 + xAcc3 / 3.0 + xAcc4 / 6.0);
-      yVel +=
-        timestepSize * (yAcc1 / 6.0 + yAcc2 / 3.0 + yAcc3 / 3.0 + yAcc4 / 6.0);
-      xPos +=
-        timestepSize * (xVel1 / 6.0 + xVel2 / 3.0 + xVel3 / 3.0 + xVel4 / 6.0);
-      yPos +=
-        timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
+      // xVel +=
+      //   timestepSize * (xAcc1 / 6.0 + xAcc2 / 3.0 + xAcc3 / 3.0 + xAcc4 / 6.0);
+      // yVel +=
+      //   timestepSize * (yAcc1 / 6.0 + yAcc2 / 3.0 + yAcc3 / 3.0 + yAcc4 / 6.0);
+      // xPos +=
+      //   timestepSize * (xVel1 / 6.0 + xVel2 / 3.0 + xVel3 / 3.0 + xVel4 / 6.0);
+      // yPos +=
+      //   timestepSize * (yVel1 / 6.0 + yVel2 / 3.0 + yVel3 / 3.0 + yVel4 / 6.0);
     }
     // make sure harmonic motion maintained and errors don't propagate
     if (simulationType == "Spring") {
       if (startYVel < 0 && yVel > 0 && yPos < springRestLength) {
-        let equilibriumPos = springRestLength + (mass * Math.abs(gravity)) / springConstant;
+        let equilibriumPos =
+          springRestLength + (mass * Math.abs(gravity)) / springConstant;
         let amplitude = Math.abs(equilibriumPos - springStartLength);
         yPos = equilibriumPos - amplitude;
       } else if (startYVel > 0 && yVel < 0 && yPos > springRestLength) {
-        let equilibriumPos = springRestLength + (mass * Math.abs(gravity)) / springConstant;
+        let equilibriumPos =
+          springRestLength + (mass * Math.abs(gravity)) / springConstant;
         let amplitude = Math.abs(equilibriumPos - springStartLength);
         yPos = equilibriumPos + amplitude;
       }
@@ -958,7 +922,8 @@ export const Weight = (props: IWeightProps) => {
               const pendulumLength = Math.sqrt(x * x + y * y);
               setPendulumAngle(oppositeAngle);
               setPendulumLength(pendulumLength);
-              const mag = Math.abs(gravity) * Math.cos((oppositeAngle * Math.PI) / 180);
+              const mag =
+                Math.abs(gravity) * Math.cos((oppositeAngle * Math.PI) / 180);
               const forceOfTension: IForce = {
                 description: "Tension",
                 magnitude: mag,
