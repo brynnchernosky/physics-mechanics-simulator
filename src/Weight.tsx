@@ -128,7 +128,10 @@ export const Weight = (props: IWeightProps) => {
   } = props;
 
   // Constants
-  const draggable = simulationType != "Inclined Plane" && mode == "Freeform";
+  const draggable =
+    simulationType != "Inclined Plane" &&
+    simulationType != "Pendulum" &&
+    mode == "Freeform";
   const epsilon = 0.0001;
 
   const xMax = window.innerWidth * 0.7;
