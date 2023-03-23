@@ -217,8 +217,9 @@ function App() {
     xDisplay: number;
     yDisplay: number;
   }>({ xDisplay: 0, yDisplay: 0 });
-  const [startForces2, startForces2] = useState<IForce[]>([]);
+  const [startForces2, setStartForces2] = useState<IForce[]>([]);
   const [updatedForces2, setUpdatedForces2] = useState<IForce[]>([]);
+  const [mass2, setMass2] = useState(1);
 
   // Add one weight to the simulation
   const addWeight = () => {
@@ -1129,22 +1130,42 @@ function App() {
         setStartPosX((xMin + xMax) / 2 - 100);
         setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
         setPositionXDisplay((xMin + xMax) / 2 - 100);
-        const gravityForce: IForce = {
+        const gravityForce1: IForce = {
           description: "Gravity",
           magnitude: mass * gravity,
           directionInDegrees: 270,
           component: false,
         };
-        const tensionForce: IForce = {
-          description: "Tension",
-          magnitude: mass * gravity,
-          directionInDegrees: 90,
-          component: false,
-        };
-        setUpdatedForces([gravityForce, tensionForce]);
-        setStartForces([gravityForce, tensionForce]);
+        const tensionForce1: IForce = {
+         description: "Tension",
+         magnitude: mass2 * gravity,
+         directionInDegrees: 270,
+         component: false,
+       };
+       const gravityForce2: IForce = {
+        description: "Gravity",
+        magnitude: mass2 * gravity,
+        directionInDegrees: 270,
+        component: false,
+      };
+      const tensionForce2: IForce = {
+       description: "Tension",
+       magnitude: mass1 * gravity,
+       directionInDegrees: 270,
+       component: false,
+     };
+        setUpdatedForces([gravityForce1, tensionForce1]);
+        setStartForces([gravityForce1, tensionForce1]);
         setStartVelX(0);
         setStartVelY(0);
+
+
+        setStartPosY((yMax + yMin) / 2);
+        setStartPosX((xMin + xMax) / 2 - 100);
+        setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
+        setPositionXDisplay((xMin + xMax) / 2 - 100);
+        setUpdatedForces2([gravityForce2, tensionForce2]);
+        setStartForces2([gravityForce2, tensionForce2]);
         setSimulationReset(!simulationReset);
         removeWalls();
       }
@@ -1573,13 +1594,13 @@ function App() {
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
                   )}
-                  displayXPosition={positionXDisplay}
-                  displayXVelocity={velocityXDisplay}
-                  displayYPosition={positionYDisplay}
-                  displayYVelocity={velocityYDisplay}
+                  displayXPosition={positionXDisplay2}
+                  displayXVelocity={velocityXDisplay2}
+                  displayYPosition={positionYDisplay2}
+                  displayYVelocity={velocityYDisplay2}
                   elasticCollisions={elasticCollisions}
                   incrementTime={timer}
-                  mass={mass}
+                  mass={mass2}
                   mode={mode}
                   noMovement={noMovement}
                   paused={simulationPaused}
@@ -1588,19 +1609,19 @@ function App() {
                   radius={radius1}
                   reset={simulationReset}
                   simulationSpeed={simulationSpeed}
-                  setDisplayXAcceleration={setAccelerationXDisplay}
-                  setDisplayXPosition={setPositionXDisplay}
-                  setDisplayXVelocity={setVelocityXDisplay}
-                  setDisplayYAcceleration={setAccelerationYDisplay}
-                  setDisplayYPosition={setPositionYDisplay}
-                  setDisplayYVelocity={setVelocityYDisplay}
+                  setDisplayXAcceleration={setAccelerationXDisplay2}
+                  setDisplayXPosition={setPositionXDisplay2}
+                  setDisplayXVelocity={setVelocityXDisplay2}
+                  setDisplayYAcceleration={setAccelerationYDisplay2}
+                  setDisplayYPosition={setPositionYDisplay2}
+                  setDisplayYVelocity={setVelocityYDisplay2}
                   setPaused={setSimulationPaused}
                   setPendulumAngle={setPendulumAngle}
                   setPendulumLength={setPendulumLength}
                   setSketching={setSketching}
                   startPendulumAngle={startPendulumAngle}
                   setStartPendulumAngle={setStartPendulumAngle}
-                  setUpdatedForces={setUpdatedForces}
+                  setUpdatedForces={setUpdatedForces2}
                   showAcceleration={showAcceleration}
                   showForceMagnitudes={showForceMagnitudes}
                   showForces={showForces}
@@ -1610,14 +1631,14 @@ function App() {
                   springStartLength={springStartLength}
                   setSpringStartLength={setSpringStartLength}
                   springRestLength={springRestLength}
-                  startForces={startForces}
-                  startPosX={startPosX}
-                  startPosY={startPosY}
+                  startForces={startForces2}
+                  startPosX={startPosX2}
+                  startPosY={startPosY2}
                   startVelX={startVelX}
                   startVelY={startVelY}
                   timestepSize={50 / 1000}
-                  updateDisplay={displayChange}
-                  updatedForces={updatedForces}
+                  updateDisplay={displayChange2}
+                  updatedForces={updatedForces2}
                   walls={wallPositions}
                   wedgeHeight={wedgeHeight}
                   wedgeWidth={wedgeWidth}
