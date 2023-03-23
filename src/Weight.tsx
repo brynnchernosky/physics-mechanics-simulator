@@ -1091,7 +1091,7 @@ export const Weight = (props: IWeightProps) => {
             position: "absolute",
             left: 0,
             top: 0,
-            zIndex: -2,
+            zIndex: -1,
           }}
         >
           <svg width={xMax + "px"} height={window.innerHeight + "px"}>
@@ -1099,7 +1099,7 @@ export const Weight = (props: IWeightProps) => {
               cx={(xMax + xMin) / 2}
               cy={radius}
               r={radius * 1.5}
-              fill={"#deb887"}
+              fill={"#808080"}
             />
           </svg>
         </div>

@@ -204,6 +204,22 @@ function App() {
   const [twoWeights, setTwoWeights] = useState(false);
   const [updateKineticFriction, setUpdateKineticFriction] = useState(false);
 
+  // pulley weight
+  const [displayXPosition2, setDisplayXPosition2] = useState(0);
+  const [displayXVelocity2, setDisplayXVelocity2] = useState(0);
+  const [displayYPosition2, setDisplayYPosition2] = useState(0);
+  const [displayYVelocity2, setDisplayYVelocity2] = useState(0);
+  const [displayXAcceleration2, setDisplayXAcceleration2] = useState(0);
+  const [displayYAcceleration2, setDisplayYAcceleration2] = useState(0);
+  const [startPosX2, setStartPosX2] = useState(0);
+  const [startPosY2, setStartPosY2] = useState(0);
+  const [displayChange2, setDisplayChange2] = useState<{
+    xDisplay: number;
+    yDisplay: number;
+  }>({ xDisplay: 0, yDisplay: 0 });
+  const [startForces2, startForces2] = useState<IForce[]>([]);
+  const [updatedForces2, setUpdatedForces2] = useState<IForce[]>([]);
+
   // Add one weight to the simulation
   const addWeight = () => {
     setWeight(true);
@@ -1546,6 +1562,67 @@ function App() {
                   wedgeWidth={wedgeWidth}
                 />
               )}
+              {simulationType == "Pulley" && (
+                <Weight
+                  adjustPendulumAngle={adjustPendulumAngle}
+                  gravity={gravity}
+                  componentForces={componentForces}
+                  setComponentForces={setComponentForces}
+                  showComponentForces={showComponentForces}
+                  color={"blue"}
+                  coefficientOfKineticFriction={Number(
+                    coefficientOfKineticFriction
+                  )}
+                  displayXPosition={positionXDisplay}
+                  displayXVelocity={velocityXDisplay}
+                  displayYPosition={positionYDisplay}
+                  displayYVelocity={velocityYDisplay}
+                  elasticCollisions={elasticCollisions}
+                  incrementTime={timer}
+                  mass={mass}
+                  mode={mode}
+                  noMovement={noMovement}
+                  paused={simulationPaused}
+                  pendulumAngle={pendulumAngle}
+                  pendulumLength={pendulumLength}
+                  radius={radius1}
+                  reset={simulationReset}
+                  simulationSpeed={simulationSpeed}
+                  setDisplayXAcceleration={setAccelerationXDisplay}
+                  setDisplayXPosition={setPositionXDisplay}
+                  setDisplayXVelocity={setVelocityXDisplay}
+                  setDisplayYAcceleration={setAccelerationYDisplay}
+                  setDisplayYPosition={setPositionYDisplay}
+                  setDisplayYVelocity={setVelocityYDisplay}
+                  setPaused={setSimulationPaused}
+                  setPendulumAngle={setPendulumAngle}
+                  setPendulumLength={setPendulumLength}
+                  setSketching={setSketching}
+                  startPendulumAngle={startPendulumAngle}
+                  setStartPendulumAngle={setStartPendulumAngle}
+                  setUpdatedForces={setUpdatedForces}
+                  showAcceleration={showAcceleration}
+                  showForceMagnitudes={showForceMagnitudes}
+                  showForces={showForces}
+                  showVelocity={showVelocity}
+                  simulationType={simulationType}
+                  springConstant={springConstant}
+                  springStartLength={springStartLength}
+                  setSpringStartLength={setSpringStartLength}
+                  springRestLength={springRestLength}
+                  startForces={startForces}
+                  startPosX={startPosX}
+                  startPosY={startPosY}
+                  startVelX={startVelX}
+                  startVelY={startVelY}
+                  timestepSize={50 / 1000}
+                  updateDisplay={displayChange}
+                  updatedForces={updatedForces}
+                  walls={wallPositions}
+                  wedgeHeight={wedgeHeight}
+                  wedgeWidth={wedgeWidth}
+                />
+              )}
               {simulationType == "Inclined Plane" && (
                 <Wedge
                   startWidth={wedgeWidth}
@@ -1995,7 +2072,7 @@ function App() {
                       lowerBound={1}
                       changeValue={setMass}
                       step={1}
-                      unit={"m/s^2"}
+                      unit={"kg"}
                       upperBound={100}
                       value={mass}
                       effect={(val: number) => {
