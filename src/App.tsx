@@ -100,6 +100,7 @@ function App() {
   let reviewCoefficient: number = 0;
 
   // State variables
+  const [resetAll, setResetAll] = useState(true);
   const [startPosX, setStartPosX] = useState(0);
   const [startPosY, setStartPosY] = useState(0);
   const [startVelX, setStartVelX] = useState(0);
@@ -1102,10 +1103,34 @@ function App() {
         setStartForces([tensionForce]);
         setStartVelX(20);
         setStartVelY(0);
-        addWalls();
         setSimulationReset(!simulationReset);
         removeWalls();
         // TODO
+      } else if (simulationType == "Pulley") {
+        setShowComponentForces(false);
+        addWeight();
+        setStartPosY((yMax + yMin) / 2);
+        setStartPosX((xMin + xMax) / 2 - 100);
+        setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
+        setPositionXDisplay((xMin + xMax) / 2 - 100);
+        const gravityForce: IForce = {
+          description: "Gravity",
+          magnitude: mass * gravity,
+          directionInDegrees: 270,
+          component: false,
+        };
+        const tensionForce: IForce = {
+          description: "Tension",
+          magnitude: mass * gravity,
+          directionInDegrees: 90,
+          component: false,
+        };
+        setUpdatedForces([gravityForce, tensionForce]);
+        setStartForces([gravityForce, tensionForce]);
+        setStartVelX(0);
+        setStartVelY(0);
+        setSimulationReset(!simulationReset);
+        removeWalls();
       }
     } else if (mode == "Review") {
       setShowComponentForces(false);
@@ -1178,11 +1203,15 @@ function App() {
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
         addWalls();
       } else if (simulationType == "Circular Motion") {
+        setShowForces(false);
+        // TODO
+      } else if (simulationType == "Pulley") {
+        setShowForces(false);
         // TODO
       }
       setSimulationReset(!simulationReset);
     }
-  }, [simulationType, mode]);
+  }, [simulationType, mode, resetAll]);
 
   const [showForceMagnitudes, setShowForceMagnitudes] = useState<boolean>(true);
 
@@ -1361,7 +1390,8 @@ function App() {
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
-                    {/* <option value="Circular Motion">Circular Motion</option> */}
+                    <option value="Circular Motion">Circular Motion</option>
+                    <option value="Pulley">Pulley</option>
                   </select>
                 </div>
               </div>
@@ -1944,7 +1974,7 @@ function App() {
                     value={simulationSpeed}
                     labelWidth={"5em"}
                   />
-                  {/* {simulationPaused && (
+                  {simulationPaused && (
                     <InputField
                       label={<Box>Gravity</Box>}
                       lowerBound={-30}
@@ -1954,66 +1984,26 @@ function App() {
                       upperBound={0}
                       value={gravity}
                       effect={(val: number) => {
-                        let newStartForces: IForce[] = startForces;
-                        for (let i = 0; i < newStartForces.length; i++) {
-                          if (newStartForces[i].description == "Gravity") {
-                            newStartForces[i].magnitude = Math.abs(val);
-                          }
-                        }
-                        setStartForces(newStartForces);
-                        setUpdatedForces(newStartForces);
-                        let newComponentForces: IForce[] = componentForces;
-                        if (simulationType == "Pendulum") {
-                          for (let i = 0; i < newComponentForces.length; i++) {
-                            if (
-                              newComponentForces[i].description ==
-                              "Gravity Parallel Component"
-                            ) {
-                              newComponentForces[i].magnitude =
-                                Math.abs(val) *
-                                Math.cos((pendulumAngle * Math.PI) / 180);
-                            }
-                            if (
-                              newComponentForces[i].description ==
-                              "Gravity Perpendicular Component"
-                            ) {
-                              newComponentForces[i].magnitude =
-                                Math.abs(val) *
-                                Math.sin((pendulumAngle * Math.PI) / 180);
-                            }
-                          }
-                        }
-                        if (simulationType == "Inclined Plane") {
-                          for (let i = 0; i < newComponentForces.length; i++) {
-                            if (
-                              newComponentForces[i].description ==
-                              "Gravity Parallel Component"
-                            ) {
-                              newComponentForces[i].magnitude =
-                                Math.abs(val) *
-                                Math.sin(
-                                  Math.PI / 2 -
-                                    Math.atan(wedgeHeight / wedgeWidth)
-                                );
-                            }
-                            if (
-                              newComponentForces[i].description ==
-                              "Gravity Perpendicular Component"
-                            ) {
-                              newComponentForces[i].magnitude =
-                                Math.abs(val) *
-                                Math.cos(
-                                  Math.PI / 2 -
-                                    Math.atan(wedgeHeight / wedgeWidth)
-                                );
-                            }
-                          }
-                        }
-                        setSimulationReset(!simulationReset);
+                        setResetAll(!resetAll);
                       }}
                       labelWidth={"5em"}
                     />
-                  )} */}
+                  )}
+                  {simulationPaused && (
+                    <InputField
+                      label={<Box>Mass</Box>}
+                      lowerBound={1}
+                      changeValue={setMass}
+                      step={1}
+                      unit={"m/s^2"}
+                      upperBound={100}
+                      value={mass}
+                      effect={(val: number) => {
+                        setResetAll(!resetAll);
+                      }}
+                      labelWidth={"5em"}
+                    />
+                  )}
                 </FormGroup>
               </FormControl>
               {simulationType == "Spring" && simulationPaused && (
@@ -2443,13 +2433,13 @@ function App() {
                       {accelerationYDisplay} m/s<sup>2</sup>
                     </td>
                   </tr>
-                  {/* <tr>
+                  <tr>
                     <td>
                       <Box>Momentum</Box>
                     </td>
                     <td>{velocityXDisplay * mass} kg*m/s</td>
                     <td>{velocityYDisplay * mass} kg*m/s</td>
-                  </tr> */}
+                  </tr>
                 </tbody>
               </table>
             )}

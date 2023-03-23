@@ -1083,6 +1083,50 @@ export const Weight = (props: IWeightProps) => {
           </svg>
         </div>
       )}
+      {simulationType == "Pulley" && (
+        <div
+          className="wheel"
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+            <circle
+              cx={(xMax + xMin) / 2}
+              cy={radius}
+              r={radius * 1.5}
+              fill={"#deb887"}
+            />
+          </svg>
+        </div>
+      )}
+      {simulationType == "Pulley" && (
+        <div
+          className="rod"
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+            <line
+              x1={xPosition + radius}
+              y1={yPosition + radius}
+              x2={xPosition + radius}
+              y2={yMin}
+              stroke={"#deb887"}
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+      )}
       {simulationType == "Circular Motion" && (
         <div
           className="rod"
