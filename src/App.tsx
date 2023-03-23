@@ -35,6 +35,7 @@ import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
+import { validateHeaderName } from "http";
 
 interface VectorTemplate {
   top: number;
@@ -176,8 +177,7 @@ function App() {
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
-  const [simulationType, setSimulationType] =
-    useState<string>("Circular Motion");
+  const [simulationType, setSimulationType] = useState<string>("Pendulum");
   const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([
     {
@@ -1351,7 +1351,7 @@ function App() {
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
-                    <option value="Circular Motion">Circular Motion</option>
+                    {/* <option value="Circular Motion">Circular Motion</option> */}
                   </select>
                 </div>
               </div>
@@ -1912,16 +1912,76 @@ function App() {
                     value={simulationSpeed}
                     labelWidth={"5em"}
                   />
-                  <InputField
-                    label={<Box>Gravity</Box>}
-                    lowerBound={-30}
-                    changeValue={setGravity}
-                    step={0.01}
-                    unit={"m/s^2"}
-                    upperBound={0}
-                    value={gravity}
-                    labelWidth={"5em"}
-                  />
+                  {/* {simulationPaused && (
+                    <InputField
+                      label={<Box>Gravity</Box>}
+                      lowerBound={-30}
+                      changeValue={setGravity}
+                      step={0.01}
+                      unit={"m/s^2"}
+                      upperBound={0}
+                      value={gravity}
+                      effect={(val: number) => {
+                        let newStartForces: IForce[] = startForces;
+                        for (let i = 0; i < newStartForces.length; i++) {
+                          if (newStartForces[i].description == "Gravity") {
+                            newStartForces[i].magnitude = Math.abs(val);
+                          }
+                        }
+                        setStartForces(newStartForces);
+                        setUpdatedForces(newStartForces);
+                        let newComponentForces: IForce[] = componentForces;
+                        if (simulationType == "Pendulum") {
+                          for (let i = 0; i < newComponentForces.length; i++) {
+                            if (
+                              newComponentForces[i].description ==
+                              "Gravity Parallel Component"
+                            ) {
+                              newComponentForces[i].magnitude =
+                                Math.abs(val) *
+                                Math.cos((pendulumAngle * Math.PI) / 180);
+                            }
+                            if (
+                              newComponentForces[i].description ==
+                              "Gravity Perpendicular Component"
+                            ) {
+                              newComponentForces[i].magnitude =
+                                Math.abs(val) *
+                                Math.sin((pendulumAngle * Math.PI) / 180);
+                            }
+                          }
+                        }
+                        if (simulationType == "Inclined Plane") {
+                          for (let i = 0; i < newComponentForces.length; i++) {
+                            if (
+                              newComponentForces[i].description ==
+                              "Gravity Parallel Component"
+                            ) {
+                              newComponentForces[i].magnitude =
+                                Math.abs(val) *
+                                Math.sin(
+                                  Math.PI / 2 -
+                                    Math.atan(wedgeHeight / wedgeWidth)
+                                );
+                            }
+                            if (
+                              newComponentForces[i].description ==
+                              "Gravity Perpendicular Component"
+                            ) {
+                              newComponentForces[i].magnitude =
+                                Math.abs(val) *
+                                Math.cos(
+                                  Math.PI / 2 -
+                                    Math.atan(wedgeHeight / wedgeWidth)
+                                );
+                            }
+                          }
+                        }
+                        setSimulationReset(!simulationReset);
+                      }}
+                      labelWidth={"5em"}
+                    />
+                  )} */}
                 </FormGroup>
               </FormControl>
               {simulationType == "Spring" && simulationPaused && (
@@ -2351,13 +2411,13 @@ function App() {
                       {accelerationYDisplay} m/s<sup>2</sup>
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td>
                       <Box>Momentum</Box>
                     </td>
                     <td>{velocityXDisplay * mass} kg*m/s</td>
                     <td>{velocityYDisplay * mass} kg*m/s</td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </table>
             )}

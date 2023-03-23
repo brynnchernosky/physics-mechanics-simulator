@@ -226,13 +226,18 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (simulationType == "One Weight") {
       let maxYPos = startPosY;
+      console.log("start pos y ", maxYPos);
       if (yVelocity < 0) {
         maxYPos - (yVelocity * yVelocity) / (2 * Math.abs(gravity));
       }
+      if (yVelocity > 0) {
+        maxYPos - (yVelocity * yVelocity) / (2 * Math.abs(gravity));
+      }
+      console.log("after adding velocity", maxYPos);
       if (maxYPos < 0) {
         maxYPos = 0;
       }
-      console.log("set max pos y", maxYPos);
+      console.log("after setting 0", maxYPos);
       setMaxPosY(maxYPos);
     }
   }, [startPosY, startVelY]);
@@ -807,10 +812,8 @@ export const Weight = (props: IWeightProps) => {
       }
     }
     if (simulationType == "One Weight") {
-      // MaxPosY
       if (yPos < maxPosY) {
         yPos = maxPosY;
-        console.log(maxPosY);
       }
     }
     setXVelocity(xVel);
