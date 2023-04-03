@@ -119,7 +119,7 @@ function App() {
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([
     {
       description: "Gravity",
-      magnitude: Math.abs(gravity),
+      magnitude: Math.abs(gravity) * mass,
       directionInDegrees: 270,
       component: false,
     },
@@ -184,7 +184,7 @@ function App() {
   const [startForces, setStartForces] = useState<IForce[]>([
     {
       description: "Gravity",
-      magnitude: Math.abs(gravity),
+      magnitude: Math.abs(gravity) * mass,
       directionInDegrees: 270,
       component: false,
     },
@@ -205,12 +205,12 @@ function App() {
   const [updateKineticFriction, setUpdateKineticFriction] = useState(false);
 
   // pulley weight
-  const [displayXPosition2, setDisplayXPosition2] = useState(0);
-  const [displayXVelocity2, setDisplayXVelocity2] = useState(0);
-  const [displayYPosition2, setDisplayYPosition2] = useState(0);
-  const [displayYVelocity2, setDisplayYVelocity2] = useState(0);
-  const [displayXAcceleration2, setDisplayXAcceleration2] = useState(0);
-  const [displayYAcceleration2, setDisplayYAcceleration2] = useState(0);
+  const [positionXDisplay2, setPositionXDisplay2] = useState(0);
+  const [velocityXDisplay2, setVelocityXDisplay2] = useState(0);
+  const [accelerationXDisplay2, setAccelerationXDisplay2] = useState(0);
+  const [positionYDisplay2, setPositionYDisplay2] = useState(0);
+  const [velocityYDisplay2, setVelocityYDisplay2] = useState(0);
+  const [accelerationYDisplay2, setAccelerationYDisplay2] = useState(0);
   const [startPosX2, setStartPosX2] = useState(0);
   const [startPosY2, setStartPosY2] = useState(0);
   const [displayChange2, setDisplayChange2] = useState<{
@@ -259,7 +259,7 @@ function App() {
   ) => {
     const normalForce: IForce = {
       description: "Normal Force",
-      magnitude: Math.abs(gravity) * Math.cos(Math.atan(height / width)),
+      magnitude: Math.abs(gravity) * Math.cos(Math.atan(height / width)) * mass,
       directionInDegrees:
         180 - 90 - (Math.atan(height / width) * 180) / Math.PI,
       component: false,
@@ -267,12 +267,15 @@ function App() {
     let frictionForce: IForce = {
       description: "Static Friction Force",
       magnitude:
-        coefficient * Math.abs(gravity) * Math.cos(Math.atan(height / width)),
+        coefficient *
+        Math.abs(gravity) *
+        Math.cos(Math.atan(height / width)) *
+        mass,
       directionInDegrees: 180 - (Math.atan(height / width) * 180) / Math.PI,
       component: false,
     };
-    // reduce magnitude of friction force if necessary such that block cannot slide up plane
-    let yForce = -Math.abs(gravity);
+    // reduce magnitude or friction force if necessary such that block cannot slide up plane
+    let yForce = -Math.abs(gravity) * mass;
     yForce +=
       normalForce.magnitude *
       Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
@@ -283,7 +286,7 @@ function App() {
       frictionForce.magnitude =
         (-normalForce.magnitude *
           Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
-          Math.abs(gravity)) /
+          Math.abs(gravity) * mass) /
         Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
     }
     const frictionForceComponent: IForce = {
@@ -1127,43 +1130,44 @@ function App() {
         setShowComponentForces(false);
         addWeight();
         setStartPosY((yMax + yMin) / 2);
-        setStartPosX((xMin + xMax) / 2 - 100);
+        setStartPosX((xMin + xMax) / 2 - 105);
         setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
-        setPositionXDisplay((xMin + xMax) / 2 - 100);
+        setPositionXDisplay((xMin + xMax) / 2 - 105);
+        let a = (mass - mass2)*Math.abs(gravity) / (mass+mass2)
+        console.log("acceleration:", a)
         const gravityForce1: IForce = {
           description: "Gravity",
-          magnitude: mass * gravity,
+          magnitude: mass * Math.abs(gravity),
           directionInDegrees: 270,
           component: false,
         };
         const tensionForce1: IForce = {
-         description: "Tension",
-         magnitude: mass2 * gravity,
-         directionInDegrees: 270,
-         component: false,
-       };
-       const gravityForce2: IForce = {
-        description: "Gravity",
-        magnitude: mass2 * gravity,
-        directionInDegrees: 270,
-        component: false,
-      };
-      const tensionForce2: IForce = {
-       description: "Tension",
-       magnitude: mass1 * gravity,
-       directionInDegrees: 270,
-       component: false,
-     };
+          description: "Tension",
+          magnitude: mass2 * Math.abs(gravity) - mass*a,
+          directionInDegrees: 90,
+          component: false,
+        };
+        const gravityForce2: IForce = {
+          description: "Gravity",
+          magnitude: mass2 * Math.abs(gravity),
+          directionInDegrees: 270,
+          component: false,
+        };
+        const tensionForce2: IForce = {
+          description: "Tension",
+          magnitude: mass * Math.abs(gravity) + mass2*a,
+          directionInDegrees: 90,
+          component: false,
+        };
         setUpdatedForces([gravityForce1, tensionForce1]);
         setStartForces([gravityForce1, tensionForce1]);
         setStartVelX(0);
         setStartVelY(0);
 
-
-        setStartPosY((yMax + yMin) / 2);
-        setStartPosX((xMin + xMax) / 2 - 100);
-        setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
-        setPositionXDisplay((xMin + xMax) / 2 - 100);
+        setStartPosY2((yMax + yMin) / 2);
+        setStartPosX2((xMin + xMax) / 2 + 5);
+        setPositionYDisplay2(getDisplayYPos((yMax + yMin) / 2));
+        setPositionXDisplay2((xMin + xMax) / 2 + 5);
         setUpdatedForces2([gravityForce2, tensionForce2]);
         setStartForces2([gravityForce2, tensionForce2]);
         setSimulationReset(!simulationReset);
@@ -2255,7 +2259,7 @@ function App() {
                     effect={(value) => {
                       if (simulationType == "Pendulum") {
                         const mag =
-                          1 *
+                          mass *
                           Math.abs(gravity) *
                           Math.cos((value * Math.PI) / 180);
 
@@ -2302,7 +2306,7 @@ function App() {
                         setStartForces([
                           {
                             description: "Gravity",
-                            magnitude: Math.abs(gravity),
+                            magnitude: Math.abs(gravity) * mass,
                             directionInDegrees: 270,
                             component: false,
                           },
@@ -2311,7 +2315,7 @@ function App() {
                         setUpdatedForces([
                           {
                             description: "Gravity",
-                            magnitude: Math.abs(gravity),
+                            magnitude: Math.abs(gravity) * mass,
                             directionInDegrees: 270,
                             component: false,
                           },

@@ -251,6 +251,14 @@ export const Weight = (props: IWeightProps) => {
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
       }
+      if (simulationType == "Pulley") {
+        if (yPosition <= yMin + 100) {
+          collisions = true;
+        }
+        if (yPosition >= yMax - 100) {
+          collisions = true;
+        }
+      }
       if (!collisions) {
         update();
       }
@@ -383,7 +391,7 @@ export const Weight = (props: IWeightProps) => {
     return [
       {
         description: "Gravity",
-        magnitude: Math.abs(gravity),
+        magnitude: Math.abs(gravity) * mass,
         directionInDegrees: 270,
         component: false,
       },
@@ -425,20 +433,12 @@ export const Weight = (props: IWeightProps) => {
     return [
       {
         description: "Gravity",
-        magnitude: Math.abs(gravity),
+        magnitude: Math.abs(gravity) * mass,
         directionInDegrees: 270,
         component: false,
       },
       forceOfTension,
     ];
-  };
-
-  const getNewPosition = (pos: number, vel: number) => {
-    return pos + vel * timestepSize;
-  };
-
-  const getNewVelocity = (vel: number, acc: number) => {
-    return vel + acc * timestepSize;
   };
 
   const checkForCollisionsWithWall = () => {
