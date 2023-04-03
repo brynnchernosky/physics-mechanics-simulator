@@ -961,13 +961,16 @@ export const Weight = (props: IWeightProps) => {
               newX = 10;
             }
 
-            setXPosition(newX);
             setYPosition(newY);
-            setUpdatedStartPosX(newX);
             setUpdatedStartPosY(newY);
             setDisplayYPosition(
               Math.round((yMax - 2 * radius - newY + 5) * 100) / 100
             );
+            if (simulationType != "Pulley") {
+              setXPosition(newX);
+              setUpdatedStartPosX(newX);
+              setDisplayXPosition(newX);
+            }
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
             setDisplayValues();
@@ -995,44 +998,6 @@ export const Weight = (props: IWeightProps) => {
             }
             if (simulationType == "Spring") {
               setSpringStartLength(newY);
-            }
-            if (simulationType == "Pendulum") {
-              const x = xMax / 2 - newX - radius;
-              const y = newY + radius + 5;
-              let angle = (Math.atan(y / x) * 180) / Math.PI;
-              if (angle < 0) {
-                angle += 180;
-              }
-              let oppositeAngle = 90 - angle;
-              if (oppositeAngle < 0) {
-                oppositeAngle = 90 - (180 - angle);
-              }
-
-              const pendulumLength = Math.sqrt(x * x + y * y);
-              setPendulumAngle(oppositeAngle);
-              setPendulumLength(pendulumLength);
-              const mag =
-                Math.abs(gravity) * Math.cos((oppositeAngle * Math.PI) / 180);
-              const forceOfTension: IForce = {
-                description: "Tension",
-                magnitude: mag,
-                directionInDegrees: angle,
-                component: false,
-              };
-
-              setKineticFriction(false);
-              setXVelocity(startVelX ?? 0);
-              setYVelocity(startVelY ?? 0);
-              setDisplayValues();
-              setUpdatedForces([
-                {
-                  description: "Gravity",
-                  magnitude: Math.abs(gravity),
-                  directionInDegrees: 270,
-                  component: false,
-                },
-                forceOfTension,
-              ]);
             }
           }
         }}

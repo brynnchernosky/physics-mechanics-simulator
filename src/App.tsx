@@ -1133,8 +1133,8 @@ function App() {
         setStartPosX((xMin + xMax) / 2 - 105);
         setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
         setPositionXDisplay((xMin + xMax) / 2 - 105);
-        let a = (mass - mass2)*Math.abs(gravity) / (mass+mass2)
-        console.log("acceleration:", a)
+        let a = ((mass - mass2) * Math.abs(gravity)) / (mass + mass2);
+        console.log("acceleration:", a);
         const gravityForce1: IForce = {
           description: "Gravity",
           magnitude: mass * Math.abs(gravity),
@@ -1143,7 +1143,7 @@ function App() {
         };
         const tensionForce1: IForce = {
           description: "Tension",
-          magnitude: mass2 * Math.abs(gravity) - mass*a,
+          magnitude: mass2 * Math.abs(gravity) - mass * a,
           directionInDegrees: 90,
           component: false,
         };
@@ -1155,7 +1155,7 @@ function App() {
         };
         const tensionForce2: IForce = {
           description: "Tension",
-          magnitude: mass * Math.abs(gravity) + mass2*a,
+          magnitude: mass * Math.abs(gravity) + mass2 * a,
           directionInDegrees: 90,
           component: false,
         };
@@ -2091,7 +2091,7 @@ function App() {
                       labelWidth={"5em"}
                     />
                   )}
-                  {simulationPaused && (
+                  {simulationPaused && simulationType != "Pulley" && (
                     <InputField
                       label={<Box>Mass</Box>}
                       lowerBound={1}
@@ -2100,6 +2100,36 @@ function App() {
                       unit={"kg"}
                       upperBound={100}
                       value={mass}
+                      effect={(val: number) => {
+                        setResetAll(!resetAll);
+                      }}
+                      labelWidth={"5em"}
+                    />
+                  )}
+                  {simulationPaused && simulationType == "Pulley" && (
+                    <InputField
+                      label={<Box>Red mass</Box>}
+                      lowerBound={1}
+                      changeValue={setMass}
+                      step={0.1}
+                      unit={"kg"}
+                      upperBound={5}
+                      value={mass}
+                      effect={(val: number) => {
+                        setResetAll(!resetAll);
+                      }}
+                      labelWidth={"5em"}
+                    />
+                  )}
+                  {simulationPaused && simulationType == "Pulley" && (
+                    <InputField
+                      label={<Box>Blue mass</Box>}
+                      lowerBound={1}
+                      changeValue={setMass2}
+                      step={0.1}
+                      unit={"kg"}
+                      upperBound={5}
+                      value={mass2}
                       effect={(val: number) => {
                         setResetAll(!resetAll);
                       }}
