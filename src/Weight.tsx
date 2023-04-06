@@ -1150,7 +1150,7 @@ export const Weight = (props: IWeightProps) => {
             <line
               x1={xPosition + radius}
               y1={yPosition + radius}
-              x2={(xMax + xMin) / 2 - radius + yMin + 200}
+              x2={(xMax + xMin) / 2 + yMin + 200 + radius}
               y2={yMin}
               stroke={"#deb887"}
               strokeWidth="10"
