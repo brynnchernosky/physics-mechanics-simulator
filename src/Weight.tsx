@@ -358,7 +358,7 @@ export const Weight = (props: IWeightProps) => {
     }
     const tensionForce: IForce = {
       description: "Tension",
-      magnitude: startVelX ** 2 / (startPosY - (yMin + yMax) / 2),
+      magnitude: startVelX ** 2 * mass / (updatedStartPosY - (yMax + yMin) / 2),
       directionInDegrees: dir,
       component: false,
     };

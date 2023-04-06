@@ -1109,10 +1109,14 @@ function App() {
       } else if (simulationType == "Circular Motion") {
         setShowComponentForces(false);
         addWeight();
-        setStartPosY(yMax - 100);
-        setStartPosX((xMin + xMax) / 2 - 50);
-        setPositionYDisplay(getDisplayYPos(yMax - 125));
-        setPositionXDisplay((xMin + xMax) / 2 - 50);
+        let startY = yMax-100;
+        let rad = startY - (yMax + yMin) / 2;
+        xPos = (xMax + xMin) / 2 - radius1;
+        yPos = (yMax + yMin) / 2 - rad - 2 * radius1;
+        setStartPosY(yPos);
+        setStartPosX(xPos);
+        setPositionYDisplay(getDisplayYPos(yPos));
+        setPositionXDisplay(xPos);
         const tensionForce: IForce = {
           description: "Tension",
           magnitude: 20 ** 2 / Math.sqrt((yMax - 100 - (yMin + yMax) / 2) ** 2),
@@ -1335,13 +1339,13 @@ function App() {
     });
   }, []);
 
-  // Timer for animating the simulation, update every 0.06 seconds
+  // Timer for animating the simulation, update every 0.05 seconds
   setInterval(() => {
     setTimer(timer + 1);
   }, 50);
 
   return (
-    <div>
+    <div className="physicsSimApp">
       <div className="mechanicsSimulationContainer">
         <div
           className="mechanicsSimulationContentContainer"
@@ -1579,7 +1583,7 @@ function App() {
                   startPosY={startPosY}
                   startVelX={startVelX}
                   startVelY={startVelY}
-                  timestepSize={50 / 1000}
+                  timestepSize={0.05}
                   updateDisplay={displayChange}
                   updatedForces={updatedForces}
                   walls={wallPositions}
@@ -2002,7 +2006,7 @@ function App() {
           )}
 
           {mode == "Freeform" && (
-            <div>
+            <div className="vars">
               <FormControl component="fieldset">
                 <FormGroup>
                   {simulationType == "One Weight" && (
@@ -2569,8 +2573,12 @@ function App() {
                     <td>
                       <Box>Momentum</Box>
                     </td>
-                    <td>{velocityXDisplay * mass} kg*m/s</td>
-                    <td>{velocityYDisplay * mass} kg*m/s</td>
+                    <td>
+                      {Math.round(velocityXDisplay * mass * 10) / 10} kg*m/s
+                    </td>
+                    <td>
+                      {Math.round(velocityYDisplay * mass * 10) / 10} kg*m/s
+                    </td>
                   </tr>
                 </tbody>
               </table>
