@@ -356,9 +356,10 @@ export const Weight = (props: IWeightProps) => {
     } else if (xPos > (xMin + xMax) / 2) {
       dir = 180;
     }
+    let rad = 100;
     const tensionForce: IForce = {
       description: "Tension",
-      magnitude: startVelX ** 2 * mass / (updatedStartPosY - (yMax + yMin) / 2),
+      magnitude: (startVelY ** 2 * mass) / rad,
       directionInDegrees: dir,
       component: false,
     };
@@ -802,8 +803,7 @@ export const Weight = (props: IWeightProps) => {
       }
     }
     if (simulationType == "Circular Motion") {
-      let startY = updatedStartPosY;
-      let rad = startY - (yMax + yMin) / 2;
+      let rad = 100;
       if (startYVel > 0 && yVel < 0) {
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2 + rad;
@@ -960,6 +960,13 @@ export const Weight = (props: IWeightProps) => {
             } else if (newX < 10) {
               newX = 10;
             }
+            if (simulationType == "Suspension") {
+              if (newX < (xMax + xMin) / 4 - radius) {
+                newX = (xMax + xMin) / 4 - radius;
+              } else if (newX > (3 * (xMax + xMin)) / 4 - radius / 2) {
+                newX = (3 * (xMax + xMin)) / 4 - radius / 2;
+              }
+            }
 
             setYPosition(newY);
             setUpdatedStartPosY(newY);
@@ -979,7 +986,7 @@ export const Weight = (props: IWeightProps) => {
         onPointerUp={(e) => {
           if (dragging) {
             e.preventDefault();
-            if (simulationType != "Pendulum") {
+            if (simulationType != "Pendulum" && simulationType != "Suspension") {
               resetEverything();
             }
             setDragging(false);
@@ -998,6 +1005,16 @@ export const Weight = (props: IWeightProps) => {
             }
             if (simulationType == "Spring") {
               setSpringStartLength(newY);
+            }
+            if (simulationType == "Suspension") {
+              if (newX < (xMax + xMin) / 4 - radius) {
+                newX = (xMax + xMin) / 4 - radius;
+              } else if (newX > (3 * (xMax + xMin)) / 4 - radius / 2) {
+                newX = (3 * (xMax + xMin)) / 4 - radius / 2;
+              }
+            }
+            if (simulationType == "Suspension") {
+              // todo update forces
             }
           }
         }}
@@ -1085,6 +1102,52 @@ export const Weight = (props: IWeightProps) => {
               x1={xPosition + radius}
               y1={yPosition + radius}
               x2={xPosition + radius}
+              y2={yMin}
+              stroke={"#deb887"}
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+      )}
+      {simulationType == "Suspension" && (
+        <div
+          className="rod"
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+            <line
+              x1={xPosition + radius}
+              y1={yPosition + radius}
+              x2={(xMax + xMin) / 4 - radius / 2}
+              y2={yMin}
+              stroke={"#deb887"}
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+      )}
+      {simulationType == "Suspension" && (
+        <div
+          className="rod"
+          style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            zIndex: -2,
+          }}
+        >
+          <svg width={xMax + "px"} height={window.innerHeight + "px"}>
+            <line
+              x1={xPosition + radius}
+              y1={yPosition + radius}
+              x2={(3 * (xMax + xMin)) / 4 + radius / 2}
               y2={yMin}
               stroke={"#deb887"}
               strokeWidth="10"

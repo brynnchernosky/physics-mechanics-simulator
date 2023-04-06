@@ -1109,27 +1109,25 @@ function App() {
       } else if (simulationType == "Circular Motion") {
         setShowComponentForces(false);
         addWeight();
-        let startY = yMax-100;
-        let rad = startY - (yMax + yMin) / 2;
-        xPos = (xMax + xMin) / 2 - radius1;
-        yPos = (yMax + yMin) / 2 - rad - 2 * radius1;
+        let rad = 100;
+        let xPos = (xMax + xMin) / 2 - rad - 2 * radius1;
+        let yPos = (yMax + yMin) / 2 - radius1;
         setStartPosY(yPos);
         setStartPosX(xPos);
         setPositionYDisplay(getDisplayYPos(yPos));
         setPositionXDisplay(xPos);
         const tensionForce: IForce = {
           description: "Tension",
-          magnitude: 20 ** 2 / Math.sqrt((yMax - 100 - (yMin + yMax) / 2) ** 2),
-          directionInDegrees: 90,
+          magnitude: (20 ** 2 * mass) / rad,
+          directionInDegrees: 0,
           component: false,
         };
         setUpdatedForces([tensionForce]);
         setStartForces([tensionForce]);
-        setStartVelX(20);
-        setStartVelY(0);
+        setStartVelX(0);
+        setStartVelY(20);
         setSimulationReset(!simulationReset);
         removeWalls();
-        // TODO
       } else if (simulationType == "Pulley") {
         setShowComponentForces(false);
         addWeight();
@@ -1174,6 +1172,38 @@ function App() {
         setPositionXDisplay2((xMin + xMax) / 2 + 5);
         setUpdatedForces2([gravityForce2, tensionForce2]);
         setStartForces2([gravityForce2, tensionForce2]);
+        setSimulationReset(!simulationReset);
+        removeWalls();
+      } else if (simulationType == "Suspension") {
+        // todo add toggle for if rods move or not!!
+        let xPos = (xMax + xMin) / 2 - radius1;
+        let yPos = yMin + 200;
+        setStartPosY(yPos);
+        setStartPosX(xPos);
+        setPositionYDisplay(getDisplayYPos(yPos));
+        setPositionXDisplay(xPos);
+        const tensionForce1: IForce = {
+          description: "Tension",
+          magnitude: (mass * Math.abs(gravity)) / 2,
+          directionInDegrees: 45,
+          component: false,
+        };
+        const tensionForce2: IForce = {
+          description: "Tension",
+          magnitude: (mass * Math.abs(gravity)) / 2,
+          directionInDegrees: 135,
+          component: false,
+        };
+        const grav: IForce = {
+          description: "Gravity",
+          magnitude: mass * Math.abs(gravity),
+          directionInDegrees: 270,
+          component: false,
+        };
+        setUpdatedForces([tensionForce1, tensionForce2, grav]);
+        setStartForces([tensionForce1, tensionForce2, grav]);
+        setStartVelX(0);
+        setStartVelY(0);
         setSimulationReset(!simulationReset);
         removeWalls();
       }
@@ -1251,6 +1281,9 @@ function App() {
         setShowForces(false);
         // TODO
       } else if (simulationType == "Pulley") {
+        setShowForces(false);
+        // TODO
+      } else if (simulationType == "Suspension") {
         setShowForces(false);
         // TODO
       }
@@ -1431,12 +1464,13 @@ function App() {
                     }}
                     style={{ height: "2em", width: "100%", fontSize: "16px" }}
                   >
-                    <option value="One Weight">One Weight</option>
+                    <option value="One Weight">Projectile</option>
                     <option value="Inclined Plane">Inclined Plane</option>
                     <option value="Pendulum">Pendulum</option>
                     <option value="Spring">Spring</option>
                     <option value="Circular Motion">Circular Motion</option>
                     <option value="Pulley">Pulley</option>
+                    <option value="Suspension">Suspension</option>
                   </select>
                 </div>
               </div>
@@ -2080,7 +2114,7 @@ function App() {
                     value={simulationSpeed}
                     labelWidth={"5em"}
                   />
-                  {simulationPaused && (
+                  {simulationPaused && simulationType != "Circular Motion" && (
                     <InputField
                       label={<Box>Gravity</Box>}
                       lowerBound={-30}
