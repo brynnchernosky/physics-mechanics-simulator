@@ -1175,22 +1175,24 @@ function App() {
         setSimulationReset(!simulationReset);
         removeWalls();
       } else if (simulationType == "Suspension") {
-        // todo add toggle for if rods move or not!!
+        // todo add toggle for if rods move or not a la cut the rope?
         let xPos = (xMax + xMin) / 2 - radius1;
         let yPos = yMin + 200;
         setStartPosY(yPos);
         setStartPosX(xPos);
         setPositionYDisplay(getDisplayYPos(yPos));
         setPositionXDisplay(xPos);
+        let tensionMag =
+          (mass * Math.abs(gravity)) / (2 * Math.sin(Math.PI / 4));
         const tensionForce1: IForce = {
           description: "Tension",
-          magnitude: (mass * Math.abs(gravity)) / 2,
+          magnitude: tensionMag,
           directionInDegrees: 45,
           component: false,
         };
         const tensionForce2: IForce = {
           description: "Tension",
-          magnitude: (mass * Math.abs(gravity)) / 2,
+          magnitude: tensionMag,
           directionInDegrees: 135,
           component: false,
         };

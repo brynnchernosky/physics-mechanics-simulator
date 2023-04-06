@@ -986,7 +986,10 @@ export const Weight = (props: IWeightProps) => {
         onPointerUp={(e) => {
           if (dragging) {
             e.preventDefault();
-            if (simulationType != "Pendulum" && simulationType != "Suspension") {
+            if (
+              simulationType != "Pendulum" &&
+              simulationType != "Suspension"
+            ) {
               resetEverything();
             }
             setDragging(false);
@@ -1124,7 +1127,7 @@ export const Weight = (props: IWeightProps) => {
             <line
               x1={xPosition + radius}
               y1={yPosition + radius}
-              x2={(xMax + xMin) / 4 - radius / 2}
+              x2={(xMax + xMin) / 2 - radius - yMin - 200}
               y2={yMin}
               stroke={"#deb887"}
               strokeWidth="10"
@@ -1147,7 +1150,7 @@ export const Weight = (props: IWeightProps) => {
             <line
               x1={xPosition + radius}
               y1={yPosition + radius}
-              x2={(3 * (xMax + xMin)) / 4 + radius / 2}
+              x2={(xMax + xMin) / 2 - radius + yMin + 200}
               y2={yMin}
               stroke={"#deb887"}
               strokeWidth="10"
