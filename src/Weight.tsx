@@ -1017,7 +1017,36 @@ export const Weight = (props: IWeightProps) => {
               }
             }
             if (simulationType == "Suspension") {
-              // todo update forces
+              let tensionMag1 =
+                (mass * Math.abs(gravity)) / (2 * Math.sin(Math.PI / 4));
+              let tensionMag2 =
+                (mass * Math.abs(gravity)) / (2 * Math.sin(Math.PI / 4));
+              let x1rod = (xMax + xMin) / 2 - radius - yMin - 200;
+              let x2rod = (xMax + xMin) / 2 + yMin + 200 + radius;
+              let deltaX1 = xPosition + radius - x1rod;
+              let deltaX2 = x2rod - (xPosition + radius);
+              let deltaY = yPosition + radius;
+              let dir1T = 180 - (Math.atan(deltaY / deltaX1) * 180) / Math.PI;
+              let dir2T = (Math.atan(deltaY / deltaX2) * 180) / Math.PI;
+              const tensionForce1: IForce = {
+                description: "Tension",
+                magnitude: tensionMag1,
+                directionInDegrees: dir1T,
+                component: false,
+              };
+              const tensionForce2: IForce = {
+                description: "Tension",
+                magnitude: tensionMag2,
+                directionInDegrees: dir2T,
+                component: false,
+              };
+              const grav: IForce = {
+                description: "Gravity",
+                magnitude: mass * Math.abs(gravity),
+                directionInDegrees: 270,
+                component: false,
+              };
+              setUpdatedForces([tensionForce1, tensionForce2, grav]);
             }
           }
         }}
