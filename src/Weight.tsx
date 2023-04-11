@@ -721,8 +721,11 @@ export const Weight = (props: IWeightProps) => {
     } else if (simulationType == "Circular Motion") {
       forces = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
     }
+    console.log("forces", forces);
     const xAcc = getNewAccelerationX(forces);
+    console.log("x acc", xAcc);
     const yAcc = getNewAccelerationY(forces);
+    console.log("y acc", yAcc);
     for (let i = 0; i < simulationSpeed; i++) {
       const k1 = evaluate(xPos, yPos, xVel, yVel, xVel, yVel, xAcc, yAcc, 0);
       const k2 = evaluate(
@@ -1022,10 +1025,22 @@ export const Weight = (props: IWeightProps) => {
               let deltaX1 = xPosition + radius - x1rod;
               let deltaX2 = x2rod - (xPosition + radius);
               let deltaY = yPosition + radius;
-              let dir1T = 180 - (Math.atan(deltaY / deltaX1) * 180) / Math.PI;
-              let dir2T = (Math.atan(deltaY / deltaX2) * 180) / Math.PI;
-              let tensionMag2 = (mass*Math.abs(gravity)) / (-Math.cos(dir2T)/Math.cos(dir1T)*Math.sin(dir1T)+Math.sin(dir2T))
-              let tensionMag1 = -tensionMag2 * Math.cos(dir2T)/Math.cos(dir1T)
+              let dir1T = Math.PI - Math.atan(deltaY / deltaX1);
+              let dir2T = Math.atan(deltaY / deltaX2) ;
+              let tensionMag2 =
+                (mass * Math.abs(gravity)) /
+                ((-Math.cos(dir2T) / Math.cos(dir1T)) * Math.sin(dir1T) +
+                  Math.sin(dir2T));
+              let tensionMag1 =
+                (-tensionMag2 * Math.cos(dir2T)) / Math.cos(dir1T);
+              dir1T = dir1T * 180 / Math.PI
+              dir2T = dir2T * 180 / Math.PI
+              // let totalTensionY =
+              //   tensionMag1 * Math.sin(dir1T) + tensionMag2 * Math.sin(dir2T);
+              // console.log("tension y:", totalTensionY);
+              // let totalTensionX =
+              //   tensionMag1 * Math.cos(dir1T) + tensionMag2 * Math.cos(dir2T);
+              // console.log("tension x:", totalTensionX);
               const tensionForce1: IForce = {
                 description: "Tension",
                 magnitude: tensionMag1,
