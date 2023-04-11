@@ -2453,13 +2453,13 @@ function App() {
                       <Box>Position</Box>
                     </td>
                     {(!simulationPaused ||
-                      simulationType == "Inclined Plane") && (
+                      simulationType == "Inclined Plane" || simulationType == "Suspension") && (
                       <td style={{ cursor: "default" }}>
                         {positionXDisplay} m
                       </td>
                     )}{" "}
                     {simulationPaused &&
-                      simulationType != "Inclined Plane" && (
+                      simulationType != "Inclined Plane" && simulationType != "Suspension" && (
                         <td
                           style={{
                             cursor: "default",
@@ -2484,13 +2484,13 @@ function App() {
                         </td>
                       )}{" "}
                     {(!simulationPaused ||
-                      simulationType == "Inclined Plane") && (
+                      simulationType == "Inclined Plane" || simulationType == "Suspension") && (
                       <td style={{ cursor: "default" }}>
                         {positionYDisplay} m
                       </td>
                     )}{" "}
                     {simulationPaused &&
-                      simulationType != "Inclined Plane" && (
+                      simulationType != "Inclined Plane" && simulationType != "Suspension" && (
                         <td
                           style={{
                             cursor: "default",
