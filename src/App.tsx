@@ -1110,7 +1110,7 @@ function App() {
         setShowComponentForces(false);
         addWeight();
         let rad = 100;
-        let xPos = (xMax + xMin) / 2 - rad - 2 * radius1;
+        let xPos = (xMax + xMin) / 2 - rad - radius1;
         let yPos = (yMax + yMin) / 2 - radius1;
         setStartPosY(yPos);
         setStartPosX(xPos);
@@ -2453,13 +2453,15 @@ function App() {
                       <Box>Position</Box>
                     </td>
                     {(!simulationPaused ||
-                      simulationType == "Inclined Plane" || simulationType == "Suspension") && (
+                      simulationType == "Inclined Plane" ||
+                      simulationType == "Suspension") && (
                       <td style={{ cursor: "default" }}>
                         {positionXDisplay} m
                       </td>
                     )}{" "}
                     {simulationPaused &&
-                      simulationType != "Inclined Plane" && simulationType != "Suspension" && (
+                      simulationType != "Inclined Plane" &&
+                      simulationType != "Suspension" && (
                         <td
                           style={{
                             cursor: "default",
@@ -2484,13 +2486,15 @@ function App() {
                         </td>
                       )}{" "}
                     {(!simulationPaused ||
-                      simulationType == "Inclined Plane" || simulationType == "Suspension") && (
+                      simulationType == "Inclined Plane" ||
+                      simulationType == "Suspension") && (
                       <td style={{ cursor: "default" }}>
                         {positionYDisplay} m
                       </td>
                     )}{" "}
                     {simulationPaused &&
-                      simulationType != "Inclined Plane" && simulationType != "Suspension" && (
+                      simulationType != "Inclined Plane" &&
+                      simulationType != "Suspension" && (
                         <td
                           style={{
                             cursor: "default",

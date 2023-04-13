@@ -341,21 +341,9 @@ export const Weight = (props: IWeightProps) => {
     xVel: number,
     yVel: number
   ) => {
-    let deltaX = xPos + radius - (xMin + xMax) / 2;
+    let deltaX = (xMin + xMax) / 2 - (xPos + radius);
     let deltaY = yPos + radius - (yMin + yMax) / 2;
-    let dir = 0;
-    if (Math.abs(deltaY) > epsilon) {
-      dir = (Math.atan(deltaX / deltaY) * 180) / Math.PI;
-    }
-    if (yPos + radius > (yMin + yMax) / 2) {
-      dir += 90;
-    } else if (yPos + radius < (yMin + yMax) / 2) {
-      dir += 270;
-    } else if (xPos < (xMin + xMax) / 2) {
-      dir = 0;
-    } else if (xPos > (xMin + xMax) / 2) {
-      dir = 180;
-    }
+    let dir = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
     let rad = 100;
     const tensionForce: IForce = {
       description: "Tension",
@@ -759,6 +747,10 @@ export const Weight = (props: IWeightProps) => {
         timestepSize
       );
 
+      // xVel += timestepSize * k1.deltaXVel;
+      // yVel += timestepSize * k1.deltaYVel;
+      // xPos += timestepSize * k1.deltaXPos;
+      // yPos += timestepSize * k1.deltaYPos;
       xVel +=
         ((timestepSize * 1.0) / 6.0) *
         (k1.deltaXVel + 2 * (k2.deltaXVel + k3.deltaXVel) + k4.deltaXVel);
@@ -802,8 +794,12 @@ export const Weight = (props: IWeightProps) => {
         yPos = startPosY;
       }
     }
-    console.log("acc^2", yAcc ** 2 + xAcc ** 2);
-    console.log("vel^2", yVel ** 2 + xVel ** 2);
+    // console.log("acc^2", yAcc ** 2 + xAcc ** 2);
+    // console.log("vel^2", yVel ** 2 + xVel ** 2);
+    // console.log("y weight", yPos + radius);
+    // console.log("x weight", xPos + radius);
+    // console.log("y center", (yMax + yMin) / 2);
+    // console.log("x center", (xMax + xMin) / 2);
     if (simulationType == "Circular Motion") {
       let rad = 100;
       if (startYVel > 0 && yVel < 0) {
@@ -814,11 +810,11 @@ export const Weight = (props: IWeightProps) => {
       } else if (startYVel < 0 && yVel > 0) {
         console.log("start2 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2 - rad - 2 * radius;
+        yPos = (yMax + yMin) / 2 - rad - radius;
         console.log("end2 ", xPos, yPos);
       } else if (startXVel < 0 && xVel > 0) {
         console.log("start3 ", xPos, yPos);
-        xPos = (xMax + xMin) / 2 - rad - 2 * radius;
+        xPos = (xMax + xMin) / 2 - rad - radius;
         yPos = (yMax + yMin) / 2 - radius;
         console.log("end3 ", xPos, yPos);
       } else if (startXVel > 0 && xVel < 0) {
@@ -991,7 +987,6 @@ export const Weight = (props: IWeightProps) => {
                 setUpdatedStartPosX(newX);
               }
               setUpdatedStartPosY(newY);
-              console.log("update start values");
             }
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
