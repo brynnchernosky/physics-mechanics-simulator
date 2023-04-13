@@ -805,7 +805,7 @@ export const Weight = (props: IWeightProps) => {
       if (startYVel > 0 && yVel < 0) {
         console.log("start1 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2 + rad;
+        yPos = (yMax + yMin) / 2 + rad - radius;
         console.log("end1 ", xPos, yPos);
       } else if (startYVel < 0 && yVel > 0) {
         console.log("start2 ", xPos, yPos);
@@ -819,7 +819,7 @@ export const Weight = (props: IWeightProps) => {
         console.log("end3 ", xPos, yPos);
       } else if (startXVel > 0 && xVel < 0) {
         console.log("start4 ", xPos, yPos);
-        xPos = (xMax + xMin) / 2 + rad;
+        xPos = (xMax + xMin) / 2 + rad - radius;
         yPos = (yMax + yMin) / 2 - radius;
         console.log("end4 ", xPos, yPos);
       }
