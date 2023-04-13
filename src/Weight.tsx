@@ -721,11 +721,8 @@ export const Weight = (props: IWeightProps) => {
     } else if (simulationType == "Circular Motion") {
       forces = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
     }
-    console.log("forces", forces);
     const xAcc = getNewAccelerationX(forces);
-    console.log("x acc", xAcc);
     const yAcc = getNewAccelerationY(forces);
-    console.log("y acc", yAcc);
     for (let i = 0; i < simulationSpeed; i++) {
       const k1 = evaluate(xPos, yPos, xVel, yVel, xVel, yVel, xAcc, yAcc, 0);
       const k2 = evaluate(
@@ -805,20 +802,30 @@ export const Weight = (props: IWeightProps) => {
         yPos = startPosY;
       }
     }
+    console.log("acc^2", yAcc ** 2 + xAcc ** 2);
+    console.log("vel^2", yVel ** 2 + xVel ** 2);
     if (simulationType == "Circular Motion") {
       let rad = 100;
       if (startYVel > 0 && yVel < 0) {
+        console.log("start1 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2 + rad;
+        console.log("end1 ", xPos, yPos);
       } else if (startYVel < 0 && yVel > 0) {
+        console.log("start2 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2 - rad - 2 * radius;
+        console.log("end2 ", xPos, yPos);
       } else if (startXVel < 0 && xVel > 0) {
+        console.log("start3 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - rad - 2 * radius;
         yPos = (yMax + yMin) / 2 - radius;
+        console.log("end3 ", xPos, yPos);
       } else if (startXVel > 0 && xVel < 0) {
+        console.log("start4 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 + rad;
         yPos = (yMax + yMin) / 2 - radius;
+        console.log("end4 ", xPos, yPos);
       }
     }
     if (simulationType == "One Weight") {
@@ -964,22 +971,27 @@ export const Weight = (props: IWeightProps) => {
               newX = 10;
             }
             if (simulationType == "Suspension") {
-              if (newX < (xMax + xMin) / 4 - radius) {
-                newX = (xMax + xMin) / 4 - radius;
-              } else if (newX > (3 * (xMax + xMin)) / 4 - radius / 2) {
-                newX = (3 * (xMax + xMin)) / 4 - radius / 2;
+              if (newX < (xMax + xMin) / 4 - radius - 15) {
+                newX = (xMax + xMin) / 4 - radius - 15;
+              } else if (newX > (3 * (xMax + xMin)) / 4 - radius / 2 - 15) {
+                newX = (3 * (xMax + xMin)) / 4 - radius / 2 - 15;
               }
             }
 
             setYPosition(newY);
-            setUpdatedStartPosY(newY);
             setDisplayYPosition(
               Math.round((yMax - 2 * radius - newY + 5) * 100) / 100
             );
             if (simulationType != "Pulley") {
               setXPosition(newX);
-              setUpdatedStartPosX(newX);
               setDisplayXPosition(newX);
+            }
+            if (simulationType != "Suspension") {
+              if (simulationType != "Pulley") {
+                setUpdatedStartPosX(newX);
+              }
+              setUpdatedStartPosY(newY);
+              console.log("update start values");
             }
             setClickPositionX(e.clientX);
             setClickPositionY(e.clientY);
@@ -1013,34 +1025,21 @@ export const Weight = (props: IWeightProps) => {
               setSpringStartLength(newY);
             }
             if (simulationType == "Suspension") {
-              if (newX < (xMax + xMin) / 4 - radius) {
-                newX = (xMax + xMin) / 4 - radius;
-              } else if (newX > (3 * (xMax + xMin)) / 4 - radius / 2) {
-                newX = (3 * (xMax + xMin)) / 4 - radius / 2;
-              }
-            }
-            if (simulationType == "Suspension") {
               let x1rod = (xMax + xMin) / 2 - radius - yMin - 200;
               let x2rod = (xMax + xMin) / 2 + yMin + 200 + radius;
               let deltaX1 = xPosition + radius - x1rod;
               let deltaX2 = x2rod - (xPosition + radius);
               let deltaY = yPosition + radius;
               let dir1T = Math.PI - Math.atan(deltaY / deltaX1);
-              let dir2T = Math.atan(deltaY / deltaX2) ;
+              let dir2T = Math.atan(deltaY / deltaX2);
               let tensionMag2 =
                 (mass * Math.abs(gravity)) /
                 ((-Math.cos(dir2T) / Math.cos(dir1T)) * Math.sin(dir1T) +
                   Math.sin(dir2T));
               let tensionMag1 =
                 (-tensionMag2 * Math.cos(dir2T)) / Math.cos(dir1T);
-              dir1T = dir1T * 180 / Math.PI
-              dir2T = dir2T * 180 / Math.PI
-              // let totalTensionY =
-              //   tensionMag1 * Math.sin(dir1T) + tensionMag2 * Math.sin(dir2T);
-              // console.log("tension y:", totalTensionY);
-              // let totalTensionX =
-              //   tensionMag1 * Math.cos(dir1T) + tensionMag2 * Math.cos(dir2T);
-              // console.log("tension x:", totalTensionX);
+              dir1T = (dir1T * 180) / Math.PI;
+              dir2T = (dir2T * 180) / Math.PI;
               const tensionForce1: IForce = {
                 description: "Tension",
                 magnitude: tensionMag1,
@@ -1175,6 +1174,28 @@ export const Weight = (props: IWeightProps) => {
               strokeWidth="10"
             />
           </svg>
+          <p
+            style={{
+              position: "absolute",
+              zIndex: 10,
+              left: (xMax + xMin) / 2 - radius - yMin - 200 + 80 + "px",
+              top: 10 + "px",
+              backgroundColor: labelBackgroundColor,
+            }}
+          >
+            {Math.round(
+              ((Math.atan(
+                (yPosition + radius) /
+                  (xPosition +
+                    radius -
+                    ((xMax + xMin) / 2 - radius - yMin - 200))
+              ) *
+                180) /
+                Math.PI) *
+                100
+            ) / 100}
+            °
+          </p>
         </div>
       )}
       {simulationType == "Suspension" && (
@@ -1198,6 +1219,31 @@ export const Weight = (props: IWeightProps) => {
               strokeWidth="10"
             />
           </svg>
+
+          <p
+            style={{
+              position: "absolute",
+              zIndex: 10,
+              left: (xMax + xMin) / 2 + yMin + 200 + radius - 80 + "px",
+              top: 10 + "px",
+              backgroundColor: labelBackgroundColor,
+            }}
+          >
+            {Math.round(
+              ((Math.atan(
+                (yPosition + radius) /
+                  ((xMax + xMin) / 2 +
+                    yMin +
+                    200 +
+                    radius -
+                    (xPosition + radius))
+              ) *
+                180) /
+                Math.PI) *
+                100
+            ) / 100}
+            °
+          </p>
         </div>
       )}
       {simulationType == "Circular Motion" && (
