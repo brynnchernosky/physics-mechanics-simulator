@@ -1023,8 +1023,7 @@ function App() {
         removeWalls();
       } else if (simulationType == "Circular Motion") {
         setShowComponentForces(false);
-        let rad = 100;
-        let xPos = (xMax + xMin) / 2 - rad - radius;
+        let xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
         let yPos = (yMax + yMin) / 2 - radius;
         setStartPosY(yPos);
         setStartPosX(xPos);
@@ -1032,7 +1031,7 @@ function App() {
         setPositionXDisplay(xPos);
         const tensionForce: IForce = {
           description: "Tension",
-          magnitude: (20 ** 2 * mass) / rad,
+          magnitude: (startVelY ** 2 * mass) / circularMotionRadius,
           directionInDegrees: 0,
           component: false,
         };
@@ -1486,9 +1485,7 @@ function App() {
                 coefficientOfKineticFriction={Number(
                   coefficientOfKineticFriction
                 )}
-                displayXPosition={positionXDisplay}
                 displayXVelocity={velocityXDisplay}
-                displayYPosition={positionYDisplay}
                 displayYVelocity={velocityYDisplay}
                 elasticCollisions={elasticCollisions}
                 incrementTime={timer}
@@ -1512,7 +1509,6 @@ function App() {
                 setPendulumLength={setPendulumLength}
                 setSketching={setSketching}
                 startPendulumAngle={startPendulumAngle}
-                setStartPendulumAngle={setStartPendulumAngle}
                 setUpdatedForces={setUpdatedForces}
                 showAcceleration={showAcceleration}
                 showForceMagnitudes={showForceMagnitudes}
@@ -1548,9 +1544,7 @@ function App() {
                   coefficientOfKineticFriction={Number(
                     coefficientOfKineticFriction
                   )}
-                  displayXPosition={positionXDisplay2}
                   displayXVelocity={velocityXDisplay2}
-                  displayYPosition={positionYDisplay2}
                   displayYVelocity={velocityYDisplay2}
                   elasticCollisions={elasticCollisions}
                   incrementTime={timer}
@@ -1574,7 +1568,6 @@ function App() {
                   setPendulumLength={setPendulumLength}
                   setSketching={setSketching}
                   startPendulumAngle={startPendulumAngle}
-                  setStartPendulumAngle={setStartPendulumAngle}
                   setUpdatedForces={setUpdatedForces2}
                   showAcceleration={showAcceleration}
                   showForceMagnitudes={showForceMagnitudes}
@@ -2544,33 +2537,25 @@ function App() {
                   </tr>
                   <tr>
                     <td>
-                     <Box>Position</Box>
+                      <Box>Position</Box>
                     </td>
-                    <td style={{ cursor: "default" }}>
-                        {positionXDisplay2} m
-                      </td>
-                    <td style={{ cursor: "default" }}>
-                        {positionYDisplay2} m
-                      </td>
-                    
+                    <td style={{ cursor: "default" }}>{positionXDisplay2} m</td>
+                    <td style={{ cursor: "default" }}>{positionYDisplay2} m</td>
                   </tr>
                   <tr>
-                    <td
-                    >
+                    <td>
                       <Box>Velocity</Box>
                     </td>
                     <td style={{ cursor: "default" }}>
-                        {velocityXDisplay2} m/s
-                      </td>
-                    
+                      {velocityXDisplay2} m/s
+                    </td>
+
                     <td style={{ cursor: "default" }}>
-                        {velocityYDisplay2} m/s
-                      </td>
+                      {velocityYDisplay2} m/s
+                    </td>
                   </tr>
                   <tr>
-                    <td
-                     
-                    >
+                    <td>
                       <Box>Acceleration</Box>
                     </td>
                     <td style={{ cursor: "default" }}>

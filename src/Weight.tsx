@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { IWallProps } from "./Wall";
 import "./Weight.scss";
-import { Wedge } from "./Wedge";
-import { Speed } from "@mui/icons-material";
 
 export interface IForce {
   description: string;
@@ -17,9 +15,7 @@ export interface IWeightProps {
   color: string;
   circularMotionRadius: number;
   componentForces: IForce[];
-  displayXPosition: number;
   displayXVelocity: number;
-  displayYPosition: number;
   displayYVelocity: number;
   elasticCollisions: boolean;
   incrementTime: number;
@@ -75,9 +71,7 @@ export const Weight = (props: IWeightProps) => {
     coefficientOfKineticFriction,
     color,
     componentForces,
-    displayXPosition,
     displayXVelocity,
-    displayYPosition,
     displayYVelocity,
     elasticCollisions,
     gravity,
@@ -434,7 +428,6 @@ export const Weight = (props: IWeightProps) => {
     let collision = false;
     const minX = xPosition;
     const maxX = xPosition + 2 * radius;
-    const containerWidth = window.innerWidth;
     if (xVelocity != 0) {
       walls.forEach((wall) => {
         if (wall.angleInDegrees == 90) {
