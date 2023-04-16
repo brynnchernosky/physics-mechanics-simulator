@@ -43,7 +43,6 @@ export interface IWeightProps {
   setPendulumLength: (val: number) => any;
   setSketching: (val: boolean) => any;
   setSpringStartLength: (val: number) => any;
-  setStartPendulumAngle: (val: number) => any;
   setUpdatedForces: (val: IForce[]) => any;
   showAcceleration: boolean;
   showComponentForces: boolean;
@@ -103,7 +102,6 @@ export const Weight = (props: IWeightProps) => {
     setPendulumLength,
     setSketching,
     setSpringStartLength,
-    setStartPendulumAngle,
     setUpdatedForces,
     showAcceleration,
     showComponentForces,
@@ -746,10 +744,6 @@ export const Weight = (props: IWeightProps) => {
         timestepSize
       );
 
-      // xVel += timestepSize * k1.deltaXVel;
-      // yVel += timestepSize * k1.deltaYVel;
-      // xPos += timestepSize * k1.deltaXPos;
-      // yPos += timestepSize * k1.deltaYPos;
       xVel +=
         ((timestepSize * 1.0) / 6.0) *
         (k1.deltaXVel + 2 * (k2.deltaXVel + k3.deltaXVel) + k4.deltaXVel);

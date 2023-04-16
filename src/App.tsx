@@ -2544,40 +2544,40 @@ function App() {
                   </tr>
                   <tr>
                     <td>
-                     <p>Position</p>
+                     <Box>Position</Box>
                     </td>
                     <td style={{ cursor: "default" }}>
-                        {positionXDisplay} m
+                        {positionXDisplay2} m
                       </td>
                     <td style={{ cursor: "default" }}>
-                        {positionYDisplay} m
+                        {positionYDisplay2} m
                       </td>
                     
                   </tr>
                   <tr>
                     <td
                     >
-                      <p>Velocity</p>
+                      <Box>Velocity</Box>
                     </td>
                     <td style={{ cursor: "default" }}>
-                        {velocityXDisplay} m/s
+                        {velocityXDisplay2} m/s
                       </td>
                     
                     <td style={{ cursor: "default" }}>
-                        {velocityYDisplay} m/s
+                        {velocityYDisplay2} m/s
                       </td>
                   </tr>
                   <tr>
                     <td
                      
                     >
-                      <p>Acceleration</p>
+                      <Box>Acceleration</Box>
                     </td>
                     <td style={{ cursor: "default" }}>
-                      {accelerationXDisplay} m/s<sup>2</sup>
+                      {accelerationXDisplay2} m/s<sup>2</sup>
                     </td>
                     <td style={{ cursor: "default" }}>
-                      {accelerationYDisplay} m/s<sup>2</sup>
+                      {accelerationYDisplay2} m/s<sup>2</sup>
                     </td>
                   </tr>
                   <tr>
@@ -2585,10 +2585,10 @@ function App() {
                       <Box>Momentum</Box>
                     </td>
                     <td>
-                      {Math.round(velocityXDisplay * mass * 10) / 10} kg*m/s
+                      {Math.round(velocityXDisplay2 * mass * 10) / 10} kg*m/s
                     </td>
                     <td>
-                      {Math.round(velocityYDisplay * mass * 10) / 10} kg*m/s
+                      {Math.round(velocityYDisplay2 * mass * 10) / 10} kg*m/s
                     </td>
                   </tr>
                 </tbody>
