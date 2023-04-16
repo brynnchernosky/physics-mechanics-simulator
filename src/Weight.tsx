@@ -282,6 +282,7 @@ export const Weight = (props: IWeightProps) => {
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
+    setPendulumAngle(startPendulumAngle)
     setUpdatedForces(startForces);
     setDisplayValues(
       updatedStartPosX,
@@ -803,25 +804,17 @@ export const Weight = (props: IWeightProps) => {
     if (simulationType == "Circular Motion") {
       let rad = 100;
       if (startYVel > 0 && yVel < 0) {
-        console.log("start1 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2 + rad - radius;
-        console.log("end1 ", xPos, yPos);
       } else if (startYVel < 0 && yVel > 0) {
-        console.log("start2 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - radius;
         yPos = (yMax + yMin) / 2 - rad - radius;
-        console.log("end2 ", xPos, yPos);
       } else if (startXVel < 0 && xVel > 0) {
-        console.log("start3 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 - rad - radius;
         yPos = (yMax + yMin) / 2 - radius;
-        console.log("end3 ", xPos, yPos);
       } else if (startXVel > 0 && xVel < 0) {
-        console.log("start4 ", xPos, yPos);
         xPos = (xMax + xMin) / 2 + rad - radius;
         yPos = (yMax + yMin) / 2 - radius;
-        console.log("end4 ", xPos, yPos);
       }
     }
     if (simulationType == "One Weight") {

@@ -21,10 +21,7 @@ import {
   IconButton,
   LinearProgress,
   Stack,
-  Tooltip,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React, { useEffect, useState } from "react";
 import "./App.scss";
@@ -35,7 +32,6 @@ import { IWallProps, Wall } from "./Wall";
 import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
-import { validateHeaderName } from "http";
 
 interface VectorTemplate {
   top: number;
@@ -76,24 +72,12 @@ interface TutorialTemplate {
 
 function App() {
   // Constants
-  const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: "#f5f5f9",
-      color: "rgba(0, 0, 0, 0.87)",
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: "1px solid #dadde9",
-    },
-  }));
   const xMin = 0;
   const yMin = 0;
   const xMax = window.innerWidth * 0.7;
   const yMax = window.innerHeight * 0.8;
   const color = `rgba(0,0,0,0.5)`;
-  const radius1 = 50;
-  const radius2 = 50;
+  const radius = 50;
 
   // Variables
   let questionVariables: number[] = [];
@@ -394,7 +378,7 @@ function App() {
     }
 
     // update weight position based on updated wedge width/height
-    let yPos = (width - 50) * Math.tan((angle * Math.PI) / 180);
+    let yPos = (width - radius) * Math.tan((angle * Math.PI) / 180);
     if (angle < 40) {
       yPos += Math.sqrt(angle);
     } else if (angle < 58) {
@@ -428,7 +412,7 @@ function App() {
 
   // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
-    return yMax - yPos - 2 * 50 + 5;
+    return yMax - yPos - 2 * radius + 5;
   };
 
   // In review mode, update forces when coefficient of static friction changed
@@ -958,14 +942,14 @@ function App() {
         setVelocityXDisplay(0);
         setVelocityYDisplay(0);
         addWeight();
-        setStartPosY(yMin + 50);
-        setStartPosX((xMax + xMin - 50) / 2);
-        setPositionYDisplay(getDisplayYPos(yMin + 50));
-        setPositionXDisplay((xMax + xMin - 50) / 2);
+        setStartPosY(yMin + radius);
+        setStartPosX((xMax + xMin - radius) / 2);
+        setPositionYDisplay(getDisplayYPos(yMin + radius));
+        setPositionXDisplay((xMax + xMin - radius) / 2);
         setUpdatedForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: Math.abs(gravity) * mass,
             directionInDegrees: 270,
             component: false,
           },
@@ -973,7 +957,7 @@ function App() {
         setStartForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: Math.abs(gravity) * mass,
             directionInDegrees: 270,
             component: false,
           },
@@ -991,7 +975,7 @@ function App() {
         setStartForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: Math.abs(gravity) * mass,
             directionInDegrees: 270,
             component: false,
           },
@@ -1006,12 +990,12 @@ function App() {
         const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
         const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
-        const xPos = xMax / 2 - x - 50;
-        const yPos = y - 50 - 5;
+        const xPos = xMax / 2 - x - radius;
+        const yPos = y - radius - 5;
         addPendulum();
         setStartPosX(xPos);
         setStartPosY(yPos);
-        const mag = Math.abs(gravity) * Math.sin((60 * Math.PI) / 180);
+        const mag = mass * Math.abs(gravity) * Math.sin((60 * Math.PI) / 180);
         const forceOfTension: IForce = {
           description: "Tension",
           magnitude: mag,
@@ -1028,19 +1012,17 @@ function App() {
         const gravityParallel: IForce = {
           description: "Gravity Parallel Component",
           magnitude:
-            Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180),
+            mass * Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle - 90,
           component: true,
         };
         const gravityPerpendicular: IForce = {
           description: "Gravity Perpendicular Component",
           magnitude:
-            Math.abs(gravity) * Math.cos(((90 - angle) * Math.PI) / 180),
+            mass * Math.abs(gravity) * Math.cos(((90 - angle) * Math.PI) / 180),
           directionInDegrees: -angle,
           component: true,
         };
-
-        console.log(gravityParallel);
 
         setComponentForces([
           tensionComponent,
@@ -1050,7 +1032,7 @@ function App() {
         setUpdatedForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: mass * Math.abs(gravity),
             directionInDegrees: 270,
             component: false,
           },
@@ -1059,12 +1041,13 @@ function App() {
         setStartForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: mass * Math.abs(gravity),
             directionInDegrees: 270,
             component: false,
           },
           forceOfTension,
         ]);
+        setStartPendulumAngle(30);
         setPendulumAngle(30);
         setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 30, length: 300 });
@@ -1085,7 +1068,7 @@ function App() {
         setUpdatedForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: Math.abs(gravity) * mass,
             directionInDegrees: 270,
             component: false,
           },
@@ -1094,13 +1077,13 @@ function App() {
         setStartForces([
           {
             description: "Gravity",
-            magnitude: Math.abs(gravity),
+            magnitude: Math.abs(gravity) * mass,
             directionInDegrees: 270,
             component: false,
           },
           springForce,
         ]);
-        setStartPosX(xMax / 2 - 50);
+        setStartPosX(xMax / 2 - radius);
         setStartPosY(200);
         setSpringConstant(0.5);
         setSpringRestLength(200);
@@ -1110,8 +1093,8 @@ function App() {
         setShowComponentForces(false);
         addWeight();
         let rad = 100;
-        let xPos = (xMax + xMin) / 2 - rad - radius1;
-        let yPos = (yMax + yMin) / 2 - radius1;
+        let xPos = (xMax + xMin) / 2 - rad - radius;
+        let yPos = (yMax + yMin) / 2 - radius;
         setStartPosY(yPos);
         setStartPosX(xPos);
         setPositionYDisplay(getDisplayYPos(yPos));
@@ -1176,7 +1159,7 @@ function App() {
         removeWalls();
       } else if (simulationType == "Suspension") {
         // todo add toggle for if rods move or not a la cut the rope?
-        let xPos = (xMax + xMin) / 2 - radius1;
+        let xPos = (xMax + xMin) / 2 - radius;
         let yPos = yMin + 200;
         setStartPosY(yPos);
         setStartPosX(xPos);
@@ -1241,7 +1224,7 @@ function App() {
         setShowForces(true);
         addWeight();
         setStartPosY(yMax - 100);
-        setStartPosX((xMax + xMin - 50) / 2);
+        setStartPosX((xMax + xMin - radius) / 2);
         setSelectedTutorial(tutorials.freeWeight);
         setSelectedTutorial(tutorials.freeWeight);
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
@@ -1256,8 +1239,8 @@ function App() {
         const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
         const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
-        const xPos = xMax / 2 - x - 50;
-        const yPos = y - 50 - 5;
+        const xPos = xMax / 2 - x - radius;
+        const yPos = y - radius - 5;
         addPendulum();
         setStartPosX(xPos);
         setStartPosY(yPos);
@@ -1386,8 +1369,8 @@ function App() {
           className="mechanicsSimulationContentContainer"
           onPointerMove={(e) => {
             if (sketching) {
-              const x1 = positionXDisplay + 50;
-              const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
+              const x1 = positionXDisplay + radius;
+              const y1 = yMax - positionYDisplay - 3 * radius + 5;
               const x2 = e.clientX;
               const y2 = e.clientY;
               const height = Math.abs(y1 - y2) + 120;
@@ -1421,8 +1404,8 @@ function App() {
                 setForceSketches(sketches);
                 setCurrentForceSketch(null);
               } else {
-                const x1 = positionXDisplay + 50;
-                const y1 = yMax - positionYDisplay - 2 * 50 + 5 + 50;
+                const x1 = positionXDisplay + radius;
+                const y1 = yMax - positionYDisplay - 3 * radius + 5;
                 const x2 = e.clientX;
                 const y2 = e.clientY;
                 let deltaX = x2 - x1;
@@ -1589,7 +1572,7 @@ function App() {
                   paused={simulationPaused}
                   pendulumAngle={pendulumAngle}
                   pendulumLength={pendulumLength}
-                  radius={radius1}
+                  radius={radius}
                   reset={simulationReset}
                   simulationSpeed={simulationSpeed}
                   setDisplayXAcceleration={setAccelerationXDisplay}
@@ -1650,7 +1633,7 @@ function App() {
                   paused={simulationPaused}
                   pendulumAngle={pendulumAngle}
                   pendulumLength={pendulumLength}
-                  radius={radius1}
+                  radius={radius}
                   reset={simulationReset}
                   simulationSpeed={simulationSpeed}
                   setDisplayXAcceleration={setAccelerationXDisplay2}
@@ -2136,9 +2119,9 @@ function App() {
                       label={<Box>Mass</Box>}
                       lowerBound={1}
                       changeValue={setMass}
-                      step={1}
+                      step={0.1}
                       unit={"kg"}
-                      upperBound={100}
+                      upperBound={5}
                       value={mass}
                       effect={(val: number) => {
                         setResetAll(!resetAll);
@@ -2327,6 +2310,7 @@ function App() {
                     upperBound={59}
                     value={pendulumAngle}
                     effect={(value) => {
+                      setStartPendulumAngle(value);
                       if (simulationType == "Pendulum") {
                         const mag =
                           mass *
@@ -2368,8 +2352,8 @@ function App() {
                           length * Math.cos(((90 - value) * Math.PI) / 180);
                         const y =
                           length * Math.sin(((90 - value) * Math.PI) / 180);
-                        const xPos = xMax / 2 - x - radius1;
-                        const yPos = y - 50 - 5;
+                        const xPos = xMax / 2 - x - radius;
+                        const yPos = y - radius - 5;
                         setStartPosX(xPos);
                         setStartPosY(yPos);
 
@@ -2688,69 +2672,6 @@ function App() {
               </ul>
             </div>
           )}
-          {/* {mode == "Freeform" &&
-            simulationElements.length > 0 &&
-            simulationElements[0].pendulum && (
-              <div className="mechanicsSimulationEquation">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>&nbsp;</td>
-                      <td>Value</td>
-                    </tr>
-                    <tr>
-                      <td>Potential Energy</td>
-                      <td>
-                        {Math.round(
-                          pendulumLength *
-                            (1 - Math.cos(pendulumAngle)) *
-                            Math.abs(gravity) *
-                            10
-                        ) / 10}{" "}
-                        J
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Kinetic Energy</td>
-                      <td>
-                        {Math.round(
-                          (Math.round(
-                            pendulumLength *
-                              (1 - Math.cos(startPendulumAngle)) *
-                              Math.abs(gravity) *
-                              10
-                          ) /
-                            10 -
-                            Math.round(
-                              pendulumLength *
-                                (1 - Math.cos(pendulumAngle)) *
-                                Math.abs(gravity) *
-                                10
-                            ) /
-                              10) *
-                            10
-                        ) / 10}{" "}
-                        J
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <b>Total Energy</b>
-                      </td>
-                      <td>
-                        {Math.round(
-                          pendulumLength *
-                            (1 - Math.cos(startPendulumAngle)) *
-                            Math.abs(gravity) *
-                            10
-                        ) / 10}{" "}
-                        J
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}*/}
         </div>
       </div>
       <CoordinateSystem
