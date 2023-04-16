@@ -878,9 +878,9 @@ function App() {
         setVelocityXDisplay(0);
         setVelocityYDisplay(0);
         setStartPosY(yMin + radius);
-        setStartPosX((xMax + xMin - radius) / 2);
+        setStartPosX((xMax + xMin) / 2 - radius);
         setPositionYDisplay(getDisplayYPos(yMin + radius));
-        setPositionXDisplay((xMax + xMin - radius) / 2);
+        setPositionXDisplay((xMax + xMin) / 2 - radius);
         setUpdatedForces([
           {
             description: "Gravity",
@@ -1151,7 +1151,7 @@ function App() {
       if (simulationType == "One Weight") {
         setShowForces(true);
         setStartPosY(yMax - 100);
-        setStartPosX((xMax + xMin - radius) / 2);
+        setStartPosX((xMax + xMin) / 2 - radius);
         setSelectedTutorial(tutorials.freeWeight);
         setSelectedTutorial(tutorials.freeWeight);
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
@@ -1939,13 +1939,13 @@ function App() {
                   }}
                   variant="outlined"
                 >
-                  <Typography>Submit</Typography>
+                  <p>Submit</p>
                 </Button>
                 <Button
                   onClick={() => generateNewQuestion()}
                   variant="outlined"
                 >
-                  <Typography>New question</Typography>
+                  <p>New question</p>
                 </Button>
               </div>
             </div>
@@ -2348,7 +2348,7 @@ function App() {
               <table>
                 <tbody>
                   <tr>
-                    <td></td>
+                    <td>{simulationType == "Pulley" ? "Red Weight" : ""}</td>
                     <td>X</td>
                     <td>Y</td>
                   </tr>
@@ -2512,6 +2512,66 @@ function App() {
                       }}
                     >
                       <Box>Acceleration</Box>
+                    </td>
+                    <td style={{ cursor: "default" }}>
+                      {accelerationXDisplay} m/s<sup>2</sup>
+                    </td>
+                    <td style={{ cursor: "default" }}>
+                      {accelerationYDisplay} m/s<sup>2</sup>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <Box>Momentum</Box>
+                    </td>
+                    <td>
+                      {Math.round(velocityXDisplay * mass * 10) / 10} kg*m/s
+                    </td>
+                    <td>
+                      {Math.round(velocityYDisplay * mass * 10) / 10} kg*m/s
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+            {mode == "Freeform" && simulationType == "Pulley" && (
+              <table>
+                <tbody>
+                  <tr>
+                    <td>Blue Weight</td>
+                    <td>X</td>
+                    <td>Y</td>
+                  </tr>
+                  <tr>
+                    <td>
+                     <p>Position</p>
+                    </td>
+                    <td style={{ cursor: "default" }}>
+                        {positionXDisplay} m
+                      </td>
+                    <td style={{ cursor: "default" }}>
+                        {positionYDisplay} m
+                      </td>
+                    
+                  </tr>
+                  <tr>
+                    <td
+                    >
+                      <p>Velocity</p>
+                    </td>
+                    <td style={{ cursor: "default" }}>
+                        {velocityXDisplay} m/s
+                      </td>
+                    
+                    <td style={{ cursor: "default" }}>
+                        {velocityYDisplay} m/s
+                      </td>
+                  </tr>
+                  <tr>
+                    <td
+                     
+                    >
+                      <p>Acceleration</p>
                     </td>
                     <td style={{ cursor: "default" }}>
                       {accelerationXDisplay} m/s<sup>2</sup>
