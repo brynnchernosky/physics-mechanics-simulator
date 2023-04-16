@@ -330,12 +330,7 @@ export const Weight = (props: IWeightProps) => {
     return newYAcc;
   };
 
-  const getNewCircularMotionForces = (
-    xPos: number,
-    yPos: number,
-    xVel: number,
-    yVel: number
-  ) => {
+  const getNewCircularMotionForces = (xPos: number, yPos: number) => {
     let deltaX = (xMin + xMax) / 2 - (xPos + radius);
     let deltaY = yPos + radius - (yMin + yMax) / 2;
     let dir = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
@@ -667,7 +662,7 @@ export const Weight = (props: IWeightProps) => {
     } else if (simulationType == "Spring") {
       forces = getNewSpringForces(newYPos);
     } else if (simulationType == "Circular Motion") {
-      forces = getNewCircularMotionForces(newXPos, newYPos, newXVel, newYVel);
+      forces = getNewCircularMotionForces(newXPos, newYPos);
     }
     const newDeltaXVel = getNewAccelerationX(forces);
     const newDeltaYVel = getNewAccelerationY(forces);
@@ -697,7 +692,7 @@ export const Weight = (props: IWeightProps) => {
     } else if (simulationType == "Spring") {
       forces = getNewSpringForces(yPos);
     } else if (simulationType == "Circular Motion") {
-      forces = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
+      forces = getNewCircularMotionForces(xPos, yPos);
     }
     const xAcc = getNewAccelerationX(forces);
     const yAcc = getNewAccelerationY(forces);
@@ -780,21 +775,6 @@ export const Weight = (props: IWeightProps) => {
         yPos = startPosY;
       }
     }
-    if (simulationType == "Circular Motion") {
-      if (startYVel > 0 && yVel < 0) {
-        xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2 + circularMotionRadius - radius;
-      } else if (startYVel < 0 && yVel > 0) {
-        xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2 - circularMotionRadius - radius;
-      } else if (startXVel < 0 && xVel > 0) {
-        xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
-        yPos = (yMax + yMin) / 2 - radius;
-      } else if (startXVel > 0 && xVel < 0) {
-        xPos = (xMax + xMin) / 2 + circularMotionRadius - radius;
-        yPos = (yMax + yMin) / 2 - radius;
-      }
-    }
     if (simulationType == "One Weight") {
       if (yPos < maxPosY) {
         yPos = maxPosY;
@@ -810,7 +790,7 @@ export const Weight = (props: IWeightProps) => {
     } else if (simulationType == "Spring") {
       forcesn = getNewSpringForces(yPos);
     } else if (simulationType == "Circular Motion") {
-      forcesn = getNewCircularMotionForces(xPos, yPos, xVel, yVel);
+      forcesn = getNewCircularMotionForces(xPos, yPos);
     }
     setUpdatedForces(forcesn);
 
