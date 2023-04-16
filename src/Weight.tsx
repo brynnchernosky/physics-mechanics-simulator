@@ -15,6 +15,7 @@ export interface IWeightProps {
   coefficientOfKineticFriction: number;
   gravity: number;
   color: string;
+  circularMotionRadius: number;
   componentForces: IForce[];
   displayXPosition: number;
   displayXVelocity: number;
@@ -71,6 +72,7 @@ export interface IWeightProps {
 export const Weight = (props: IWeightProps) => {
   const {
     adjustPendulumAngle,
+    circularMotionRadius,
     coefficientOfKineticFriction,
     color,
     componentForces,
@@ -282,7 +284,7 @@ export const Weight = (props: IWeightProps) => {
     setYPosition(updatedStartPosY);
     setXVelocity(startVelX ?? 0);
     setYVelocity(startVelY ?? 0);
-    setPendulumAngle(startPendulumAngle)
+    setPendulumAngle(startPendulumAngle);
     setUpdatedForces(startForces);
     setDisplayValues(
       updatedStartPosX,
@@ -345,10 +347,9 @@ export const Weight = (props: IWeightProps) => {
     let deltaX = (xMin + xMax) / 2 - (xPos + radius);
     let deltaY = yPos + radius - (yMin + yMax) / 2;
     let dir = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
-    let rad = 100;
     const tensionForce: IForce = {
       description: "Tension",
-      magnitude: (startVelY ** 2 * mass) / rad,
+      magnitude: (startVelY ** 2 * mass) / circularMotionRadius,
       directionInDegrees: dir,
       component: false,
     };
@@ -548,7 +549,9 @@ export const Weight = (props: IWeightProps) => {
       const normalForce: IForce = {
         description: "Normal Force",
         magnitude:
-          Math.abs(gravity) * Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+          mass *
+          Math.abs(gravity) *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: false,
@@ -556,6 +559,7 @@ export const Weight = (props: IWeightProps) => {
       let frictionForce: IForce = {
         description: "Kinetic Friction Force",
         magnitude:
+          mass *
           coefficientOfKineticFriction *
           Math.abs(gravity) *
           Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
@@ -583,6 +587,7 @@ export const Weight = (props: IWeightProps) => {
         description: "Kinetic Friction Force",
 
         magnitude:
+          mass *
           coefficientOfKineticFriction *
           Math.abs(gravity) *
           Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
@@ -593,7 +598,9 @@ export const Weight = (props: IWeightProps) => {
       const normalForceComponent: IForce = {
         description: "Normal Force",
         magnitude:
-          Math.abs(gravity) * Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+          mass *
+          Math.abs(gravity) *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: true,
@@ -601,6 +608,7 @@ export const Weight = (props: IWeightProps) => {
       const gravityParallel: IForce = {
         description: "Gravity Parallel Component",
         magnitude:
+          mass *
           Math.abs(gravity) *
           Math.sin(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
@@ -613,23 +621,21 @@ export const Weight = (props: IWeightProps) => {
       const gravityPerpendicular: IForce = {
         description: "Gravity Perpendicular Component",
         magnitude:
+          mass *
           Math.abs(gravity) *
           Math.cos(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
         directionInDegrees:
           360 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
         component: true,
       };
+      const gravityForce: IForce = {
+        description: "Gravity",
+        magnitude: mass * Math.abs(gravity),
+        directionInDegrees: 270,
+        component: false,
+      };
       if (coefficientOfKineticFriction != 0) {
-        setUpdatedForces([
-          {
-            description: "Gravity",
-            magnitude: Math.abs(gravity),
-            directionInDegrees: 270,
-            component: false,
-          },
-          normalForce,
-          frictionForce,
-        ]);
+        setUpdatedForces([gravityForce, normalForce, frictionForce]);
         setComponentForces([
           frictionForceComponent,
           normalForceComponent,
@@ -637,15 +643,7 @@ export const Weight = (props: IWeightProps) => {
           gravityPerpendicular,
         ]);
       } else {
-        setUpdatedForces([
-          {
-            description: "Gravity",
-            magnitude: Math.abs(gravity),
-            directionInDegrees: 270,
-            component: false,
-          },
-          normalForce,
-        ]);
+        setUpdatedForces([gravityForce, normalForce]);
         setComponentForces([
           normalForceComponent,
           gravityParallel,
@@ -795,25 +793,18 @@ export const Weight = (props: IWeightProps) => {
         yPos = startPosY;
       }
     }
-    // console.log("acc^2", yAcc ** 2 + xAcc ** 2);
-    // console.log("vel^2", yVel ** 2 + xVel ** 2);
-    // console.log("y weight", yPos + radius);
-    // console.log("x weight", xPos + radius);
-    // console.log("y center", (yMax + yMin) / 2);
-    // console.log("x center", (xMax + xMin) / 2);
     if (simulationType == "Circular Motion") {
-      let rad = 100;
       if (startYVel > 0 && yVel < 0) {
         xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2 + rad - radius;
+        yPos = (yMax + yMin) / 2 + circularMotionRadius - radius;
       } else if (startYVel < 0 && yVel > 0) {
         xPos = (xMax + xMin) / 2 - radius;
-        yPos = (yMax + yMin) / 2 - rad - radius;
+        yPos = (yMax + yMin) / 2 - circularMotionRadius - radius;
       } else if (startXVel < 0 && xVel > 0) {
-        xPos = (xMax + xMin) / 2 - rad - radius;
+        xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
         yPos = (yMax + yMin) / 2 - radius;
       } else if (startXVel > 0 && xVel < 0) {
-        xPos = (xMax + xMin) / 2 + rad - radius;
+        xPos = (xMax + xMin) / 2 + circularMotionRadius - radius;
         yPos = (yMax + yMin) / 2 - radius;
       }
     }
