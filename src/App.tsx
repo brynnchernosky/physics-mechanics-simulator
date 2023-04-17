@@ -1010,15 +1010,15 @@ function App() {
 
   const setupCircular = () => {
     setShowComponentForces(false);
-    let xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
-    let yPos = (yMax + yMin) / 2 - radius;
+    let xPos = (xMax + xMin) / 2 - radius;
+    let yPos = (yMax + yMin) / 2 + circularMotionRadius - radius;
     setStartPosY(yPos);
     setStartPosX(xPos);
     setPositionYDisplay(getDisplayYPos(yPos));
     setPositionXDisplay(xPos);
     const tensionForce: IForce = {
       description: "Tension",
-      magnitude: (startVelY ** 2 * mass) / circularMotionRadius,
+      magnitude: (startVelX ** 2 * mass) / circularMotionRadius,
       directionInDegrees: 0,
       component: false,
     };
@@ -2078,6 +2078,21 @@ function App() {
                       labelWidth={"5em"}
                     />
                   )}
+                  {simulationPaused && simulationType == "Circular Motion" && (
+                    <InputField
+                      label={<Box>Rod length</Box>}
+                      lowerBound={100}
+                      changeValue={setCircularMotionRadius}
+                      step={5}
+                      unit={"kg"}
+                      upperBound={300}
+                      value={circularMotionRadius}
+                      effect={(val: number) => {
+                        setResetAll(!resetAll);
+                      }}
+                      labelWidth={"5em"}
+                    />
+                  )}
                 </FormGroup>
               </FormControl>
               {simulationType == "Spring" && simulationPaused && (
@@ -2439,36 +2454,41 @@ function App() {
                     >
                       <Box>Velocity</Box>
                     </td>
-                    {(!simulationPaused || simulationType != "One Weight") && (
+                    {(!simulationPaused ||
+                      (simulationType != "One Weight" &&
+                        simulationType != "Circular Motion")) && (
                       <td style={{ cursor: "default" }}>
                         {velocityXDisplay} m/s
                       </td>
                     )}{" "}
-                    {simulationPaused && simulationType == "One Weight" && (
-                      <td
-                        style={{
-                          cursor: "default",
-                        }}
-                      >
-                        <InputField
-                          lowerBound={-50}
-                          changeValue={setVelocityXDisplay}
-                          step={1}
-                          unit={"m/s"}
-                          upperBound={50}
-                          value={velocityXDisplay}
-                          effect={(value) => {
-                            setStartVelX(value);
-                            setDisplayChange({
-                              xDisplay: positionXDisplay,
-                              yDisplay: positionYDisplay,
-                            });
+                    {simulationPaused &&
+                      (simulationType == "One Weight" ||
+                        simulationType == "Circular Motion") && (
+                        <td
+                          style={{
+                            cursor: "default",
                           }}
-                          small={true}
-                          mode={"Freeform"}
-                        />
-                      </td>
-                    )}{" "}
+                        >
+                          <InputField
+                            lowerBound={-50}
+                            changeValue={setVelocityXDisplay}
+                            step={1}
+                            unit={"m/s"}
+                            upperBound={50}
+                            value={velocityXDisplay}
+                            effect={(value) => {
+                              setStartVelX(value);
+                              setDisplayChange({
+                                xDisplay: positionXDisplay,
+                                yDisplay: positionYDisplay,
+                              });
+                              setResetAll(!resetAll);
+                            }}
+                            small={true}
+                            mode={"Freeform"}
+                          />
+                        </td>
+                      )}{" "}
                     {(!simulationPaused || simulationType != "One Weight") && (
                       <td style={{ cursor: "default" }}>
                         {velocityYDisplay} m/s
