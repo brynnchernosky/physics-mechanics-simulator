@@ -1291,7 +1291,7 @@ function App() {
                 setCurrentForceSketch(null);
               } else {
                 const x1 = positionXDisplay + radius;
-                const y1 = yMax - positionYDisplay - 3 * radius + 5;
+                const y1 = getYPosFromDisplay(positionYDisplay) + radius;
                 const x2 = e.clientX;
                 const y2 = e.clientY;
                 let deltaX = x2 - x1;
