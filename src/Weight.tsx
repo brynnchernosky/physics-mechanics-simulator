@@ -125,22 +125,25 @@ export const Weight = (props: IWeightProps) => {
     simulationType != "Pendulum" &&
     mode == "Freeform";
   const epsilon = 0.0001;
+  const labelBackgroundColor = `rgba(255,255,255,0.5)`;
   const xMax = window.innerWidth * 0.7;
   const xMin = 0;
   const yMax = window.innerHeight * 0.8;
   const yMin = 0;
 
   // State hooks
+  const [clickPositionX, setClickPositionX] = useState(0);
+  const [clickPositionY, setClickPositionY] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [kineticFriction, setKineticFriction] = useState(false);
+  const [maxPosYConservation, setMaxPosYConservation] = useState(0);
   const [updatedStartPosX, setUpdatedStartPosX] = useState(startPosX);
   const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
+  const [walls, setWalls] = useState<IWallProps[]>([]);
   const [xPosition, setXPosition] = useState(startPosX);
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
   const [yPosition, setYPosition] = useState(startPosY);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
-  const [walls, setWalls] = useState<IWallProps[]>([]);
-  const [maxPosYConservation, setMaxPosYConservation] = useState(0);
 
   // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
@@ -237,16 +240,16 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (!paused && !noMovement) {
       let collisions = false;
-      if (simulationType != "Pendulum" && simulationType != "Spring") {
+      if (
+        simulationType == "One Weight" ||
+        simulationType == "Inclined Plane"
+      ) {
         const collisionsWithGround = checkForCollisionsWithGround();
         const collisionsWithWalls = checkForCollisionsWithWall();
         collisions = collisionsWithGround || collisionsWithWalls;
       }
       if (simulationType == "Pulley") {
-        if (yPosition <= yMin + 100) {
-          collisions = true;
-        }
-        if (yPosition >= yMax - 100) {
+        if (yPosition <= yMin + 100 || yPosition >= yMax - 100) {
           collisions = true;
         }
       }
@@ -261,12 +264,6 @@ export const Weight = (props: IWeightProps) => {
     resetEverything();
   }, [reset]);
 
-  useEffect(() => {
-    setXVelocity(startVelX ?? 0);
-    setYVelocity(startVelY ?? 0);
-    setDisplayValues();
-  }, [startForces]);
-
   const resetEverything = () => {
     setKineticFriction(false);
     setXPosition(updatedStartPosX);
@@ -275,7 +272,6 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(startVelY ?? 0);
     setPendulumAngle(startPendulumAngle);
     setUpdatedForces(startForces);
-
     setDisplayXAcceleration(0);
     setDisplayYAcceleration(0);
     setYPosDisplay(updatedStartPosX);
@@ -465,7 +461,7 @@ export const Weight = (props: IWeightProps) => {
         if (wall.angleInDegrees == 0 && wall.yPos > 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
           if (maxY > groundY) {
-            setYPosition(groundY - 2 * radius);
+            setYPosition(groundY - 2 * radius - 0.01);
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {
@@ -511,7 +507,7 @@ export const Weight = (props: IWeightProps) => {
         if (wall.angleInDegrees == 0 && wall.yPos < 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
           if (minY < groundY) {
-            setYPosition(groundY + 5);
+            setYPosition(groundY + 5 );
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {
@@ -876,10 +872,6 @@ export const Weight = (props: IWeightProps) => {
   if (dragging) {
     weightStyle.borderColor = "lightblue";
   }
-
-  const [clickPositionX, setClickPositionX] = useState(0);
-  const [clickPositionY, setClickPositionY] = useState(0);
-  const labelBackgroundColor = `rgba(255,255,255,0.5)`;
 
   // Update x start position
   useEffect(() => {
