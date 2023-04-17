@@ -1022,45 +1022,7 @@ function App() {
         setStartForces([tensionForce]);
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Pulley") {
-        setShowComponentForces(false);
-        setStartPosY((yMax + yMin) / 2);
-        setStartPosX((xMin + xMax) / 2 - 105);
-        setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
-        setPositionXDisplay((xMin + xMax) / 2 - 105);
-        let a = ((mass - mass2) * Math.abs(gravity)) / (mass + mass2);
-        const gravityForce1: IForce = {
-          description: "Gravity",
-          magnitude: mass * Math.abs(gravity),
-          directionInDegrees: 270,
-          component: false,
-        };
-        const tensionForce1: IForce = {
-          description: "Tension",
-          magnitude: mass2 * Math.abs(gravity) - mass * a,
-          directionInDegrees: 90,
-          component: false,
-        };
-        const gravityForce2: IForce = {
-          description: "Gravity",
-          magnitude: mass2 * Math.abs(gravity),
-          directionInDegrees: 270,
-          component: false,
-        };
-        const tensionForce2: IForce = {
-          description: "Tension",
-          magnitude: mass * Math.abs(gravity) + mass2 * a,
-          directionInDegrees: 90,
-          component: false,
-        };
-        setUpdatedForces([gravityForce1, tensionForce1]);
-        setStartForces([gravityForce1, tensionForce1]);
-        setStartPosY2((yMax + yMin) / 2);
-        setStartPosX2((xMin + xMax) / 2 + 5);
-        setPositionYDisplay2(getDisplayYPos((yMax + yMin) / 2));
-        setPositionXDisplay2((xMin + xMax) / 2 + 5);
-        setUpdatedForces2([gravityForce2, tensionForce2]);
-        setStartForces2([gravityForce2, tensionForce2]);
-        setSimulationReset(!simulationReset);
+        setupPulley();
       } else if (simulationType == "Suspension") {
         let xPos = (xMax + xMin) / 2 - radius;
         let yPos = yMin + 200;
@@ -1095,15 +1057,28 @@ function App() {
     } else if (mode == "Review") {
       setShowComponentForces(false);
       setShowForceMagnitudes(true);
-      if (simulationType == "Inclined Plane") {
-        setUpdatedForces([]);
-        setStartForces([]);
-      }
       setShowAcceleration(false);
       setShowVelocity(false);
       setShowForces(true);
       generateNewQuestion();
-      // TODO - all other simulation types
+      if (simulationType == "One Weight") {
+        // TODO - one weight review problems
+      } else if (simulationType == "Spring") {
+        // TODO - spring review problems
+      } else if (simulationType == "Inclined Plane") {
+        setUpdatedForces([]);
+        setStartForces([]);
+      } else if (simulationType == "Pendulum") {
+        // TODO - pendulum review problems
+      } else if (simulationType == "Circular Motion") {
+        setShowForces(false);
+        // TODO - circular motion review problems
+      } else if (simulationType == "Pulley") {
+        setupPulley();
+        // TODO - pulley tutorial review problems
+      } else if (simulationType == "Suspension") {
+        // TODO - suspension tutorial review problems
+      }
     } else if (mode == "Tutorial") {
       setShowComponentForces(false);
       setVelocityXDisplay(0);
@@ -1153,6 +1128,7 @@ function App() {
         // TODO - circular motion tutorial
       } else if (simulationType == "Pulley") {
         setShowForces(false);
+        setupPulley();
         // TODO - pulley tutorial
       } else if (simulationType == "Suspension") {
         setShowForces(false);
@@ -1161,6 +1137,48 @@ function App() {
       setSimulationReset(!simulationReset);
     }
   }, [simulationType, mode, resetAll]);
+
+  const setupPulley = () => {
+    setShowComponentForces(false);
+    setStartPosY((yMax + yMin) / 2);
+    setStartPosX((xMin + xMax) / 2 - 105);
+    setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
+    setPositionXDisplay((xMin + xMax) / 2 - 105);
+    let a = ((mass - mass2) * Math.abs(gravity)) / (mass + mass2);
+    const gravityForce1: IForce = {
+      description: "Gravity",
+      magnitude: mass * Math.abs(gravity),
+      directionInDegrees: 270,
+      component: false,
+    };
+    const tensionForce1: IForce = {
+      description: "Tension",
+      magnitude: mass2 * Math.abs(gravity) - mass * a,
+      directionInDegrees: 90,
+      component: false,
+    };
+    const gravityForce2: IForce = {
+      description: "Gravity",
+      magnitude: mass2 * Math.abs(gravity),
+      directionInDegrees: 270,
+      component: false,
+    };
+    const tensionForce2: IForce = {
+      description: "Tension",
+      magnitude: mass * Math.abs(gravity) + mass2 * a,
+      directionInDegrees: 90,
+      component: false,
+    };
+    setUpdatedForces([gravityForce1, tensionForce1]);
+    setStartForces([gravityForce1, tensionForce1]);
+    setStartPosY2((yMax + yMin) / 2);
+    setStartPosX2((xMin + xMax) / 2 + 5);
+    setPositionYDisplay2(getDisplayYPos((yMax + yMin) / 2));
+    setPositionXDisplay2((xMin + xMax) / 2 + 5);
+    setUpdatedForces2([gravityForce2, tensionForce2]);
+    setStartForces2([gravityForce2, tensionForce2]);
+    setSimulationReset(!simulationReset);
+  };
 
   // Helper function used for tutorial and review mode
   const getForceFromJSON = (
@@ -1435,7 +1453,6 @@ function App() {
                     </div>
                   );
                 })}
-
               <Weight
                 adjustPendulumAngle={adjustPendulumAngle}
                 gravity={gravity}
@@ -1492,7 +1509,6 @@ function App() {
                 wedgeHeight={wedgeHeight}
                 wedgeWidth={wedgeWidth}
               />
-
               {simulationType == "Pulley" && (
                 <Weight
                   adjustPendulumAngle={adjustPendulumAngle}
@@ -1597,7 +1613,6 @@ function App() {
                   <PauseIcon />
                 </IconButton>
               )}
-
               {simulationPaused && mode != "Tutorial" && (
                 <IconButton
                   onClick={() => {
@@ -1650,13 +1665,11 @@ function App() {
               </select>
             </div>
           </div>
-
           {mode == "Review" && simulationType != "Inclined Plane" && (
             <div className="wordProblemBox">
               <p>{simulationType} review problems in progress!</p>
             </div>
           )}
-
           {mode == "Review" && simulationType == "Inclined Plane" && (
             <div>
               {!hintDialogueOpen && (
@@ -1717,156 +1730,160 @@ function App() {
               </div>
             </div>
           )}
-
-          {mode == "Tutorial" && simulationType == "Spring" && (
-            <div className="wordProblemBox">
-              <p>{simulationType} tutorial in progress!</p>
-            </div>
-          )}
-
-          {mode == "Tutorial" && simulationType != "Spring" && (
-            <div className="wordProblemBox">
-              <div className="question">
-                <h2>Problem</h2>
-                <p>{selectedTutorial.question}</p>
+          {mode == "Tutorial" &&
+            simulationType != "One Weight" &&
+            simulationType != "Pendulum" &&
+            simulationType != "Inclined Plane" && (
+              <div className="wordProblemBox">
+                <p>{simulationType} tutorial in progress!</p>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "spaceBetween",
-                  width: "100%",
-                }}
-              >
-                <IconButton
-                  onClick={() => {
-                    let step = stepNumber - 1;
-                    step = Math.max(step, 0);
-                    step = Math.min(step, selectedTutorial.steps.length - 1);
-                    setStepNumber(step);
-                    setStartForces(
-                      getForceFromJSON(selectedTutorial.steps[step].forces)
-                    );
-                    setUpdatedForces(
-                      getForceFromJSON(selectedTutorial.steps[step].forces)
-                    );
-                    setShowForceMagnitudes(
-                      selectedTutorial.steps[step].showMagnitude
-                    );
-                  }}
-                  disabled={stepNumber == 0}
-                >
-                  <ArrowLeftIcon />
-                </IconButton>
-                <div>
-                  <h3>
-                    Step {stepNumber + 1}:{" "}
-                    {selectedTutorial.steps[stepNumber].description}
-                  </h3>
-                  <p>{selectedTutorial.steps[stepNumber].content}</p>
+            )}
+          {mode == "Tutorial" &&
+            (simulationType == "One Weight" ||
+              simulationType == "Pendulum" ||
+              simulationType == "Inclined Plane") && (
+              <div className="wordProblemBox">
+                <div className="question">
+                  <h2>Problem</h2>
+                  <p>{selectedTutorial.question}</p>
                 </div>
-                <IconButton
-                  onClick={() => {
-                    let step = stepNumber + 1;
-                    step = Math.max(step, 0);
-                    step = Math.min(step, selectedTutorial.steps.length - 1);
-                    setStepNumber(step);
-                    setStartForces(
-                      getForceFromJSON(selectedTutorial.steps[step].forces)
-                    );
-                    setUpdatedForces(
-                      getForceFromJSON(selectedTutorial.steps[step].forces)
-                    );
-                    setShowForceMagnitudes(
-                      selectedTutorial.steps[step].showMagnitude
-                    );
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "spaceBetween",
+                    width: "100%",
                   }}
-                  disabled={stepNumber == selectedTutorial.steps.length - 1}
                 >
-                  <ArrowRightIcon />
-                </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      let step = stepNumber - 1;
+                      step = Math.max(step, 0);
+                      step = Math.min(step, selectedTutorial.steps.length - 1);
+                      setStepNumber(step);
+                      setStartForces(
+                        getForceFromJSON(selectedTutorial.steps[step].forces)
+                      );
+                      setUpdatedForces(
+                        getForceFromJSON(selectedTutorial.steps[step].forces)
+                      );
+                      setShowForceMagnitudes(
+                        selectedTutorial.steps[step].showMagnitude
+                      );
+                    }}
+                    disabled={stepNumber == 0}
+                  >
+                    <ArrowLeftIcon />
+                  </IconButton>
+                  <div>
+                    <h3>
+                      Step {stepNumber + 1}:{" "}
+                      {selectedTutorial.steps[stepNumber].description}
+                    </h3>
+                    <p>{selectedTutorial.steps[stepNumber].content}</p>
+                  </div>
+                  <IconButton
+                    onClick={() => {
+                      let step = stepNumber + 1;
+                      step = Math.max(step, 0);
+                      step = Math.min(step, selectedTutorial.steps.length - 1);
+                      setStepNumber(step);
+                      setStartForces(
+                        getForceFromJSON(selectedTutorial.steps[step].forces)
+                      );
+                      setUpdatedForces(
+                        getForceFromJSON(selectedTutorial.steps[step].forces)
+                      );
+                      setShowForceMagnitudes(
+                        selectedTutorial.steps[step].showMagnitude
+                      );
+                    }}
+                    disabled={stepNumber == selectedTutorial.steps.length - 1}
+                  >
+                    <ArrowRightIcon />
+                  </IconButton>
+                </div>
+                <div>
+                  <p>Resources</p>
+                  {simulationType == "One Weight" && (
+                    <ul>
+                      <li>
+                        <a
+                          href="https://www.khanacademy.org/science/physics/one-dimensional-motion"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Khan Academy - One Dimensional Motion
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.khanacademy.org/science/physics/two-dimensional-motion"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Khan Academy - Two Dimensional Motion
+                        </a>
+                      </li>
+                    </ul>
+                  )}
+                  {simulationType == "Inclined Plane" && (
+                    <ul>
+                      <li>
+                        <a
+                          href="https://www.khanacademy.org/science/physics/forces-newtons-laws#normal-contact-force"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Khan Academy - Normal Force
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Khan Academy - Inclined Planes
+                        </a>
+                      </li>
+                    </ul>
+                  )}
+                  {simulationType == "Pendulum" && (
+                    <ul>
+                      <li>
+                        <a
+                          href="https://www.khanacademy.org/science/physics/forces-newtons-laws#tension-tutorial"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          Khan Academy - Tension
+                        </a>
+                      </li>
+                    </ul>
+                  )}
+                </div>
               </div>
-              <div>
-                <p>Resources</p>
-                {simulationType == "One Weight" && (
-                  <ul>
-                    <li>
-                      <a
-                        href="https://www.khanacademy.org/science/physics/one-dimensional-motion"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          color: "blue",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        Khan Academy - One Dimensional Motion
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.khanacademy.org/science/physics/two-dimensional-motion"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          color: "blue",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        Khan Academy - Two Dimensional Motion
-                      </a>
-                    </li>
-                  </ul>
-                )}
-                {simulationType == "Inclined Plane" && (
-                  <ul>
-                    <li>
-                      <a
-                        href="https://www.khanacademy.org/science/physics/forces-newtons-laws#normal-contact-force"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          color: "blue",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        Khan Academy - Normal Force
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.khanacademy.org/science/physics/forces-newtons-laws#inclined-planes-friction"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          color: "blue",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        Khan Academy - Inclined Planes
-                      </a>
-                    </li>
-                  </ul>
-                )}
-                {simulationType == "Pendulum" && (
-                  <ul>
-                    <li>
-                      <a
-                        href="https://www.khanacademy.org/science/physics/forces-newtons-laws#tension-tutorial"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          color: "blue",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        Khan Academy - Tension
-                      </a>
-                    </li>
-                  </ul>
-                )}
-              </div>
-            </div>
-          )}
+            )}
           {mode == "Review" && simulationType == "Inclined Plane" && (
             <div
               style={{
@@ -1906,7 +1923,6 @@ function App() {
               </div>
             </div>
           )}
-
           {mode == "Freeform" && (
             <div className="vars">
               <FormControl component="fieldset">
