@@ -78,86 +78,48 @@ function App() {
   const yMax = window.innerHeight * 0.8;
   const color = `rgba(0,0,0,0.5)`;
   const radius = 50;
-  const wallPositions: IWallProps[] = []
+  const wallPositions: IWallProps[] = [];
   wallPositions.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
   wallPositions.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
   wallPositions.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
   wallPositions.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
 
   // Variables
-  let questionVariables: number[] = [];
   let reviewCoefficient: number = 0;
+  let questionVariables: number[] = [];
 
   // State variables
-  const [resetAll, setResetAll] = useState(true);
-  const [startPosX, setStartPosX] = useState(0);
-  const [startPosY, setStartPosY] = useState(0);
-  const [startVelX, setStartVelX] = useState(0);
-  const [startVelY, setStartVelY] = useState(0);
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
-  const [positionXDisplay, setPositionXDisplay] = useState(0);
-  const [positionYDisplay, setPositionYDisplay] = useState(0);
-  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
-  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
-  const [simulationSpeed, setSimulationSpeed] = useState(2);
-  const [mass, setMass] = useState(1);
-
-  const [gravity, setGravity] = useState(-9.81);
-
-  const [updatedForces, setUpdatedForces] = useState<IForce[]>([]);
-
-  const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
-    angle: number;
-    length: number;
-  }>({ angle: 0, length: 0 });
-  const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
-  const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
-    React.useState<number | string | Array<number | string>>(0);
-  const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
-    React.useState<number | string | Array<number | string>>(0);
-  const [currentForceSketch, setCurrentForceSketch] =
-    useState<VectorTemplate | null>(null);
-  const [deleteMode, setDeleteMode] = useState(false);
+  const [circularMotionRadius, setCircularMotionRadius] = useState(150);
+  const [componentForces, setComponentForces] = useState<IForce[]>([]);
   const [displayChange, setDisplayChange] = useState<{
     xDisplay: number;
     yDisplay: number;
   }>({ xDisplay: 0, yDisplay: 0 });
-  const [circularMotionRadius, setCircularMotionRadius] = useState(150);
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
   const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
-  const [questionPartOne, setQuestionPartOne] = useState<string>("");
+  const [gravity, setGravity] = useState(-9.81);
   const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
+  const [mass, setMass] = useState(1);
   const [mode, setMode] = useState<string>("Freeform");
   const [noMovement, setNoMovement] = useState(false);
   const [pendulumAngle, setPendulumAngle] = useState(0);
   const [pendulumLength, setPendulumLength] = useState(300);
-  const [springConstant, setSpringConstant] = useState(0.5);
-  const [springRestLength, setSpringRestLength] = useState(200);
-  const [springStartLength, setSpringStartLength] = useState(200);
+  const [positionXDisplay, setPositionXDisplay] = useState(0);
+  const [positionYDisplay, setPositionYDisplay] = useState(0);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
-  const [reviewGravityMagnitude, setReviewGravityMagnitude] =
-    useState<number>(0);
-  const [reviewNormalAngle, setReviewNormalAngle] = useState<number>(0);
-  const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
-  const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
-  const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
-  const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
-    questions.inclinePlane[0]
-  );
-  const [selectedTutorial, setSelectedTutorial] = useState<TutorialTemplate>(
-    tutorials.inclinePlane
-  );
+  const [questionPartOne, setQuestionPartOne] = useState<string>("");
   const [questionPartTwo, setQuestionPartTwo] = useState<string>("");
-  const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
+  const [resetAll, setResetAll] = useState(true);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
-  const [showForces, setShowForces] = useState<boolean>(true);
   const [showComponentForces, setShowComponentForces] =
     useState<boolean>(false);
+  const [showForces, setShowForces] = useState<boolean>(true);
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
+  const [simulationSpeed, setSimulationSpeed] = useState(2);
   const [simulationType, setSimulationType] =
     useState<string>("Inclined Plane");
   const [sketching, setSketching] = useState(false);
@@ -169,20 +131,65 @@ function App() {
       component: false,
     },
   ]);
-  const [componentForces, setComponentForces] = useState<IForce[]>([]);
-  const [startPendulumAngle, setStartPendulumAngle] = useState(0);
+  const [startPosX, setStartPosX] = useState(0);
+  const [startPosY, setStartPosY] = useState(0);
+  const [startVelX, setStartVelX] = useState(0);
+  const [startVelY, setStartVelY] = useState(0);
   const [stepNumber, setStepNumber] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
+  const [updatedForces, setUpdatedForces] = useState<IForce[]>([]);
+  const [velocityXDisplay, setVelocityXDisplay] = useState(0);
+  const [velocityYDisplay, setVelocityYDisplay] = useState(0);
+  const [wedgeWidth, setWedgeWidth] = useState(400);
+
+  // Review mode
+  const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
+
+  const [currentForceSketch, setCurrentForceSketch] =
+    useState<VectorTemplate | null>(null);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
+  const [reviewGravityMagnitude, setReviewGravityMagnitude] =
+    useState<number>(0);
+  const [reviewNormalAngle, setReviewNormalAngle] = useState<number>(0);
+  const [reviewNormalMagnitude, setReviewNormalMagnitude] = useState<number>(0);
+  const [reviewStaticAngle, setReviewStaticAngle] = useState<number>(0);
+  const [reviewStaticMagnitude, setReviewStaticMagnitude] = useState<number>(0);
+  const [selectedSolutions, setSelectedSolutions] = useState<number[]>([]);
+  const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
+    questions.inclinePlane[0]
+  );
+
+  // Tutorial mode
+  const [selectedTutorial, setSelectedTutorial] = useState<TutorialTemplate>(
+    tutorials.inclinePlane
+  );
+
+  // Spring
+  const [springConstant, setSpringConstant] = useState(0.5);
+  const [springRestLength, setSpringRestLength] = useState(200);
+  const [springStartLength, setSpringStartLength] = useState(200);
+
+  // Pendulum
+  const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
+    angle: number;
+    length: number;
+  }>({ angle: 0, length: 0 });
+  const [startPendulumAngle, setStartPendulumAngle] = useState(0);
+
+  // Wedge
+  const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
+    React.useState<number | string | Array<number | string>>(0);
+  const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
+    React.useState<number | string | Array<number | string>>(0);
   const [wedgeAngle, setWedgeAngle] = React.useState<
     number | string | Array<number | string>
   >(26);
   const [wedgeHeight, setWedgeHeight] = useState(
     Math.tan((26 * Math.PI) / 180) * 400
   );
-  const [wedgeWidth, setWedgeWidth] = useState(400);
-  const [updateKineticFriction, setUpdateKineticFriction] = useState(false);
 
-  // pulley weight
+  // Pulley
   const [positionXDisplay2, setPositionXDisplay2] = useState(0);
   const [velocityXDisplay2, setVelocityXDisplay2] = useState(0);
   const [accelerationXDisplay2, setAccelerationXDisplay2] = useState(0);
@@ -856,12 +863,14 @@ function App() {
   useEffect(() => {
     setElasticCollisions(false);
     setSimulationPaused(true);
+    setStartVelX(0);
+    setStartVelY(0);
+    setVelocityXDisplay(0);
+    setVelocityYDisplay(0);
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
         setShowComponentForces(false);
-        setStartVelX(0);
-        setStartVelY(0);
         setVelocityXDisplay(0);
         setVelocityYDisplay(0);
         setStartPosY(yMin + radius);
@@ -886,8 +895,6 @@ function App() {
         ]);
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Inclined Plane") {
-        setStartVelX(0);
-        setStartVelY(0);
         setVelocityXDisplay(0);
         setVelocityYDisplay(0);
         changeWedgeBasedOnNewAngle(26);
@@ -901,10 +908,6 @@ function App() {
         ]);
         updateForcesWithFriction(Number(coefficientOfStaticFriction));
       } else if (simulationType == "Pendulum") {
-        setStartVelX(0);
-        setStartVelY(0);
-        setVelocityXDisplay(0);
-        setVelocityYDisplay(0);
         const length = 300;
         const angle = 30;
         const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
@@ -971,10 +974,6 @@ function App() {
         setAdjustPendulumAngle({ angle: 30, length: 300 });
       } else if (simulationType == "Spring") {
         setShowComponentForces(false);
-        setStartVelX(0);
-        setStartVelY(0);
-        setVelocityXDisplay(0);
-        setVelocityYDisplay(0);
         const springForce: IForce = {
           description: "Spring Force",
           magnitude: 0,
@@ -1020,8 +1019,6 @@ function App() {
         };
         setUpdatedForces([tensionForce]);
         setStartForces([tensionForce]);
-        setStartVelX(0);
-        setStartVelY(20);
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Pulley") {
         setShowComponentForces(false);
@@ -1056,9 +1053,6 @@ function App() {
         };
         setUpdatedForces([gravityForce1, tensionForce1]);
         setStartForces([gravityForce1, tensionForce1]);
-        setStartVelX(0);
-        setStartVelY(0);
-
         setStartPosY2((yMax + yMin) / 2);
         setStartPosX2((xMin + xMax) / 2 + 5);
         setPositionYDisplay2(getDisplayYPos((yMax + yMin) / 2));
@@ -1095,16 +1089,10 @@ function App() {
         };
         setUpdatedForces([tensionForce1, tensionForce2, grav]);
         setStartForces([tensionForce1, tensionForce2, grav]);
-        setStartVelX(0);
-        setStartVelY(0);
         setSimulationReset(!simulationReset);
       }
     } else if (mode == "Review") {
       setShowComponentForces(false);
-      setStartVelX(0);
-      setStartVelY(0);
-      setVelocityXDisplay(0);
-      setVelocityYDisplay(0);
       setShowForceMagnitudes(true);
       if (simulationType == "Inclined Plane") {
         setUpdatedForces([]);
@@ -1117,8 +1105,6 @@ function App() {
       // TODO - all others
     } else if (mode == "Tutorial") {
       setShowComponentForces(false);
-      setStartVelX(0);
-      setStartVelY(0);
       setVelocityXDisplay(0);
       setVelocityYDisplay(0);
       setStepNumber(0);
@@ -1573,19 +1559,19 @@ function App() {
               )}
             </div>
             <div>
-              {(simulationType == "One Weight" || simulationType == "Inclined Plane") &&
-              (wallPositions.map((element, index) => {
-                return (
-                  <Wall
-                    key={index}
-                    length={element.length}
-                    xPos={element.xPos}
-                    yPos={element.yPos}
-                    angleInDegrees={element.angleInDegrees}
-                  />
-                );
-              }))
-             }
+              {(simulationType == "One Weight" ||
+                simulationType == "Inclined Plane") &&
+                wallPositions.map((element, index) => {
+                  return (
+                    <Wall
+                      key={index}
+                      length={element.length}
+                      xPos={element.xPos}
+                      yPos={element.yPos}
+                      angleInDegrees={element.angleInDegrees}
+                    />
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -2147,7 +2133,6 @@ function App() {
                       updateForcesWithFriction(val);
                       if (val < Number(coefficientOfKineticFriction)) {
                         setCoefficientOfKineticFriction(val);
-                        setUpdateKineticFriction(!updateKineticFriction);
                       }
                       setSimulationReset(!simulationReset);
                     }}
@@ -2170,7 +2155,6 @@ function App() {
                       setSimulationReset(!simulationReset);
                     }}
                     mode={"Freeform"}
-                    update={updateKineticFriction}
                     labelWidth={"2em"}
                   />
                 </div>

@@ -459,8 +459,8 @@ export const Weight = (props: IWeightProps) => {
       walls.forEach((wall) => {
         if (wall.angleInDegrees == 0 && wall.yPos > 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
-          if (maxY >= groundY) {
-            setYPosition(groundY - 2 * radius - 1);
+          if (maxY > groundY) {
+            setYPosition(groundY - 2 * radius);
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {
@@ -505,8 +505,8 @@ export const Weight = (props: IWeightProps) => {
       walls.forEach((wall) => {
         if (wall.angleInDegrees == 0 && wall.yPos < 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
-          if (minY <= groundY) {
-            setYPosition(groundY + 6);
+          if (minY < groundY) {
+            setYPosition(groundY + 5);
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {
@@ -644,7 +644,6 @@ export const Weight = (props: IWeightProps) => {
       w.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
       w.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
     }
-    console.log("set walls!");
     setWalls(w);
   }, [simulationType]);
 
