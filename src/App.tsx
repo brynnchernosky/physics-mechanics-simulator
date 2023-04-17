@@ -909,150 +909,15 @@ function App() {
         ]);
         updateForcesWithFriction(Number(coefficientOfStaticFriction));
       } else if (simulationType == "Pendulum") {
-        const length = 300;
-        const angle = 30;
-        const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
-        const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
-        const xPos = xMax / 2 - x - radius;
-        const yPos = y - radius - 5;
-        setStartPosX(xPos);
-        setStartPosY(yPos);
-        const mag = mass * Math.abs(gravity) * Math.sin((60 * Math.PI) / 180);
-        const forceOfTension: IForce = {
-          description: "Tension",
-          magnitude: mag,
-          directionInDegrees: 90 - angle,
-          component: false,
-        };
-
-        const tensionComponent: IForce = {
-          description: "Tension",
-          magnitude: mag,
-          directionInDegrees: 90 - angle,
-          component: true,
-        };
-        const gravityParallel: IForce = {
-          description: "Gravity Parallel Component",
-          magnitude:
-            mass * Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180),
-          directionInDegrees: -angle - 90,
-          component: true,
-        };
-        const gravityPerpendicular: IForce = {
-          description: "Gravity Perpendicular Component",
-          magnitude:
-            mass * Math.abs(gravity) * Math.cos(((90 - angle) * Math.PI) / 180),
-          directionInDegrees: -angle,
-          component: true,
-        };
-
-        setComponentForces([
-          tensionComponent,
-          gravityParallel,
-          gravityPerpendicular,
-        ]);
-        setUpdatedForces([
-          {
-            description: "Gravity",
-            magnitude: mass * Math.abs(gravity),
-            directionInDegrees: 270,
-            component: false,
-          },
-          forceOfTension,
-        ]);
-        setStartForces([
-          {
-            description: "Gravity",
-            magnitude: mass * Math.abs(gravity),
-            directionInDegrees: 270,
-            component: false,
-          },
-          forceOfTension,
-        ]);
-        setStartPendulumAngle(30);
-        setPendulumAngle(30);
-        setPendulumLength(300);
-        setAdjustPendulumAngle({ angle: 30, length: 300 });
+        setupPendulum();
       } else if (simulationType == "Spring") {
-        setShowComponentForces(false);
-        const springForce: IForce = {
-          description: "Spring Force",
-          magnitude: 0,
-          directionInDegrees: 90,
-          component: false,
-        };
-        setUpdatedForces([
-          {
-            description: "Gravity",
-            magnitude: Math.abs(gravity) * mass,
-            directionInDegrees: 270,
-            component: false,
-          },
-          springForce,
-        ]);
-        setStartForces([
-          {
-            description: "Gravity",
-            magnitude: Math.abs(gravity) * mass,
-            directionInDegrees: 270,
-            component: false,
-          },
-          springForce,
-        ]);
-        setStartPosX(xMax / 2 - radius);
-        setStartPosY(200);
-        setSpringConstant(0.5);
-        setSpringRestLength(200);
-        setSpringStartLength(200);
+        setupSpring();
       } else if (simulationType == "Circular Motion") {
-        setShowComponentForces(false);
-        let xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
-        let yPos = (yMax + yMin) / 2 - radius;
-        setStartPosY(yPos);
-        setStartPosX(xPos);
-        setPositionYDisplay(getDisplayYPos(yPos));
-        setPositionXDisplay(xPos);
-        const tensionForce: IForce = {
-          description: "Tension",
-          magnitude: (startVelY ** 2 * mass) / circularMotionRadius,
-          directionInDegrees: 0,
-          component: false,
-        };
-        setUpdatedForces([tensionForce]);
-        setStartForces([tensionForce]);
-        setSimulationReset(!simulationReset);
+        setupCircular();
       } else if (simulationType == "Pulley") {
         setupPulley();
       } else if (simulationType == "Suspension") {
-        let xPos = (xMax + xMin) / 2 - radius;
-        let yPos = yMin + 200;
-        setStartPosY(yPos);
-        setStartPosX(xPos);
-        setPositionYDisplay(getDisplayYPos(yPos));
-        setPositionXDisplay(xPos);
-        let tensionMag =
-          (mass * Math.abs(gravity)) / (2 * Math.sin(Math.PI / 4));
-        const tensionForce1: IForce = {
-          description: "Tension",
-          magnitude: tensionMag,
-          directionInDegrees: 45,
-          component: false,
-        };
-        const tensionForce2: IForce = {
-          description: "Tension",
-          magnitude: tensionMag,
-          directionInDegrees: 135,
-          component: false,
-        };
-        const grav: IForce = {
-          description: "Gravity",
-          magnitude: mass * Math.abs(gravity),
-          directionInDegrees: 270,
-          component: false,
-        };
-        setUpdatedForces([tensionForce1, tensionForce2, grav]);
-        setStartForces([tensionForce1, tensionForce2, grav]);
-        setSimulationReset(!simulationReset);
+        setupSuspension();
       }
     } else if (mode == "Review") {
       setShowComponentForces(false);
@@ -1064,19 +929,22 @@ function App() {
       if (simulationType == "One Weight") {
         // TODO - one weight review problems
       } else if (simulationType == "Spring") {
+        setupSpring();
         // TODO - spring review problems
       } else if (simulationType == "Inclined Plane") {
         setUpdatedForces([]);
         setStartForces([]);
       } else if (simulationType == "Pendulum") {
+        setupPendulum();
         // TODO - pendulum review problems
       } else if (simulationType == "Circular Motion") {
-        setShowForces(false);
+        setupCircular();
         // TODO - circular motion review problems
       } else if (simulationType == "Pulley") {
         setupPulley();
         // TODO - pulley tutorial review problems
       } else if (simulationType == "Suspension") {
+        setupSuspension();
         // TODO - suspension tutorial review problems
       }
     } else if (mode == "Tutorial") {
@@ -1097,6 +965,7 @@ function App() {
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
       } else if (simulationType == "Spring") {
         setShowForces(false);
+        setupSpring();
         // TODO - spring tutorial
       } else if (simulationType == "Pendulum") {
         setShowForces(true);
@@ -1125,6 +994,7 @@ function App() {
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
       } else if (simulationType == "Circular Motion") {
         setShowForces(false);
+        setupCircular();
         // TODO - circular motion tutorial
       } else if (simulationType == "Pulley") {
         setShowForces(false);
@@ -1137,6 +1007,156 @@ function App() {
       setSimulationReset(!simulationReset);
     }
   }, [simulationType, mode, resetAll]);
+
+  const setupCircular = () => {
+    setShowComponentForces(false);
+    let xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
+    let yPos = (yMax + yMin) / 2 - radius;
+    setStartPosY(yPos);
+    setStartPosX(xPos);
+    setPositionYDisplay(getDisplayYPos(yPos));
+    setPositionXDisplay(xPos);
+    const tensionForce: IForce = {
+      description: "Tension",
+      magnitude: (startVelY ** 2 * mass) / circularMotionRadius,
+      directionInDegrees: 0,
+      component: false,
+    };
+    setUpdatedForces([tensionForce]);
+    setStartForces([tensionForce]);
+    setSimulationReset(!simulationReset);
+  };
+
+  const setupPendulum = () => {
+    const length = 300;
+    const angle = 30;
+    const x = length * Math.cos(((90 - angle) * Math.PI) / 180);
+    const y = length * Math.sin(((90 - angle) * Math.PI) / 180);
+    const xPos = xMax / 2 - x - radius;
+    const yPos = y - radius - 5;
+    setStartPosX(xPos);
+    setStartPosY(yPos);
+    const mag = mass * Math.abs(gravity) * Math.sin((60 * Math.PI) / 180);
+    const forceOfTension: IForce = {
+      description: "Tension",
+      magnitude: mag,
+      directionInDegrees: 90 - angle,
+      component: false,
+    };
+
+    const tensionComponent: IForce = {
+      description: "Tension",
+      magnitude: mag,
+      directionInDegrees: 90 - angle,
+      component: true,
+    };
+    const gravityParallel: IForce = {
+      description: "Gravity Parallel Component",
+      magnitude:
+        mass * Math.abs(gravity) * Math.sin(((90 - angle) * Math.PI) / 180),
+      directionInDegrees: -angle - 90,
+      component: true,
+    };
+    const gravityPerpendicular: IForce = {
+      description: "Gravity Perpendicular Component",
+      magnitude:
+        mass * Math.abs(gravity) * Math.cos(((90 - angle) * Math.PI) / 180),
+      directionInDegrees: -angle,
+      component: true,
+    };
+
+    setComponentForces([
+      tensionComponent,
+      gravityParallel,
+      gravityPerpendicular,
+    ]);
+    setUpdatedForces([
+      {
+        description: "Gravity",
+        magnitude: mass * Math.abs(gravity),
+        directionInDegrees: 270,
+        component: false,
+      },
+      forceOfTension,
+    ]);
+    setStartForces([
+      {
+        description: "Gravity",
+        magnitude: mass * Math.abs(gravity),
+        directionInDegrees: 270,
+        component: false,
+      },
+      forceOfTension,
+    ]);
+    setStartPendulumAngle(30);
+    setPendulumAngle(30);
+    setPendulumLength(300);
+    setAdjustPendulumAngle({ angle: 30, length: 300 });
+  };
+
+  const setupSpring = () => {
+    setShowComponentForces(false);
+    const springForce: IForce = {
+      description: "Spring Force",
+      magnitude: 0,
+      directionInDegrees: 90,
+      component: false,
+    };
+    setUpdatedForces([
+      {
+        description: "Gravity",
+        magnitude: Math.abs(gravity) * mass,
+        directionInDegrees: 270,
+        component: false,
+      },
+      springForce,
+    ]);
+    setStartForces([
+      {
+        description: "Gravity",
+        magnitude: Math.abs(gravity) * mass,
+        directionInDegrees: 270,
+        component: false,
+      },
+      springForce,
+    ]);
+    setStartPosX(xMax / 2 - radius);
+    setStartPosY(200);
+    setSpringConstant(0.5);
+    setSpringRestLength(200);
+    setSpringStartLength(200);
+  };
+
+  const setupSuspension = () => {
+    let xPos = (xMax + xMin) / 2 - radius;
+    let yPos = yMin + 200;
+    setStartPosY(yPos);
+    setStartPosX(xPos);
+    setPositionYDisplay(getDisplayYPos(yPos));
+    setPositionXDisplay(xPos);
+    let tensionMag = (mass * Math.abs(gravity)) / (2 * Math.sin(Math.PI / 4));
+    const tensionForce1: IForce = {
+      description: "Tension",
+      magnitude: tensionMag,
+      directionInDegrees: 45,
+      component: false,
+    };
+    const tensionForce2: IForce = {
+      description: "Tension",
+      magnitude: tensionMag,
+      directionInDegrees: 135,
+      component: false,
+    };
+    const grav: IForce = {
+      description: "Gravity",
+      magnitude: mass * Math.abs(gravity),
+      directionInDegrees: 270,
+      component: false,
+    };
+    setUpdatedForces([tensionForce1, tensionForce2, grav]);
+    setStartForces([tensionForce1, tensionForce2, grav]);
+    setSimulationReset(!simulationReset);
+  };
 
   const setupPulley = () => {
     setShowComponentForces(false);
