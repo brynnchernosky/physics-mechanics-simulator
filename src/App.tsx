@@ -915,7 +915,7 @@ function App() {
       } else if (simulationType == "Spring") {
         setupSpring();
       } else if (simulationType == "Circular Motion") {
-        setupCircular();
+        setupCircular(0);
       } else if (simulationType == "Pulley") {
         setupPulley();
       } else if (simulationType == "Suspension") {
@@ -940,7 +940,7 @@ function App() {
         setupPendulum();
         // TODO - pendulum review problems
       } else if (simulationType == "Circular Motion") {
-        setupCircular();
+        setupCircular(0);
         // TODO - circular motion review problems
       } else if (simulationType == "Pulley") {
         setupPulley();
@@ -996,7 +996,7 @@ function App() {
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
       } else if (simulationType == "Circular Motion") {
         setShowForces(false);
-        setupCircular();
+        setupCircular(0);
         // TODO - circular motion tutorial
       } else if (simulationType == "Pulley") {
         setShowForces(false);
@@ -1010,18 +1010,18 @@ function App() {
     }
   }, [simulationType, mode, resetAll]);
 
-  const setupCircular = () => {
+  const setupCircular = (value: number) => {
     setShowComponentForces(false);
+    setStartVelY(0);
+    setStartVelX(value);
     let xPos = (xMax + xMin) / 2 - radius;
     let yPos = (yMax + yMin) / 2 + circularMotionRadius - radius;
     setStartPosY(yPos);
     setStartPosX(xPos);
-    setPositionYDisplay(getDisplayYPos(yPos));
-    setPositionXDisplay(xPos);
     const tensionForce: IForce = {
       description: "Tension",
       magnitude: (startVelX ** 2 * mass) / circularMotionRadius,
-      directionInDegrees: 0,
+      directionInDegrees: 90,
       component: false,
     };
     setUpdatedForces([tensionForce]);
@@ -2026,7 +2026,7 @@ function App() {
                       lowerBound={-30}
                       changeValue={setGravity}
                       step={0.01}
-                      unit={"m/s^2"}
+                      unit={"m/s2"}
                       upperBound={0}
                       value={gravity}
                       effect={(val: number) => {
@@ -2087,7 +2087,7 @@ function App() {
                       changeValue={setCircularMotionRadius}
                       step={5}
                       unit={"kg"}
-                      upperBound={300}
+                      upperBound={250}
                       value={circularMotionRadius}
                       effect={(val: number) => {
                         setResetAll(!resetAll);
@@ -2480,11 +2480,7 @@ function App() {
                             value={velocityXDisplay}
                             effect={(value) => {
                               setStartVelX(value);
-                              setDisplayChange({
-                                xDisplay: positionXDisplay,
-                                yDisplay: positionYDisplay,
-                              });
-                              setResetAll(!resetAll);
+                              setSimulationReset(!simulationReset);
                             }}
                             small={true}
                             mode={"Freeform"}
