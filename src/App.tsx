@@ -868,10 +868,12 @@ function App() {
   useEffect(() => {
     setElasticCollisions(false);
     setSimulationPaused(true);
-    setStartVelX(0);
-    setStartVelY(0);
-    setVelocityXDisplay(0);
-    setVelocityYDisplay(0);
+    if (simulationType != "Circular Motion") {
+      setStartVelX(0);
+      setStartVelY(0);
+      setVelocityXDisplay(0);
+      setVelocityYDisplay(0);
+    }
     if (mode == "Freeform") {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
