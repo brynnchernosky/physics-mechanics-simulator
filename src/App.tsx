@@ -78,6 +78,11 @@ function App() {
   const yMax = window.innerHeight * 0.8;
   const color = `rgba(0,0,0,0.5)`;
   const radius = 50;
+  const wallPositions: IWallProps[] = []
+  wallPositions.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
+  wallPositions.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
+  wallPositions.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
+  wallPositions.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
 
   // Variables
   let questionVariables: number[] = [];
@@ -168,7 +173,6 @@ function App() {
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
   const [stepNumber, setStepNumber] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
-  const [wallPositions, setWallPositions] = useState<IWallProps[]>([]);
   const [wedgeAngle, setWedgeAngle] = React.useState<
     number | string | Array<number | string>
   >(26);
@@ -848,23 +852,6 @@ function App() {
     );
   };
 
-  // Remove floor and walls from simulation
-  const removeWalls = () => {
-    setWallPositions([]);
-  };
-
-  // Add floor and walls to simulation
-  const addWalls = () => {
-    if (wallPositions.length == 0) {
-      const walls: IWallProps[] = [];
-      walls.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
-      walls.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
-      walls.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
-      walls.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
-      setWallPositions(walls);
-    }
-  };
-
   // Use effect hook to handle mode/topic change
   useEffect(() => {
     setElasticCollisions(false);
@@ -897,7 +884,6 @@ function App() {
             component: false,
           },
         ]);
-        addWalls();
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Inclined Plane") {
         setStartVelX(0);
@@ -905,7 +891,6 @@ function App() {
         setVelocityXDisplay(0);
         setVelocityYDisplay(0);
         changeWedgeBasedOnNewAngle(26);
-        addWalls();
         setStartForces([
           {
             description: "Gravity",
@@ -984,7 +969,6 @@ function App() {
         setPendulumAngle(30);
         setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 30, length: 300 });
-        removeWalls();
       } else if (simulationType == "Spring") {
         setShowComponentForces(false);
         setStartVelX(0);
@@ -1020,7 +1004,6 @@ function App() {
         setSpringConstant(0.5);
         setSpringRestLength(200);
         setSpringStartLength(200);
-        removeWalls();
       } else if (simulationType == "Circular Motion") {
         setShowComponentForces(false);
         let xPos = (xMax + xMin) / 2 - circularMotionRadius - radius;
@@ -1040,7 +1023,6 @@ function App() {
         setStartVelX(0);
         setStartVelY(20);
         setSimulationReset(!simulationReset);
-        removeWalls();
       } else if (simulationType == "Pulley") {
         setShowComponentForces(false);
         setStartPosY((yMax + yMin) / 2);
@@ -1084,9 +1066,7 @@ function App() {
         setUpdatedForces2([gravityForce2, tensionForce2]);
         setStartForces2([gravityForce2, tensionForce2]);
         setSimulationReset(!simulationReset);
-        removeWalls();
       } else if (simulationType == "Suspension") {
-        // todo add toggle for if rods move or not a la cut the rope?
         let xPos = (xMax + xMin) / 2 - radius;
         let yPos = yMin + 200;
         setStartPosY(yPos);
@@ -1118,7 +1098,6 @@ function App() {
         setStartVelX(0);
         setStartVelY(0);
         setSimulationReset(!simulationReset);
-        removeWalls();
       }
     } else if (mode == "Review") {
       setShowComponentForces(false);
@@ -1130,7 +1109,6 @@ function App() {
       if (simulationType == "Inclined Plane") {
         setUpdatedForces([]);
         setStartForces([]);
-        addWalls();
       }
       setShowAcceleration(false);
       setShowVelocity(false);
@@ -1155,7 +1133,6 @@ function App() {
         setSelectedTutorial(tutorials.freeWeight);
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
-        addWalls();
       } else if (simulationType == "Spring") {
         setShowForces(false);
         // TODO
@@ -1175,7 +1152,6 @@ function App() {
         setPendulumAngle(30);
         setPendulumLength(300);
         setAdjustPendulumAngle({ angle: 30, length: 300 });
-        removeWalls();
       } else if (simulationType == "Inclined Plane") {
         setShowForces(true);
         setWedgeAngle(26);
@@ -1185,7 +1161,6 @@ function App() {
           getForceFromJSON(tutorials.inclinePlane.steps[0].forces)
         );
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
-        addWalls();
       } else if (simulationType == "Circular Motion") {
         setShowForces(false);
         // TODO
@@ -1264,7 +1239,7 @@ function App() {
     reviewStaticAngle,
   ]);
 
-  // Use effect to add listener for SHIFT key, which determines if sketch force arrow will be edited or deleted on click
+  // Use effect to add listener for SHIFT key, which determines if sketch force arrow will be edited or deleted on click - delete in Dash integration
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
       if (e.shiftKey) {
@@ -1527,7 +1502,6 @@ function App() {
                 timestepSize={0.05}
                 updateDisplay={displayChange}
                 updatedForces={updatedForces}
-                walls={wallPositions}
                 wedgeHeight={wedgeHeight}
                 wedgeWidth={wedgeWidth}
               />
@@ -1586,7 +1560,6 @@ function App() {
                   timestepSize={50 / 1000}
                   updateDisplay={displayChange2}
                   updatedForces={updatedForces2}
-                  walls={wallPositions}
                   wedgeHeight={wedgeHeight}
                   wedgeWidth={wedgeWidth}
                 />
@@ -1600,7 +1573,8 @@ function App() {
               )}
             </div>
             <div>
-              {wallPositions.map((element, index) => {
+              {(simulationType == "One Weight" || simulationType == "Inclined Plane") &&
+              (wallPositions.map((element, index) => {
                 return (
                   <Wall
                     key={index}
@@ -1610,7 +1584,8 @@ function App() {
                     angleInDegrees={element.angleInDegrees}
                   />
                 );
-              })}
+              }))
+             }
             </div>
           </div>
         </div>

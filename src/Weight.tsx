@@ -59,7 +59,6 @@ export interface IWeightProps {
   timestepSize: number;
   updateDisplay: { xDisplay: number; yDisplay: number };
   updatedForces: IForce[];
-  walls: IWallProps[];
   wedgeHeight: number;
   wedgeWidth: number;
 }
@@ -116,7 +115,6 @@ export const Weight = (props: IWeightProps) => {
     timestepSize,
     updateDisplay,
     updatedForces,
-    walls,
     wedgeHeight,
     wedgeWidth,
   } = props;
@@ -127,7 +125,6 @@ export const Weight = (props: IWeightProps) => {
     simulationType != "Pendulum" &&
     mode == "Freeform";
   const epsilon = 0.0001;
-
   const xMax = window.innerWidth * 0.7;
   const xMin = 0;
   const yMax = window.innerHeight * 0.8;
@@ -142,8 +139,8 @@ export const Weight = (props: IWeightProps) => {
   const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
   const [yPosition, setYPosition] = useState(startPosY);
   const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
-
-  const [maxPosY, setMaxPosY] = useState(0);
+  const [walls, setWalls] = useState<IWallProps[]>([]);
+  const [maxPosYConservation, setMaxPosYConservation] = useState(0);
 
   // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
@@ -232,7 +229,7 @@ export const Weight = (props: IWeightProps) => {
       if (maxYPos < 0) {
         maxYPos = 0;
       }
-      setMaxPosY(maxYPos);
+      setMaxPosYConservation(maxYPos);
     }
   }, [updatedStartPosY, startVelY]);
 
@@ -639,6 +636,18 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [xVelocity]);
 
+  useEffect(() => {
+    let w: IWallProps[] = [];
+    if (simulationType == "One Weight" || simulationType == "Inclined Plane") {
+      w.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
+      w.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
+      w.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
+      w.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
+    }
+    console.log("set walls!");
+    setWalls(w);
+  }, [simulationType]);
+
   const evaluate = (
     currentXPos: number,
     currentYPos: number,
@@ -776,8 +785,8 @@ export const Weight = (props: IWeightProps) => {
       }
     }
     if (simulationType == "One Weight") {
-      if (yPos < maxPosY) {
-        yPos = maxPosY;
+      if (yPos < maxPosYConservation) {
+        yPos = maxPosYConservation;
       }
     }
     setXVelocity(xVel);
