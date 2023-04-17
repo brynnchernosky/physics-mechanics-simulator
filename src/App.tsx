@@ -2355,14 +2355,18 @@ function App() {
                     </td>
                     {(!simulationPaused ||
                       simulationType == "Inclined Plane" ||
-                      simulationType == "Suspension") && (
+                      simulationType == "Suspension" ||
+                      simulationType == "Circular Motion" ||
+                      simulationType == "Pulley") && (
                       <td style={{ cursor: "default" }}>
                         {positionXDisplay} m
                       </td>
                     )}{" "}
                     {simulationPaused &&
                       simulationType != "Inclined Plane" &&
-                      simulationType != "Suspension" && (
+                      simulationType != "Suspension" &&
+                      simulationType != "Circular Motion" &&
+                      simulationType != "Pulley" && (
                         <td
                           style={{
                             cursor: "default",
@@ -2388,14 +2392,18 @@ function App() {
                       )}{" "}
                     {(!simulationPaused ||
                       simulationType == "Inclined Plane" ||
-                      simulationType == "Suspension") && (
+                      simulationType == "Suspension" ||
+                      simulationType == "Circular Motion" ||
+                      simulationType == "Pulley") && (
                       <td style={{ cursor: "default" }}>
                         {positionYDisplay} m
                       </td>
                     )}{" "}
                     {simulationPaused &&
                       simulationType != "Inclined Plane" &&
-                      simulationType != "Suspension" && (
+                      simulationType != "Suspension" &&
+                      simulationType != "Circular Motion" &&
+                      simulationType != "Pulley" && (
                         <td
                           style={{
                             cursor: "default",
