@@ -88,41 +88,32 @@ function App() {
   let reviewCoefficient: number = 0;
   let questionVariables: number[] = [];
 
-  // State variables
+  // State variables used throughout
   const [accelerationXDisplay, setAccelerationXDisplay] = useState(0);
   const [accelerationYDisplay, setAccelerationYDisplay] = useState(0);
-  const [circularMotionRadius, setCircularMotionRadius] = useState(150);
   const [componentForces, setComponentForces] = useState<IForce[]>([]);
   const [displayChange, setDisplayChange] = useState<{
     xDisplay: number;
     yDisplay: number;
   }>({ xDisplay: 0, yDisplay: 0 });
   const [elasticCollisions, setElasticCollisions] = useState<boolean>(false);
-  const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
   const [gravity, setGravity] = useState(-9.81);
-  const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
   const [mass, setMass] = useState(1);
   const [mode, setMode] = useState<string>("Freeform");
-  const [noMovement, setNoMovement] = useState(false);
-  const [pendulumAngle, setPendulumAngle] = useState(0);
-  const [pendulumLength, setPendulumLength] = useState(300);
   const [positionXDisplay, setPositionXDisplay] = useState(0);
   const [positionYDisplay, setPositionYDisplay] = useState(0);
-  const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const [questionPartOne, setQuestionPartOne] = useState<string>("");
-  const [questionPartTwo, setQuestionPartTwo] = useState<string>("");
   const [resetAll, setResetAll] = useState(true);
   const [showAcceleration, setShowAcceleration] = useState<boolean>(false);
   const [showComponentForces, setShowComponentForces] =
     useState<boolean>(false);
   const [showForces, setShowForces] = useState<boolean>(true);
+  const [showForceMagnitudes, setShowForceMagnitudes] = useState<boolean>(true);
   const [showVelocity, setShowVelocity] = useState<boolean>(false);
   const [simulationPaused, setSimulationPaused] = useState<boolean>(true);
   const [simulationReset, setSimulationReset] = useState<boolean>(false);
   const [simulationSpeed, setSimulationSpeed] = useState(2);
   const [simulationType, setSimulationType] =
     useState<string>("Inclined Plane");
-  const [sketching, setSketching] = useState(false);
   const [startForces, setStartForces] = useState<IForce[]>([
     {
       description: "Gravity",
@@ -140,14 +131,18 @@ function App() {
   const [updatedForces, setUpdatedForces] = useState<IForce[]>([]);
   const [velocityXDisplay, setVelocityXDisplay] = useState(0);
   const [velocityYDisplay, setVelocityYDisplay] = useState(0);
-  const [wedgeWidth, setWedgeWidth] = useState(400);
 
-  // Review mode
+  // State variables used for review mode
   const [answerInputFields, setAnswerInputFields] = useState(<div></div>);
-
   const [currentForceSketch, setCurrentForceSketch] =
     useState<VectorTemplate | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
+  const [forceSketches, setForceSketches] = useState<VectorTemplate[]>([]);
+  const [hintDialogueOpen, setHintDialogueOpen] = useState<boolean>(false);
+  const [noMovement, setNoMovement] = useState(false);
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const [questionPartOne, setQuestionPartOne] = useState<string>("");
+  const [questionPartTwo, setQuestionPartTwo] = useState<string>("");
   const [reviewGravityAngle, setReviewGravityAngle] = useState<number>(0);
   const [reviewGravityMagnitude, setReviewGravityMagnitude] =
     useState<number>(0);
@@ -159,25 +154,31 @@ function App() {
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionTemplate>(
     questions.inclinePlane[0]
   );
+  const [sketching, setSketching] = useState(false);
 
-  // Tutorial mode
+  // State variables used for tutorial mode
   const [selectedTutorial, setSelectedTutorial] = useState<TutorialTemplate>(
     tutorials.inclinePlane
   );
 
-  // Spring
+  // State variables used for uniform circular motion simulation
+  const [circularMotionRadius, setCircularMotionRadius] = useState(150);
+
+  // State variables used for spring simulation
   const [springConstant, setSpringConstant] = useState(0.5);
   const [springRestLength, setSpringRestLength] = useState(200);
   const [springStartLength, setSpringStartLength] = useState(200);
 
-  // Pendulum
+  // State variables used for pendulum simulation
   const [adjustPendulumAngle, setAdjustPendulumAngle] = useState<{
     angle: number;
     length: number;
   }>({ angle: 0, length: 0 });
+  const [pendulumAngle, setPendulumAngle] = useState(0);
+  const [pendulumLength, setPendulumLength] = useState(300);
   const [startPendulumAngle, setStartPendulumAngle] = useState(0);
 
-  // Wedge
+  // State variables used for wedge simulation
   const [coefficientOfKineticFriction, setCoefficientOfKineticFriction] =
     React.useState<number | string | Array<number | string>>(0);
   const [coefficientOfStaticFriction, setCoefficientOfStaticFriction] =
@@ -188,6 +189,7 @@ function App() {
   const [wedgeHeight, setWedgeHeight] = useState(
     Math.tan((26 * Math.PI) / 180) * 400
   );
+  const [wedgeWidth, setWedgeWidth] = useState(400);
 
   // Pulley
   const [positionXDisplay2, setPositionXDisplay2] = useState(0);
@@ -360,6 +362,9 @@ function App() {
   // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
     return yMax - yPos - 2 * radius + 5;
+  };
+  const getYPosFromDisplay = (yDisplay: number) => {
+    return yMax - yDisplay - 2 * radius + 5;
   };
 
   // In review mode, update forces when coefficient of static friction changed
@@ -589,8 +594,8 @@ function App() {
     }
   };
 
+  // Reset all review values to default
   const resetReviewValuesToDefault = () => {
-    // Reset all values to default
     setReviewGravityMagnitude(0);
     setReviewGravityAngle(0);
     setReviewNormalMagnitude(0);
@@ -871,8 +876,6 @@ function App() {
       setShowForceMagnitudes(true);
       if (simulationType == "One Weight") {
         setShowComponentForces(false);
-        setVelocityXDisplay(0);
-        setVelocityYDisplay(0);
         setStartPosY(yMin + radius);
         setStartPosX((xMax + xMin) / 2 - radius);
         setPositionYDisplay(getDisplayYPos(yMin + radius));
@@ -895,8 +898,6 @@ function App() {
         ]);
         setSimulationReset(!simulationReset);
       } else if (simulationType == "Inclined Plane") {
-        setVelocityXDisplay(0);
-        setVelocityYDisplay(0);
         changeWedgeBasedOnNewAngle(26);
         setStartForces([
           {
@@ -1102,7 +1103,7 @@ function App() {
       setShowVelocity(false);
       setShowForces(true);
       generateNewQuestion();
-      // TODO - all others
+      // TODO - all other simulation types
     } else if (mode == "Tutorial") {
       setShowComponentForces(false);
       setVelocityXDisplay(0);
@@ -1121,7 +1122,7 @@ function App() {
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
       } else if (simulationType == "Spring") {
         setShowForces(false);
-        // TODO
+        // TODO - spring tutorial
       } else if (simulationType == "Pendulum") {
         setShowForces(true);
         const length = 300;
@@ -1149,20 +1150,19 @@ function App() {
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
       } else if (simulationType == "Circular Motion") {
         setShowForces(false);
-        // TODO
+        // TODO - circular motion tutorial
       } else if (simulationType == "Pulley") {
         setShowForces(false);
-        // TODO
+        // TODO - pulley tutorial
       } else if (simulationType == "Suspension") {
         setShowForces(false);
-        // TODO
+        // TODO - suspension tutorial
       }
       setSimulationReset(!simulationReset);
     }
   }, [simulationType, mode, resetAll]);
 
-  const [showForceMagnitudes, setShowForceMagnitudes] = useState<boolean>(true);
-
+  // Helper function used for tutorial and review mode
   const getForceFromJSON = (
     json: {
       description: string;
@@ -1225,7 +1225,7 @@ function App() {
     reviewStaticAngle,
   ]);
 
-  // Use effect to add listener for SHIFT key, which determines if sketch force arrow will be edited or deleted on click - delete in Dash integration
+  // Use effect to add listener for SHIFT key, which determines if sketch force arrow will be edited or deleted on click - TODO delete in Dash integration
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
       if (e.shiftKey) {
@@ -1247,6 +1247,7 @@ function App() {
     setTimer(timer + 1);
   }, 50);
 
+  // Render simulation
   return (
     <div className="physicsSimApp">
       <div className="mechanicsSimulationContainer">
@@ -1255,7 +1256,7 @@ function App() {
           onPointerMove={(e) => {
             if (sketching) {
               const x1 = positionXDisplay + radius;
-              const y1 = yMax - positionYDisplay - 3 * radius + 5;
+              const y1 = getYPosFromDisplay(positionYDisplay) + radius;
               const x2 = e.clientX;
               const y2 = e.clientY;
               const height = Math.abs(y1 - y2) + 120;
@@ -1613,6 +1614,7 @@ function App() {
                   <IconButton
                     onClick={() => {
                       setSketching(true);
+                      setShowVelocity(true);
                       setSimulationReset(!simulationReset);
                     }}
                   >
