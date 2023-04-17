@@ -275,12 +275,17 @@ export const Weight = (props: IWeightProps) => {
     setYVelocity(startVelY ?? 0);
     setPendulumAngle(startPendulumAngle);
     setUpdatedForces(startForces);
-    setDisplayValues(
-      updatedStartPosX,
-      updatedStartPosY,
-      startVelX ?? 0,
-      startVelY ?? 0
-    );
+
+    setDisplayXAcceleration(0);
+    setDisplayYAcceleration(0);
+    setYPosDisplay(updatedStartPosX);
+    setXPosDisplay(updatedStartPosY);
+    setYVelDisplay(startVelX);
+    setXVelDisplay(startVelY);
+    setYPosDisplay(updatedStartPosY);
+    setXPosDisplay(updatedStartPosX);
+    setYVelDisplay(startVelY);
+    setXVelDisplay(startVelX);
   };
 
   // Change pendulum angle based on input field
@@ -1307,37 +1312,6 @@ export const Weight = (props: IWeightProps) => {
                 markerEnd="url(#accArrow)"
               />
             </svg>
-            {/* <div
-              style={{
-                pointerEvents: "none",
-                position: "absolute",
-                left:
-                  xPosition +
-                  radius +
-                  getNewAccelerationX(updatedForces) * 5 +
-                  25 +
-                  "px",
-                top:
-                  yPosition +
-                  radius +
-                  getNewAccelerationY(updatedForces) * 5 +
-                  25 +
-                  "px",
-                zIndex: -1,
-                lineHeight: 0.5,
-              }}
-            >
-              <p>
-                {Math.round(
-                  100 *
-                    Math.sqrt(
-                      Math.pow(getNewAccelerationX(updatedForces), 2) +
-                        Math.pow(getNewAccelerationY(updatedForces), 2)
-                    )
-                ) / 100}{" "}
-                m/s<sup>2</sup>
-              </p>
-            </div> */}
           </div>
         </div>
       )}
