@@ -2674,11 +2674,66 @@ function App() {
           )}
         </div>
       </div>
-      <CoordinateSystem
-        upAxis={simulationType == "Circular Motion" ? "Z" : "Y"}
-        top={window.innerHeight - 120}
-        right={xMin + 90}
-      />
+      <div
+        style={{
+          position: "fixed",
+          top: window.innerHeight - 120 + 20 + "px",
+          left: xMin + 90 - 80 + "px",
+          zIndex: -10000,
+        }}
+      >
+        <svg width={100 + "px"} height={100 + "px"}>
+          <defs>
+            <marker
+              id="miniArrow"
+              markerWidth="20"
+              markerHeight="20"
+              refX="0"
+              refY="3"
+              orient="auto"
+              markerUnits="strokeWidth"
+            >
+              <path d="M0,0 L0,6 L9,3 z" fill={"#000000"} />
+            </marker>
+          </defs>
+          <line
+            x1={20}
+            y1={70}
+            x2={70}
+            y2={70}
+            stroke={"#000000"}
+            strokeWidth="2"
+            markerEnd="url(#miniArrow)"
+          />
+          <line
+            x1={20}
+            y1={70}
+            x2={20}
+            y2={20}
+            stroke={"#000000"}
+            strokeWidth="2"
+            markerEnd="url(#miniArrow)"
+          />
+        </svg>
+        <p
+          style={{
+            position: "fixed",
+            top: window.innerHeight - 120 + 40 + "px",
+            left: xMin + 90 - 80 + "px",
+          }}
+        >
+          {simulationType == "Circular Motion" ? "Z" : "Y"}
+        </p>
+        <p
+          style={{
+            position: "fixed",
+            top: window.innerHeight - 120 + 80 + "px",
+            left: xMin + 90 - 40 + "px",
+          }}
+        >
+          X
+        </p>
+      </div>
     </div>
   );
 }
