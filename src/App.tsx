@@ -29,7 +29,6 @@ import { InputField } from "./InputField";
 import questions from "./Questions.json";
 import tutorials from "./Tutorial.json";
 import { IWallProps, Wall } from "./Wall";
-import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
 
 interface VectorTemplate {
@@ -1100,35 +1099,20 @@ function App() {
   // Default setup for spring simulation
   const setupSpring = () => {
     setShowComponentForces(false);
-    const springForce: IForce = {
-      description: "Spring Force",
-      magnitude: 0,
-      directionInDegrees: 90,
+    const gravityForce: IForce = {
+      description: "Gravity",
+      magnitude: Math.abs(gravity) * mass,
+      directionInDegrees: 270,
       component: false,
     };
-    setUpdatedForces([
-      {
-        description: "Gravity",
-        magnitude: Math.abs(gravity) * mass,
-        directionInDegrees: 270,
-        component: false,
-      },
-      springForce,
-    ]);
-    setStartForces([
-      {
-        description: "Gravity",
-        magnitude: Math.abs(gravity) * mass,
-        directionInDegrees: 270,
-        component: false,
-      },
-      springForce,
-    ]);
+    setUpdatedForces([gravityForce]);
+    setStartForces([gravityForce]);
     setStartPosX(xMax / 2 - radius);
     setStartPosY(200);
     setSpringConstant(0.5);
     setSpringRestLength(200);
     setSpringStartLength(200);
+    setSimulationReset(!simulationReset);
   };
 
   // Default setup for suspension simulation
