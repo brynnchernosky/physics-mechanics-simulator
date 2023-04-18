@@ -10,14 +10,14 @@ export interface IForce {
 }
 export interface IWeightProps {
   adjustPendulumAngle: { angle: number; length: number };
-  coefficientOfKineticFriction: number;
-  gravity: number;
-  color: string;
   circularMotionRadius: number;
+  coefficientOfKineticFriction: number;
+  color: string;
   componentForces: IForce[];
   displayXVelocity: number;
   displayYVelocity: number;
   elasticCollisions: boolean;
+  gravity: number;
   incrementTime: number;
   mass: number;
   mode: string;
@@ -61,6 +61,10 @@ export interface IWeightProps {
   updatedForces: IForce[];
   wedgeHeight: number;
   wedgeWidth: number;
+  xMax: number;
+  xMin: number;
+  yMax: number;
+  yMin: number;
 }
 
 export const Weight = (props: IWeightProps) => {
@@ -117,6 +121,10 @@ export const Weight = (props: IWeightProps) => {
     updatedForces,
     wedgeHeight,
     wedgeWidth,
+    xMax,
+    xMin,
+    yMax,
+    yMin,
   } = props;
 
   // Constants
@@ -126,10 +134,6 @@ export const Weight = (props: IWeightProps) => {
     mode == "Freeform";
   const epsilon = 0.0001;
   const labelBackgroundColor = `rgba(255,255,255,0.5)`;
-  const xMax = window.innerWidth * 0.7;
-  const xMin = 0;
-  const yMax = window.innerHeight * 0.8;
-  const yMin = 0;
 
   // State hooks
   const [clickPositionX, setClickPositionX] = useState(0);
@@ -168,6 +172,7 @@ export const Weight = (props: IWeightProps) => {
     setDisplayXVelocity(Math.round(xVel * 100) / 100);
   };
 
+  // Update display values when simulation updates
   const setDisplayValues = (
     xPos: number = xPosition,
     yPos: number = yPosition,
@@ -220,6 +225,7 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [updateDisplay]);
 
+  // Make sure weight doesn't go above max height
   useEffect(() => {
     if (simulationType == "One Weight") {
       let maxYPos = updatedStartPosY;
@@ -507,7 +513,7 @@ export const Weight = (props: IWeightProps) => {
         if (wall.angleInDegrees == 0 && wall.yPos < 0.4) {
           const groundY = (wall.yPos / 100) * window.innerHeight;
           if (minY < groundY) {
-            setYPosition(groundY + 5 );
+            setYPosition(groundY + 5);
             if (elasticCollisions) {
               setYVelocity(-yVelocity);
             } else {

@@ -191,7 +191,7 @@ function App() {
   );
   const [wedgeWidth, setWedgeWidth] = useState(400);
 
-  // Pulley
+  // State variables used for pulley simulation
   const [positionXDisplay2, setPositionXDisplay2] = useState(0);
   const [velocityXDisplay2, setVelocityXDisplay2] = useState(0);
   const [accelerationXDisplay2, setAccelerationXDisplay2] = useState(0);
@@ -1010,6 +1010,7 @@ function App() {
     }
   }, [simulationType, mode, resetAll]);
 
+  // Default setup for uniform circular motion simulation
   const setupCircular = (value: number) => {
     setShowComponentForces(false);
     setStartVelY(0);
@@ -1029,6 +1030,7 @@ function App() {
     setSimulationReset(!simulationReset);
   };
 
+  // Default setup for pendulum simulation
   const setupPendulum = () => {
     const length = 300;
     const angle = 30;
@@ -1096,6 +1098,7 @@ function App() {
     setAdjustPendulumAngle({ angle: 30, length: 300 });
   };
 
+  // Default setup for spring simulation
   const setupSpring = () => {
     setShowComponentForces(false);
     const springForce: IForce = {
@@ -1129,6 +1132,7 @@ function App() {
     setSpringStartLength(200);
   };
 
+  // Default setup for suspension simulation
   const setupSuspension = () => {
     let xPos = (xMax + xMin) / 2 - radius;
     let yPos = yMin + 200;
@@ -1160,6 +1164,7 @@ function App() {
     setSimulationReset(!simulationReset);
   };
 
+  // Default setup for pulley simulation
   const setupPulley = () => {
     setShowComponentForces(false);
     setStartPosY((yMax + yMin) / 2);
@@ -1265,6 +1270,11 @@ function App() {
     reviewStaticAngle,
   ]);
 
+  // Timer for animating the simulation, update every 0.05 seconds
+  setInterval(() => {
+    setTimer(timer + 1);
+  }, 50);
+
   // Use effect to add listener for SHIFT key, which determines if sketch force arrow will be edited or deleted on click - TODO delete in Dash integration
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
@@ -1281,11 +1291,6 @@ function App() {
       window.location.reload();
     });
   }, []);
-
-  // Timer for animating the simulation, update every 0.05 seconds
-  setInterval(() => {
-    setTimer(timer + 1);
-  }, 50);
 
   // Render simulation
   return (
@@ -1530,6 +1535,10 @@ function App() {
                 updatedForces={updatedForces}
                 wedgeHeight={wedgeHeight}
                 wedgeWidth={wedgeWidth}
+                xMax={xMax}
+                xMin={xMin}
+                yMax={yMax}
+                yMin={yMin}
               />
               {simulationType == "Pulley" && (
                 <Weight
@@ -1587,6 +1596,10 @@ function App() {
                   updatedForces={updatedForces2}
                   wedgeHeight={wedgeHeight}
                   wedgeWidth={wedgeWidth}
+                  xMax={xMax}
+                  xMin={xMin}
+                  yMax={yMax}
+                  yMin={yMin}
                 />
               )}
               {simulationType == "Inclined Plane" && (
