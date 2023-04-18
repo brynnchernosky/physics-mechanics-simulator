@@ -225,6 +225,13 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [updateDisplay]);
 
+  // Prevent bug when switching between sims
+  useEffect(() => {
+    setXVelocity(startVelX ?? 0);
+    setYVelocity(startVelY ?? 0);
+    setDisplayValues();
+  }, [startForces]);
+
   // Make sure weight doesn't go above max height
   useEffect(() => {
     if (simulationType == "One Weight") {
