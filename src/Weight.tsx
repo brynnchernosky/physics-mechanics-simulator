@@ -134,6 +134,7 @@ export const Weight = (props: IWeightProps) => {
     mode == "Freeform";
   const epsilon = 0.0001;
   const labelBackgroundColor = `rgba(255,255,255,0.5)`;
+  const wedgeColor = "#deb887";
 
   // State hooks
   const [clickPositionX, setClickPositionX] = useState(0);
@@ -145,9 +146,30 @@ export const Weight = (props: IWeightProps) => {
   const [updatedStartPosY, setUpdatedStartPosY] = useState(startPosY);
   const [walls, setWalls] = useState<IWallProps[]>([]);
   const [xPosition, setXPosition] = useState(startPosX);
-  const [xVelocity, setXVelocity] = useState(startVelX ?? 0);
+  const [xVelocity, setXVelocity] = useState(startVelX);
   const [yPosition, setYPosition] = useState(startPosY);
-  const [yVelocity, setYVelocity] = useState(startVelY ?? 0);
+  const [yVelocity, setYVelocity] = useState(startVelY);
+  const [coordinates, setCoordinates] = useState(""); // for wedge
+
+  // Variables
+  let weightStyle = {
+    backgroundColor: color,
+    borderStyle: "solid",
+    borderColor: "black",
+    position: "absolute" as "absolute",
+    left: xPosition + "px",
+    top: yPosition + "px",
+    width: 2 * radius + "px",
+    height: 2 * radius + "px",
+    borderRadius: 50 + "%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    touchAction: "none",
+  };
+  if (dragging) {
+    weightStyle.borderColor = "lightblue";
+  }
 
   // Helper function to go between display and real values
   const getDisplayYPos = (yPos: number) => {
@@ -191,98 +213,13 @@ export const Weight = (props: IWeightProps) => {
     );
   };
 
-  // When display values updated by user, update real values
-  useEffect(() => {
-    if (updateDisplay.xDisplay != xPosition) {
-      let x = updateDisplay.xDisplay;
-      x = Math.max(0, x);
-      x = Math.min(x, xMax - 2 * radius);
-      setUpdatedStartPosX(x);
-      setXPosition(x);
-      setDisplayXPosition(x);
-    }
-
-    if (updateDisplay.yDisplay != getDisplayYPos(yPosition)) {
-      let y = updateDisplay.yDisplay;
-      y = Math.max(0, y);
-      y = Math.min(y, yMax - 2 * radius);
-      setDisplayYPosition(y);
-      let coordinatePosition = getYPosFromDisplay(y);
-      setUpdatedStartPosY(coordinatePosition);
-      setYPosition(coordinatePosition);
-    }
-
-    if (displayXVelocity != xVelocity) {
-      let x = displayXVelocity;
-      setXVelocity(x);
-      setDisplayXVelocity(x);
-    }
-
-    if (displayYVelocity != -yVelocity) {
-      let y = displayYVelocity;
-      setYVelocity(-y);
-      setDisplayYVelocity(y);
-    }
-  }, [updateDisplay]);
-
-  // Prevent bug when switching between sims
-  useEffect(() => {
-    setXVelocity(startVelX ?? 0);
-    setYVelocity(startVelY ?? 0);
-    setDisplayValues();
-  }, [startForces]);
-
-  // Make sure weight doesn't go above max height
-  useEffect(() => {
-    if (simulationType == "One Weight") {
-      let maxYPos = updatedStartPosY;
-      if (startVelY < 0) {
-        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
-      }
-      if (startVelY > 0) {
-        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
-      }
-      if (maxYPos < 0) {
-        maxYPos = 0;
-      }
-      setMaxPosYConservation(maxYPos);
-    }
-  }, [updatedStartPosY, startVelY]);
-
-  // Check for collisions and update
-  useEffect(() => {
-    if (!paused && !noMovement) {
-      let collisions = false;
-      if (
-        simulationType == "One Weight" ||
-        simulationType == "Inclined Plane"
-      ) {
-        const collisionsWithGround = checkForCollisionsWithGround();
-        const collisionsWithWalls = checkForCollisionsWithWall();
-        collisions = collisionsWithGround || collisionsWithWalls;
-      }
-      if (simulationType == "Pulley") {
-        if (yPosition <= yMin + 100 || yPosition >= yMax - 100) {
-          collisions = true;
-        }
-      }
-      if (!collisions) {
-        update();
-      }
-      setDisplayValues();
-    }
-  }, [incrementTime]);
-
-  useEffect(() => {
-    resetEverything();
-  }, [reset]);
-
+  // Reset simulation on reset button click
   const resetEverything = () => {
     setKineticFriction(false);
     setXPosition(updatedStartPosX);
     setYPosition(updatedStartPosY);
-    setXVelocity(startVelX ?? 0);
-    setYVelocity(startVelY ?? 0);
+    setXVelocity(startVelX);
+    setYVelocity(startVelY);
     setPendulumAngle(startPendulumAngle);
     setUpdatedForces(startForces);
     setDisplayXAcceleration(0);
@@ -297,23 +234,7 @@ export const Weight = (props: IWeightProps) => {
     setXVelDisplay(startVelX);
   };
 
-  // Change pendulum angle based on input field
-  useEffect(() => {
-    let length = adjustPendulumAngle.length;
-    const x =
-      length * Math.cos(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
-    const y =
-      length * Math.sin(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
-    const xPos = xMax / 2 - x - radius;
-    const yPos = y - radius - 5;
-    setXPosition(xPos);
-    setYPosition(yPos);
-    setUpdatedStartPosX(xPos);
-    setUpdatedStartPosY(yPos);
-    setPendulumAngle(adjustPendulumAngle.angle);
-    setPendulumLength(adjustPendulumAngle.length);
-  }, [adjustPendulumAngle]);
-
+  // Compute x acceleration from forces, F=ma
   const getNewAccelerationX = (forceList: IForce[]) => {
     let newXAcc = 0;
     forceList.forEach((force) => {
@@ -327,6 +248,7 @@ export const Weight = (props: IWeightProps) => {
     return newXAcc;
   };
 
+  // Compute y acceleration from forces, F=ma
   const getNewAccelerationY = (forceList: IForce[]) => {
     let newYAcc = 0;
     forceList.forEach((force) => {
@@ -341,6 +263,7 @@ export const Weight = (props: IWeightProps) => {
     return newYAcc;
   };
 
+  // Compute uniform circular motion forces given x, y positions
   const getNewCircularMotionForces = (xPos: number, yPos: number) => {
     let deltaX = (xMin + xMax) / 2 - (xPos + radius);
     let deltaY = yPos + radius - (yMin + yMax) / 2;
@@ -354,6 +277,7 @@ export const Weight = (props: IWeightProps) => {
     return [tensionForce];
   };
 
+  // Compute spring forces given y position
   const getNewSpringForces = (yPos: number) => {
     let springForce: IForce = {
       description: "Spring Force",
@@ -388,6 +312,7 @@ export const Weight = (props: IWeightProps) => {
     ];
   };
 
+  // Compute pendulum forces given position, velocity
   const getNewPendulumForces = (
     xPos: number,
     yPos: number,
@@ -430,6 +355,7 @@ export const Weight = (props: IWeightProps) => {
     ];
   };
 
+  // Check for collisions in x direction
   const checkForCollisionsWithWall = () => {
     let collision = false;
     const minX = xPosition;
@@ -465,6 +391,7 @@ export const Weight = (props: IWeightProps) => {
     return collision;
   };
 
+  // Check for collisions in y direction
   const checkForCollisionsWithGround = () => {
     let collision = false;
     const minY = yPosition;
@@ -534,133 +461,7 @@ export const Weight = (props: IWeightProps) => {
     return collision;
   };
 
-  useEffect(() => {
-    if (
-      simulationType == "Inclined Plane" &&
-      Math.abs(xVelocity) > 0.1 &&
-      mode != "Review" &&
-      !kineticFriction
-    ) {
-      setKineticFriction(true);
-      //switch from static to kinetic friction
-      const normalForce: IForce = {
-        description: "Normal Force",
-        magnitude:
-          mass *
-          Math.abs(gravity) *
-          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
-        directionInDegrees:
-          180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
-        component: false,
-      };
-      let frictionForce: IForce = {
-        description: "Kinetic Friction Force",
-        magnitude:
-          mass *
-          coefficientOfKineticFriction *
-          Math.abs(gravity) *
-          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
-        directionInDegrees:
-          180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
-        component: false,
-      };
-      // reduce magnitude of friction force if necessary such that block cannot slide up plane
-      let yForce = -Math.abs(gravity);
-      yForce +=
-        normalForce.magnitude *
-        Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
-      yForce +=
-        frictionForce.magnitude *
-        Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
-      if (yForce > 0) {
-        frictionForce.magnitude =
-          (-normalForce.magnitude *
-            Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
-            Math.abs(gravity)) /
-          Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
-      }
-
-      const frictionForceComponent: IForce = {
-        description: "Kinetic Friction Force",
-
-        magnitude:
-          mass *
-          coefficientOfKineticFriction *
-          Math.abs(gravity) *
-          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
-        directionInDegrees:
-          180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
-        component: true,
-      };
-      const normalForceComponent: IForce = {
-        description: "Normal Force",
-        magnitude:
-          mass *
-          Math.abs(gravity) *
-          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
-        directionInDegrees:
-          180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
-        component: true,
-      };
-      const gravityParallel: IForce = {
-        description: "Gravity Parallel Component",
-        magnitude:
-          mass *
-          Math.abs(gravity) *
-          Math.sin(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
-        directionInDegrees:
-          180 -
-          90 -
-          (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI +
-          180,
-        component: true,
-      };
-      const gravityPerpendicular: IForce = {
-        description: "Gravity Perpendicular Component",
-        magnitude:
-          mass *
-          Math.abs(gravity) *
-          Math.cos(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
-        directionInDegrees:
-          360 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
-        component: true,
-      };
-      const gravityForce: IForce = {
-        description: "Gravity",
-        magnitude: mass * Math.abs(gravity),
-        directionInDegrees: 270,
-        component: false,
-      };
-      if (coefficientOfKineticFriction != 0) {
-        setUpdatedForces([gravityForce, normalForce, frictionForce]);
-        setComponentForces([
-          frictionForceComponent,
-          normalForceComponent,
-          gravityParallel,
-          gravityPerpendicular,
-        ]);
-      } else {
-        setUpdatedForces([gravityForce, normalForce]);
-        setComponentForces([
-          normalForceComponent,
-          gravityParallel,
-          gravityPerpendicular,
-        ]);
-      }
-    }
-  }, [xVelocity]);
-
-  useEffect(() => {
-    let w: IWallProps[] = [];
-    if (simulationType == "One Weight" || simulationType == "Inclined Plane") {
-      w.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
-      w.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
-      w.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
-      w.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
-    }
-    setWalls(w);
-  }, [simulationType]);
-
+  // Called at each RK4 step
   const evaluate = (
     currentXPos: number,
     currentYPos: number,
@@ -700,8 +501,8 @@ export const Weight = (props: IWeightProps) => {
     };
   };
 
+  // Update position, velocity using RK4 method
   const update = () => {
-    // RK4 update
     let startXVel = xVelocity;
     let startYVel = yVelocity;
     let xPos = xPosition;
@@ -867,26 +668,240 @@ export const Weight = (props: IWeightProps) => {
     }
   };
 
-  let weightStyle = {
-    backgroundColor: color,
-    borderStyle: "solid",
-    borderColor: "black",
-    position: "absolute" as "absolute",
-    left: xPosition + "px",
-    top: yPosition + "px",
-    width: 2 * radius + "px",
-    height: 2 * radius + "px",
-    borderRadius: 50 + "%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    touchAction: "none",
-  };
-  if (dragging) {
-    weightStyle.borderColor = "lightblue";
-  }
+  // Change pendulum angle based on input field
+  useEffect(() => {
+    let length = adjustPendulumAngle.length;
+    const x =
+      length * Math.cos(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
+    const y =
+      length * Math.sin(((90 - adjustPendulumAngle.angle) * Math.PI) / 180);
+    const xPos = xMax / 2 - x - radius;
+    const yPos = y - radius - 5;
+    setXPosition(xPos);
+    setYPosition(yPos);
+    setUpdatedStartPosX(xPos);
+    setUpdatedStartPosY(yPos);
+    setPendulumAngle(adjustPendulumAngle.angle);
+    setPendulumLength(adjustPendulumAngle.length);
+  }, [adjustPendulumAngle]);
 
-  // Update x start position
+  // When display values updated by user, update real values
+  useEffect(() => {
+    if (updateDisplay.xDisplay != xPosition) {
+      let x = updateDisplay.xDisplay;
+      x = Math.max(0, x);
+      x = Math.min(x, xMax - 2 * radius);
+      setUpdatedStartPosX(x);
+      setXPosition(x);
+      setDisplayXPosition(x);
+    }
+
+    if (updateDisplay.yDisplay != getDisplayYPos(yPosition)) {
+      let y = updateDisplay.yDisplay;
+      y = Math.max(0, y);
+      y = Math.min(y, yMax - 2 * radius);
+      setDisplayYPosition(y);
+      let coordinatePosition = getYPosFromDisplay(y);
+      setUpdatedStartPosY(coordinatePosition);
+      setYPosition(coordinatePosition);
+    }
+
+    if (displayXVelocity != xVelocity) {
+      let x = displayXVelocity;
+      setXVelocity(x);
+      setDisplayXVelocity(x);
+    }
+
+    if (displayYVelocity != -yVelocity) {
+      let y = displayYVelocity;
+      setYVelocity(-y);
+      setDisplayYVelocity(y);
+    }
+  }, [updateDisplay]);
+
+  // Prevent bug when switching between sims
+  useEffect(() => {
+    setXVelocity(startVelX);
+    setYVelocity(startVelY);
+    setDisplayValues();
+  }, [startForces]);
+
+  // Make sure weight doesn't go above max height
+  useEffect(() => {
+    if (simulationType == "One Weight") {
+      let maxYPos = updatedStartPosY;
+      if (startVelY < 0) {
+        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
+      }
+      if (startVelY > 0) {
+        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
+      }
+      if (maxYPos < 0) {
+        maxYPos = 0;
+      }
+      setMaxPosYConservation(maxYPos);
+    }
+  }, [updatedStartPosY, startVelY]);
+
+  // Check for collisions and update
+  useEffect(() => {
+    if (!paused && !noMovement) {
+      let collisions = false;
+      if (
+        simulationType == "One Weight" ||
+        simulationType == "Inclined Plane"
+      ) {
+        const collisionsWithGround = checkForCollisionsWithGround();
+        const collisionsWithWalls = checkForCollisionsWithWall();
+        collisions = collisionsWithGround || collisionsWithWalls;
+      }
+      if (simulationType == "Pulley") {
+        if (yPosition <= yMin + 100 || yPosition >= yMax - 100) {
+          collisions = true;
+        }
+      }
+      if (!collisions) {
+        update();
+      }
+      setDisplayValues();
+    }
+  }, [incrementTime]);
+
+  // Reset everything on reset button click
+  useEffect(() => {
+    resetEverything();
+  }, [reset]);
+
+  // Convert from static to kinetic friction if/when weight slips on inclined plane
+  useEffect(() => {
+    if (
+      simulationType == "Inclined Plane" &&
+      Math.abs(xVelocity) > 0.1 &&
+      mode != "Review" &&
+      !kineticFriction
+    ) {
+      setKineticFriction(true);
+      //switch from static to kinetic friction
+      const normalForce: IForce = {
+        description: "Normal Force",
+        magnitude:
+          mass *
+          Math.abs(gravity) *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: false,
+      };
+      let frictionForce: IForce = {
+        description: "Kinetic Friction Force",
+        magnitude:
+          mass *
+          coefficientOfKineticFriction *
+          Math.abs(gravity) *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: false,
+      };
+      // reduce magnitude of friction force if necessary such that block cannot slide up plane
+      let yForce = -Math.abs(gravity);
+      yForce +=
+        normalForce.magnitude *
+        Math.sin((normalForce.directionInDegrees * Math.PI) / 180);
+      yForce +=
+        frictionForce.magnitude *
+        Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
+      if (yForce > 0) {
+        frictionForce.magnitude =
+          (-normalForce.magnitude *
+            Math.sin((normalForce.directionInDegrees * Math.PI) / 180) +
+            Math.abs(gravity)) /
+          Math.sin((frictionForce.directionInDegrees * Math.PI) / 180);
+      }
+
+      const frictionForceComponent: IForce = {
+        description: "Kinetic Friction Force",
+
+        magnitude:
+          mass *
+          coefficientOfKineticFriction *
+          Math.abs(gravity) *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: true,
+      };
+      const normalForceComponent: IForce = {
+        description: "Normal Force",
+        magnitude:
+          mass *
+          Math.abs(gravity) *
+          Math.cos(Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 - 90 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: true,
+      };
+      const gravityParallel: IForce = {
+        description: "Gravity Parallel Component",
+        magnitude:
+          mass *
+          Math.abs(gravity) *
+          Math.sin(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          180 -
+          90 -
+          (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI +
+          180,
+        component: true,
+      };
+      const gravityPerpendicular: IForce = {
+        description: "Gravity Perpendicular Component",
+        magnitude:
+          mass *
+          Math.abs(gravity) *
+          Math.cos(Math.PI / 2 - Math.atan(wedgeHeight / wedgeWidth)),
+        directionInDegrees:
+          360 - (Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI,
+        component: true,
+      };
+      const gravityForce: IForce = {
+        description: "Gravity",
+        magnitude: mass * Math.abs(gravity),
+        directionInDegrees: 270,
+        component: false,
+      };
+      if (coefficientOfKineticFriction != 0) {
+        setUpdatedForces([gravityForce, normalForce, frictionForce]);
+        setComponentForces([
+          frictionForceComponent,
+          normalForceComponent,
+          gravityParallel,
+          gravityPerpendicular,
+        ]);
+      } else {
+        setUpdatedForces([gravityForce, normalForce]);
+        setComponentForces([
+          normalForceComponent,
+          gravityParallel,
+          gravityPerpendicular,
+        ]);
+      }
+    }
+  }, [xVelocity]);
+
+  // Add/remove walls when simulation type changes
+  useEffect(() => {
+    let w: IWallProps[] = [];
+    if (simulationType == "One Weight" || simulationType == "Inclined Plane") {
+      w.push({ length: 70, xPos: 0, yPos: 0, angleInDegrees: 0 });
+      w.push({ length: 70, xPos: 0, yPos: 80, angleInDegrees: 0 });
+      w.push({ length: 80, xPos: 0, yPos: 0, angleInDegrees: 90 });
+      w.push({ length: 80, xPos: 69.5, yPos: 0, angleInDegrees: 90 });
+    }
+    setWalls(w);
+  }, [simulationType]);
+
+  // Update x position when start pos x changes
   useEffect(() => {
     if (paused) {
       setUpdatedStartPosX(startPosX);
@@ -895,7 +910,7 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [startPosX]);
 
-  // Update y start position
+  // Update y position when start pos y changes
   useEffect(() => {
     if (paused) {
       setUpdatedStartPosY(startPosY);
@@ -904,6 +919,17 @@ export const Weight = (props: IWeightProps) => {
     }
   }, [startPosY]);
 
+  // Update wedge coordinates
+  useEffect(() => {
+    const left = xMax * 0.5 - 200;
+    const coordinatePair1 = Math.round(left) + "," + yMax + " ";
+    const coordinatePair2 = Math.round(left + wedgeWidth) + "," + yMax + " ";
+    const coordinatePair3 = Math.round(left) + "," + (yMax - wedgeHeight);
+    const coord = coordinatePair1 + coordinatePair2 + coordinatePair3;
+    setCoordinates(coord);
+  }, [wedgeWidth, wedgeHeight]);
+
+  // Render weight, spring, rod(s), vectors
   return (
     <div style={{ zIndex: -1000 }}>
       <div
@@ -1280,6 +1306,31 @@ export const Weight = (props: IWeightProps) => {
               </p>
             </div>
           )}
+        </div>
+      )}
+      {simulationType == "Inclined Plane" && (
+        <div>
+          <div
+            style={{ position: "absolute", left: "0", top: "0", zIndex: -5 }}
+          >
+            <svg width={xMax + "px"} height={yMax + "px"}>
+              <polygon points={coordinates} style={{ fill: "burlywood" }} />
+            </svg>
+          </div>
+
+          <p
+            style={{
+              position: "absolute",
+              zIndex: 500,
+              left: Math.round(xMax * 0.5 - 200 + wedgeWidth - 80) + "px",
+              top: Math.round(window.innerHeight * 0.8 - 40) + "px",
+            }}
+          >
+            {Math.round(
+              ((Math.atan(wedgeHeight / wedgeWidth) * 180) / Math.PI) * 100
+            ) / 100}
+            °
+          </p>
         </div>
       )}
       {!dragging && showAcceleration && (

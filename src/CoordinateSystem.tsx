@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import "./Wedge.scss";
 
 export interface ICoordinateSystemProps {
   top: number;

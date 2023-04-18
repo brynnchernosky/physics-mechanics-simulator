@@ -29,7 +29,6 @@ import { InputField } from "./InputField";
 import questions from "./Questions.json";
 import tutorials from "./Tutorial.json";
 import { IWallProps, Wall } from "./Wall";
-import { Wedge } from "./Wedge";
 import { CoordinateSystem } from "./CoordinateSystem";
 import { IForce, Weight } from "./Weight";
 
@@ -1600,13 +1599,6 @@ function App() {
                   xMin={xMin}
                   yMax={yMax}
                   yMin={yMin}
-                />
-              )}
-              {simulationType == "Inclined Plane" && (
-                <Wedge
-                  startWidth={wedgeWidth}
-                  startHeight={wedgeHeight}
-                  startLeft={xMax * 0.5 - 200}
                 />
               )}
             </div>
