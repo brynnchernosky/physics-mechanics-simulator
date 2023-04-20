@@ -134,7 +134,6 @@ export const Weight = (props: IWeightProps) => {
     mode == "Freeform";
   const epsilon = 0.0001;
   const labelBackgroundColor = `rgba(255,255,255,0.5)`;
-  const wedgeColor = "#deb887";
 
   // State hooks
   const [clickPositionX, setClickPositionX] = useState(0);
@@ -150,6 +149,8 @@ export const Weight = (props: IWeightProps) => {
   const [yPosition, setYPosition] = useState(startPosY);
   const [yVelocity, setYVelocity] = useState(startVelY);
   const [coordinates, setCoordinates] = useState(""); // for wedge
+  const [xAccel, setXAccel] = useState(0);
+  const [yAccel, setYAccel] = useState(0);
 
   // Variables
   let weightStyle = {
@@ -210,6 +211,10 @@ export const Weight = (props: IWeightProps) => {
     );
     setDisplayXAcceleration(
       Math.round(getNewAccelerationX(updatedForces) * 100) / 100
+    );
+    setXAccel(Math.round(getNewAccelerationX(updatedForces) * 100) / 100);
+    setYAccel(
+      (-1 * Math.round(getNewAccelerationY(updatedForces) * 100)) / 100
     );
   };
 
@@ -1358,13 +1363,31 @@ export const Weight = (props: IWeightProps) => {
               <line
                 x1={xPosition + radius}
                 y1={yPosition + radius}
-                x2={xPosition + radius + getNewAccelerationX(updatedForces) * 5}
-                y2={yPosition + radius + getNewAccelerationY(updatedForces) * 5}
+                x2={xPosition + radius + getNewAccelerationX(updatedForces) * 7}
+                y2={yPosition + radius + getNewAccelerationY(updatedForces) * 7}
                 stroke={"green"}
                 strokeWidth="5"
                 markerEnd="url(#accArrow)"
               />
             </svg>
+            <div
+              style={{
+                pointerEvents: "none",
+                position: "absolute",
+                left: xPosition + radius + xAccel * 3 + 25 + "px",
+                top: yPosition + radius + yAccel * 3 + 70 + "px",
+                zIndex: -1,
+                lineHeight: 0.5,
+              }}
+            >
+              <p>
+                {Math.round(
+                  100 * Math.sqrt(xAccel * xAccel + yAccel * yAccel)
+                ) / 100}{" "}
+                m/s
+                <sup>2</sup>
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -1403,7 +1426,7 @@ export const Weight = (props: IWeightProps) => {
                 markerEnd="url(#velArrow)"
               />
             </svg>
-            {/* <div
+            <div
               style={{
                 pointerEvents: "none",
                 position: "absolute",
@@ -1415,11 +1438,15 @@ export const Weight = (props: IWeightProps) => {
             >
               <p>
                 {Math.round(
-                  100 * Math.sqrt(xVelocity * xVelocity + yVelocity * yVelocity)
+                  100 *
+                    Math.sqrt(
+                      displayXVelocity * displayXVelocity +
+                        displayYVelocity * displayYVelocity
+                    )
                 ) / 100}{" "}
                 m/s
               </p>
-            </div> */}
+            </div>
           </div>
         </div>
       )}
@@ -1631,7 +1658,6 @@ export const Weight = (props: IWeightProps) => {
                   position: "absolute",
                   left: labelLeft + "px",
                   top: labelTop + "px",
-                  // zIndex: -1,
                   lineHeight: 0.5,
                   backgroundColor: labelBackgroundColor,
                 }}

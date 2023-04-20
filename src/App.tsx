@@ -1942,7 +1942,7 @@ function App() {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          value={elasticCollisions}
+                          checked={elasticCollisions}
                           onChange={() =>
                             setElasticCollisions(!elasticCollisions)
                           }
@@ -1955,7 +1955,7 @@ function App() {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        value={showForces}
+                        checked={showForces}
                         onChange={() => setShowForces(!showForces)}
                         defaultChecked
                       />
