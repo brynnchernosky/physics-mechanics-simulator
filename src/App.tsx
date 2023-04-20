@@ -1017,7 +1017,9 @@ function App() {
       } else if (simulationType == "Pulley") {
         setShowForces(false);
         setupPulley();
-        // TODO - pulley tutorial
+        setSelectedTutorial(tutorials.pulley);
+        setStartForces(getForceFromJSON(tutorials.pulley.steps[0].forces));
+        setShowForceMagnitudes(tutorials.pulley.steps[0].showMagnitude);
       } else if (simulationType == "Suspension") {
         setShowForces(false);
         // TODO - suspension tutorial
@@ -1172,7 +1174,7 @@ function App() {
     setStartPosX((xMin + xMax) / 2 - 105);
     setPositionYDisplay(getDisplayYPos((yMax + yMin) / 2));
     setPositionXDisplay((xMin + xMax) / 2 - 105);
-    let a = ((mass - mass2) * Math.abs(gravity)) / (mass + mass2);
+    let a = (-1 * ((mass - mass2) * Math.abs(gravity))) / (mass + mass2);
     const gravityForce1: IForce = {
       description: "Gravity",
       magnitude: mass * Math.abs(gravity),
@@ -1181,10 +1183,11 @@ function App() {
     };
     const tensionForce1: IForce = {
       description: "Tension",
-      magnitude: mass2 * Math.abs(gravity) - mass * a,
+      magnitude: mass * a + mass * Math.abs(gravity),
       directionInDegrees: 90,
       component: false,
     };
+    a *= -1;
     const gravityForce2: IForce = {
       description: "Gravity",
       magnitude: mass2 * Math.abs(gravity),
@@ -1193,7 +1196,7 @@ function App() {
     };
     const tensionForce2: IForce = {
       description: "Tension",
-      magnitude: mass * Math.abs(gravity) + mass2 * a,
+      magnitude: mass2 * a + mass2 * Math.abs(gravity),
       directionInDegrees: 90,
       component: false,
     };
