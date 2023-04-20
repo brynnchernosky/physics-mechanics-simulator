@@ -1968,7 +1968,7 @@ function App() {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          value={showForces}
+                          checked={showForces}
                           onChange={() =>
                             setShowComponentForces(!showComponentForces)
                           }
@@ -1981,7 +1981,7 @@ function App() {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        value={showAcceleration}
+                        checked={showAcceleration}
                         onChange={() => setShowAcceleration(!showAcceleration)}
                       />
                     }
@@ -1991,7 +1991,7 @@ function App() {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        value={showVelocity}
+                        checked={showVelocity}
                         onChange={() => setShowVelocity(!showVelocity)}
                       />
                     }

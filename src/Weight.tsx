@@ -730,10 +730,7 @@ export const Weight = (props: IWeightProps) => {
   useEffect(() => {
     if (simulationType == "One Weight") {
       let maxYPos = updatedStartPosY;
-      if (startVelY < 0) {
-        maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
-      }
-      if (startVelY > 0) {
+      if (startVelY != 0) {
         maxYPos -= (startVelY * startVelY) / (2 * Math.abs(gravity));
       }
       if (maxYPos < 0) {
