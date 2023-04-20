@@ -375,11 +375,62 @@
       },
       {
         "description": "Centripetal Force",
-        "content": "The formula for solving for centripetal force for an object undergoing uniform circular motion is Fc=mv^2 / r. Plugging in for known values, we get Fc=1*(40^2)/100. Solving for this, we get Fc=16",
+        "content": "The centripetal force is always directed toward the center of the circle. The formula for solving for the magnitude of centripetal force for an object undergoing uniform circular motion is Fc=mv^2 / r. Plugging in for known values, we get Fc=1*(40^2)/100. Solving for this, we get Fc=16",
         "forces": [
           {
             "description": "Centripetal Force",
             "magnitude": 16,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": true
+      }
+    ]
+  },
+  "pulley": {
+    "question": "A 1kg red weight is attached to a simple pulley with a rope of negligible mass. A 1.5kg blue weight is attached to the other end of the simple pulley. What are the forces acting on the red weight?",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "There are two force acting on the red weight: the force of gravity and the force of tension.",
+        "forces": [
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Tension",
+            "magnitude": 16.68,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": false
+      },
+      {
+        "description": "Gravity",
+        "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
+        "forces": [
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          }
+        ],
+        "showMagnitude": true
+      },
+
+      {
+        "description": "Tension",
+        "content": "The force of tension acts in the positive y direction: π/2 rad. We know that the acceleration in a simple pulley system ?? .",
+        "forces": [
+          {
+            "description": "Tension",
+            "magnitude": 16.68,
             "directionInDegrees": 90,
             "component": false
           }
