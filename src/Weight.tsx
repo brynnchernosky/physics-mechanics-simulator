@@ -274,7 +274,7 @@ export const Weight = (props: IWeightProps) => {
     let deltaY = yPos + radius - (yMin + yMax) / 2;
     let dir = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
     const tensionForce: IForce = {
-      description: "Tension",
+      description: "Centripetal Force",
       magnitude: (startVelX ** 2 * mass) / circularMotionRadius,
       directionInDegrees: dir,
       component: false,

@@ -356,5 +356,36 @@
         "showMagnitude": true
       }
     ]
+  },
+  "circular": {
+    "question": "A 1kg weight is attached to a 100m rod of negligible mass. The weight is undergoing uniform circular motion with tangential velocity 40 m/s. What are the magnitude and directions of the forces acting on the weight? (Ignore air resistance)",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "There is one force acting on the weight: the centripetal force.",
+        "forces": [
+          {
+            "description": "Centripetal Force",
+            "magnitude": 16,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": false
+      },
+      {
+        "description": "Centripetal Force",
+        "content": "The formula for solving for centripetal force for an object undergoing uniform circular motion is Fc=mv^2 / r. Plugging in for known values, we get Fc=1*(40^2)/100. Solving for this, we get Fc=16",
+        "forces": [
+          {
+            "description": "Centripetal Force",
+            "magnitude": 16,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": true
+      }
+    ]
   }
 }

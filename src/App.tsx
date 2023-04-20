@@ -956,11 +956,17 @@ function App() {
       }
     } else if (mode == "Tutorial") {
       setShowComponentForces(false);
-      setVelocityXDisplay(0);
-      setVelocityYDisplay(0);
       setStepNumber(0);
-      setShowVelocity(false);
       setShowAcceleration(false);
+      if (simulationType != "Circular Motion") {
+        setVelocityXDisplay(0);
+        setVelocityYDisplay(0);
+        setShowVelocity(false);
+      } else {
+        setVelocityXDisplay(20);
+        setVelocityYDisplay(0);
+        setShowVelocity(true);
+      }
 
       if (simulationType == "One Weight") {
         setShowForces(true);
@@ -970,7 +976,7 @@ function App() {
         setStartForces(getForceFromJSON(tutorials.freeWeight.steps[0].forces));
         setShowForceMagnitudes(tutorials.freeWeight.steps[0].showMagnitude);
       } else if (simulationType == "Spring") {
-        setShowForces(false);
+        setShowForces(true);
         setupSpring();
         setStartPosY(yMin + 200 + 19.62);
         setStartPosX((xMax + xMin) / 2 - radius);
@@ -1003,9 +1009,11 @@ function App() {
         );
         setShowForceMagnitudes(tutorials.inclinePlane.steps[0].showMagnitude);
       } else if (simulationType == "Circular Motion") {
-        setShowForces(false);
-        setupCircular(0);
-        // TODO - circular motion tutorial
+        setShowForces(true);
+        setupCircular(40);
+        setSelectedTutorial(tutorials.circular);
+        setStartForces(getForceFromJSON(tutorials.circular.steps[0].forces));
+        setShowForceMagnitudes(tutorials.circular.steps[0].showMagnitude);
       } else if (simulationType == "Pulley") {
         setShowForces(false);
         setupPulley();
@@ -1028,7 +1036,7 @@ function App() {
     setStartPosY(yPos);
     setStartPosX(xPos);
     const tensionForce: IForce = {
-      description: "Tension",
+      description: "Centripetal Force",
       magnitude: (startVelX ** 2 * mass) / circularMotionRadius,
       directionInDegrees: 90,
       component: false,
@@ -1958,7 +1966,6 @@ function App() {
                       <Checkbox
                         checked={showForces}
                         onChange={() => setShowForces(!showForces)}
-                        defaultChecked
                       />
                     }
                     label="Show force vectors"
