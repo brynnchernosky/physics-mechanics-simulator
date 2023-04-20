@@ -293,5 +293,68 @@
         "showMagnitude": true
       }
     ]
+  },
+  "spring": {
+    "question": "A 1kg weight is on a spring of negligible mass with rest length 200m and spring constant 0.5. What is the equilibrium spring length?",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "We can start by solving for the forces acting on the weight at any given point in time. There are two forces potentially acting on the weight: the force of gravity and the spring force. In equilibrium, these forces will be perfectly balanced.",
+        "forces": [
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Spring Force",
+            "magnitude": 9.81,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": false
+      },
+      {
+        "description": "Force of Gravity",
+        "content": "The force of gravity acts in the negative y direction: 3π/2 rad. It has magnitude equal to m*g. We can approximate g as 9.81.",
+        "forces": [
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          }
+        ],
+        "showMagnitude": true
+      },
+      {
+        "description": "Spring Force",
+        "content": "The spring force acts in the negative y direction (3π/2 rad) if the spring is compressed. The spring force acts in the positive y direction (π/2 rad) if the spring is extended. Because the forces are perfectly balanced and gravity acts in the negative y direction, the spring force must act in the positive y direction and have the same magnitude as the force og gravity, m*g. We can approximate g as 9.81.",
+        "forces": [
+          {
+            "description": "Spring Force",
+            "magnitude": 9.81,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": true
+      },
+      {
+        "description": "Spring Force",
+        "content": "We can use the spring force equation, Fs=kd to solve for the displacement such that Fs=mg. Setting them equal, we get mg=kd. Plugging in for the known values of m,g, and k, we get 1*9.81=0.5d. Solving for d, we get d=19.62 as the equilibrium starting displacement",
+        "forces": [
+          {
+            "description": "Spring Force",
+            "magnitude": 9.81,
+            "directionInDegrees": 90,
+            "component": false
+          }
+        ],
+        "showMagnitude": true
+      }
+    ]
   }
 }
