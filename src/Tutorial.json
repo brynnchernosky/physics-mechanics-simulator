@@ -426,7 +426,7 @@
 
       {
         "description": "Tension",
-        "content": "The force of tension acts in the positive y direction: π/2 rad. We know that the acceleration in a simple pulley system ?? .",
+        "content": "The force of tension acts in the positive y direction: π/2 rad. We know that the acceleration in a simple pulley system is  .",
         "forces": [
           {
             "description": "Tension",
@@ -436,6 +436,36 @@
           }
         ],
         "showMagnitude": true
+      }
+    ]
+  },
+  "suspension": {
+    "question": "A 1kg weight is attached to two rods hanging from 45° angles from the ceiling. The system is in equilibrium, i.e. the weight does not move. What are the magnitudes and directions of the forces acting on the weight?",
+    "steps": [
+      {
+        "description": "Forces",
+        "content": "There are three force acting on the red weight: the force of gravity, the force of tension from the left rod, and the force of tension from the right rod.",
+        "forces": [
+          {
+            "description": "Gravity",
+            "magnitude": 9.81,
+            "directionInDegrees": 270,
+            "component": false
+          },
+          {
+            "description": "Left Tension",
+            "magnitude": 6.94,
+            "directionInDegrees": 135,
+            "component": false
+          },
+          {
+            "description": "Right Tension",
+            "magnitude": 6.94,
+            "directionInDegrees": 45,
+            "component": false
+          }
+        ],
+        "showMagnitude": false
       }
     ]
   }

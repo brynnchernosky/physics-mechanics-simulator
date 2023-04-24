@@ -1015,14 +1015,17 @@ function App() {
         setStartForces(getForceFromJSON(tutorials.circular.steps[0].forces));
         setShowForceMagnitudes(tutorials.circular.steps[0].showMagnitude);
       } else if (simulationType == "Pulley") {
-        setShowForces(false);
+        setShowForces(true);
         setupPulley();
         setSelectedTutorial(tutorials.pulley);
         setStartForces(getForceFromJSON(tutorials.pulley.steps[0].forces));
         setShowForceMagnitudes(tutorials.pulley.steps[0].showMagnitude);
       } else if (simulationType == "Suspension") {
-        setShowForces(false);
-        // TODO - suspension tutorial
+        setShowForces(true);
+        setupSuspension();
+        setSelectedTutorial(tutorials.suspension);
+        setStartForces(getForceFromJSON(tutorials.suspension.steps[0].forces));
+        setShowForceMagnitudes(tutorials.suspension.steps[0].showMagnitude);
       }
       setSimulationReset(!simulationReset);
     }
